@@ -68,7 +68,7 @@ public class JpaConfiguration {
     public FlywayMigrationStrategy flywayMigrationStrategy(FlywayOptions flywayOptions, Logger logger) {
         return flyway -> {
             if (!flywayOptions.isEnabled()) {
-                System.out.println("Flyway migrations are disabled.");
+                logger.info("Flyway migrations are disabled.");
                 return;
             }
 

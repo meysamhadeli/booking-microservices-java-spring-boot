@@ -35,3 +35,9 @@ rabbitmq:
   password: guest
   exchangeName: student
   exchangeType: topic
+
+otel:
+  collector:
+    service-name: student
+    service-version: 1.0.0
+    endpoint: http://localhost:4317
