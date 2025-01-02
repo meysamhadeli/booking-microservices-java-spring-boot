@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>sample.spring</groupId>
-    <artifactId>demo</artifactId>
+    <artifactId>student</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>demo</name>
-    <description>Demo project for Spring Boot</description>
+    <name>student</name>
+    <description>Student project for Spring Boot</description>
     <url/>
     <licenses>
         <license/>
@@ -36,11 +36,13 @@
             <artifactId>building-blocks</artifactId>
             <version>1.0.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>

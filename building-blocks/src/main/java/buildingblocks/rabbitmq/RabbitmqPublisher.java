@@ -1,12 +1,10 @@
 package buildingblocks.rabbitmq;
 
-
 import buildingblocks.utils.jsonconverter.JsonConverter;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
 import org.springframework.scheduling.annotation.Async;
-
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 

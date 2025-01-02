@@ -1,8 +1,13 @@
 package buildingblocks.jpa;
 
+import buildingblocks.logger.LoggerConfiguration;
 import jakarta.persistence.EntityManagerFactory;
+import org.flywaydb.core.Flyway;
+import org.slf4j.Logger;
+import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -12,6 +17,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
+@Import(LoggerConfiguration.class)
 public class JpaConfiguration {
 
     @Bean
@@ -19,10 +25,10 @@ public class JpaConfiguration {
         return new JpaOptions();
     }
 
-//    @Bean
-//    public FlywayOptions flywayOptions() {
-//        return new FlywayOptions();
-//    }
+    @Bean
+    public FlywayOptions flywayOptions() {
+        return new FlywayOptions();
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -46,6 +52,8 @@ public class JpaConfiguration {
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.hbm2ddl.auto", jpaOptions.getHibernateDdlAuto());
         jpaProperties.put("hibernate.column_ordering_strategy", jpaOptions.getHibernateColumnOrderingStrategy());
+        jpaProperties.put("hibernate.show_sql", jpaOptions.getHibernateShowSql());
+        jpaProperties.put("hibernate.format_sql", jpaOptions.getHibernateFormatSql());
 
         factoryBean.setJpaProperties(jpaProperties);
         return factoryBean;
@@ -56,22 +64,31 @@ public class JpaConfiguration {
         return new JpaTransactionManager(entityManagerFactory);
     }
 
-//    @Bean
-//    @ConditionalOnMissingBean
-//    public Flyway flyway(FlywayOptions flywayOptions, DataSource dataSource) {
-//        var flyway = Flyway.configure()
-//                .dataSource(dataSource)
-//                .ignoreMigrationPatterns("*:missing")
-//                .locations(flywayOptions.getLocations())
-//                .baselineOnMigrate(flywayOptions.isBaselineOnMigrate())
-//                .mixed(true)
-//                .createSchemas(true)
-//                .failOnMissingLocations(false)
-//                .loggers("auto")
-//                .load();
-//
-//
-//        flyway.migrate();
-//        return flyway;
-//    }
+    @Bean
+    public FlywayMigrationStrategy flywayMigrationStrategy(FlywayOptions flywayOptions, Logger logger) {
+        return flyway -> {
+            if (!flywayOptions.isEnabled()) {
+                System.out.println("Flyway migrations are disabled.");
+                return;
+            }
+
+            Flyway configuredFlyway = Flyway.configure()
+                    .dataSource(flyway.getConfiguration().getDataSource())
+                    .locations(flywayOptions.getLocations())
+                    .baselineOnMigrate(flywayOptions.isBaselineOnMigrate())
+                    .baselineVersion(flywayOptions.getBaselineVersion())
+                    .validateOnMigrate(flywayOptions.isValidateOnMigrate())
+                    .cleanDisabled(flywayOptions.isCleanDisabled())
+                    .load();
+
+            logger.info("Starting Flyway migration...");
+            try {
+                configuredFlyway.migrate();
+                logger.info("Flyway migration completed successfully!");
+            } catch (Exception ex) {
+                logger.error("Flyway migration failed: {}", ex.getMessage(), ex);
+                throw ex;
+            }
+        };
+    }
 }
