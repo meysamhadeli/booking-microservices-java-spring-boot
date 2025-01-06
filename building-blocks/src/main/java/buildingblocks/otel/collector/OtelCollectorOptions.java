@@ -1,4 +1,4 @@
-package buildingblocks.jpa;
+package buildingblocks.otel.collector;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,15 +7,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "spring.flyway")
+@ConfigurationProperties(prefix = "spring.otel.collector")
 @Getter
 @Setter
 @ConditionalOnMissingBean
-public class FlywayOptions {
-    private boolean enabled;
-    private String locations;
-    private boolean baselineOnMigrate;
-    private String baselineVersion;
-    private boolean validateOnMigrate;
-    private boolean cleanDisabled;
+public class OtelCollectorOptions {
+    private String endpoint;
+    private String serviceName;
+    private String serviceVersion;
 }

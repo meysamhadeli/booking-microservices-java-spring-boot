@@ -5,7 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-public class JsonConverter {
+public final class JsonConverter {
+
+    private JsonConverter() {
+        throw new AssertionError("Cannot instantiate utility class.");
+    }
+
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     static {

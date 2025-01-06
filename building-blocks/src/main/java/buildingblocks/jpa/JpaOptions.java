@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "jpa")
+@ConfigurationProperties(prefix = "spring.jpa")
 @Getter
 @Setter
 @ConditionalOnMissingBean
@@ -21,4 +21,5 @@ public class JpaOptions {
     private String hibernateColumnOrderingStrategy;
     private String hibernateShowSql;
     private String hibernateFormatSql;
+    private String hibernatePhysicalNamingStrategy;
 }

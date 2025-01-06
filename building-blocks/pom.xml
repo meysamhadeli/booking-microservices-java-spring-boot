@@ -69,6 +69,25 @@
 			<version>3.4.1</version>
 		</dependency>
 
+		<!-- Swagger -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
 		<!-- OpenTelemetry Core -->
 		<dependency>
 			<groupId>io.opentelemetry</groupId>
@@ -109,6 +128,13 @@
 			<version>1.30.1-alpha</version>
 		</dependency>
 
+		<!-- Axon -->
+		<dependency>
+			<groupId>org.axonframework</groupId>
+			<artifactId>axon-spring-boot-starter</artifactId>
+			<version>4.10.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -132,6 +158,12 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>42.7.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.f4b6a3</groupId>
+			<artifactId>uuid-creator</artifactId>
+			<version>6.0.0</version>
 		</dependency>
 
 	</dependencies>

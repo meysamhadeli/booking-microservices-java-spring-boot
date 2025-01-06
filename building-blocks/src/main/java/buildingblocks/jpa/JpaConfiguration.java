@@ -3,11 +3,13 @@ package buildingblocks.jpa;
 import buildingblocks.logger.LoggerConfiguration;
 import jakarta.persistence.EntityManagerFactory;
 import org.flywaydb.core.Flyway;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -42,7 +44,8 @@ public class JpaConfiguration {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaOptions jpaOptions) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaOptions jpaOptions)
+    {
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 
         factoryBean.setDataSource(dataSource);
@@ -54,6 +57,7 @@ public class JpaConfiguration {
         jpaProperties.put("hibernate.column_ordering_strategy", jpaOptions.getHibernateColumnOrderingStrategy());
         jpaProperties.put("hibernate.show_sql", jpaOptions.getHibernateShowSql());
         jpaProperties.put("hibernate.format_sql", jpaOptions.getHibernateFormatSql());
+        jpaProperties.put("hibernate.physical_naming_strategy", jpaOptions.getHibernatePhysicalNamingStrategy());
 
         factoryBean.setJpaProperties(jpaProperties);
         return factoryBean;
@@ -90,5 +94,16 @@ public class JpaConfiguration {
                 throw ex;
             }
         };
+    }
+
+    @Bean
+    public AuditorAware<Long> auditorAware() {
+        return new AuditorAwareImpl();
+    }
+
+    @Bean
+    public HibernateGlobalFilter hibernateFilterConfigurer(EntityManagerFactory entityManagerFactory) {
+        SessionFactory sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
+        return new HibernateGlobalFilter(sessionFactory);
     }
 }

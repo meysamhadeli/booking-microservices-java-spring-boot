@@ -1,0 +1,49 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: flight
+
+
+  jpa:
+    datasource-url: jdbc:postgresql://localhost:5432/flight_spring
+    datasource-username: postgres
+    datasource-password: postgres
+    datasource-driver-class-name: org.postgresql.Driver
+    hibernate-ddl-auto: validate
+    packagesToScan: com.booking.microservices.java.spring.boot.flight
+    hibernate-column_ordering_strategy: legacy
+    hibernate-show_sql: false
+    hibernate-format_sql: false
+    hibernate-physical-naming-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: true
+    clean-disabled: false
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    exchangeName: flight
+    exchangeType: topic
+
+  otel:
+    collector:
+      service-name: flight
+      service-version: 1.0.0
+      endpoint: http://localhost:4317
+
+logging:
+  name: flight-logger
+  level:
+    root: INFO
+
+axon:
+  axonserver:
+    enabled: false
