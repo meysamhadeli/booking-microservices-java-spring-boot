@@ -6,6 +6,7 @@ import com.booking.microservices.java.spring.boot.flight.airports.valueobjects.A
 import com.booking.microservices.java.spring.boot.flight.flights.enums.FlightStatus;
 import com.booking.microservices.java.spring.boot.flight.flights.models.Flight;
 import com.booking.microservices.java.spring.boot.flight.flights.valueobjects.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "flights")
+@EntityListeners(AuditingEntityListener.class)
 public class FlightEntity extends BaseEntity<UUID> {
 
     private String flightNumber;
