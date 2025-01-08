@@ -3,8 +3,6 @@ package buildingblocks.rabbitmq;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import java.util.List;
 
 
@@ -12,8 +10,6 @@ public interface RabbitmqReceiver{
     MessageListenerContainer addListeners(List<MessageListener> handlers);
 }
 
-@Configuration
-@Import({RabbitmqConfiguration.class})
 class RabbitmqReceiverImpl implements RabbitmqReceiver {
 
     private final RabbitmqConfiguration rabbitmqConfiguration;

@@ -2,6 +2,7 @@ package com.booking.microservices.java.spring.boot.flight.flights.features.creat
 
 import com.booking.microservices.java.spring.boot.flight.aircrafts.valueobjects.AircraftId;
 import com.booking.microservices.java.spring.boot.flight.airports.valueobjects.AirportId;
+import com.booking.microservices.java.spring.boot.flight.flights.dtos.FlightDto;
 import com.booking.microservices.java.spring.boot.flight.flights.features.create.flight.CreateFlightCommand;
 import com.booking.microservices.java.spring.boot.flight.flights.features.create.flight.CreateFlightRequestDto;
 import com.booking.microservices.java.spring.boot.flight.flights.models.Flight;
@@ -40,5 +41,20 @@ public final class Mappings {
       new Price(createFlightCommand.price()),
       false
     );
+  }
+
+  public static FlightDto toFlightDto(Flight flight) {
+    return new FlightDto(
+      flight.getId().value(),
+      flight.getFlightNumber().value(),
+      flight.getAircraftId().value(),
+      flight.getDepartureAirportId().value(),
+      flight.getDepartureDate().value(),
+      flight.getArriveDate().value(),
+      flight.getArriveAirportId().value(),
+      flight.getDurationMinutes().value(),
+      flight.getFlightDate().value(),
+      flight.getStatus(),
+      flight.getPrice().value());
   }
 }

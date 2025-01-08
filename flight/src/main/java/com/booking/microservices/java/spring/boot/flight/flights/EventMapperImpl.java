@@ -9,7 +9,6 @@ import com.booking.microservices.java.spring.boot.flight.flights.events.FlightUp
 import com.booking.microservices.java.spring.boot.flight.flights.features.create.flight.FlightCreatedDomainEvent;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class EventMapperImpl implements EventMapper {
   @Override

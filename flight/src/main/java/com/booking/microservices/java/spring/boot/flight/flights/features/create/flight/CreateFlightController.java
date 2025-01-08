@@ -1,9 +1,8 @@
 package com.booking.microservices.java.spring.boot.flight.flights.features.create.flight;
 
+import com.booking.microservices.java.spring.boot.flight.flights.dtos.FlightDto;
 import com.booking.microservices.java.spring.boot.flight.flights.features.create.Mappings;
-import com.github.f4b6a3.uuid.UuidCreator;
 import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +22,8 @@ public class CreateFlightController {
   }
 
   @PostMapping()
-  public CompletableFuture<Void> createFlight(@RequestBody CreateFlightRequestDto createFlightRequestDto) {
+  public CompletableFuture<ResponseEntity<FlightDto>> createFlight(@RequestBody CreateFlightRequestDto createFlightRequestDto) {
     CreateFlightCommand command = Mappings.toCreateFlightCommand(createFlightRequestDto);
-    return commandGateway.send(command).thenAcceptAsync(students -> new ResponseEntity<>(students, HttpStatus.OK));
+    return commandGateway.send(command);
   }
 }

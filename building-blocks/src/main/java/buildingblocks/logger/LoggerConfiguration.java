@@ -1,5 +1,6 @@
 package buildingblocks.logger;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +13,7 @@ public class LoggerConfiguration {
     private String defaultLoggerName;
 
     @Bean
-    public org.slf4j.Logger defaultLogger() {
+    public Logger defaultLogger() {
         return LoggerFactory.getLogger(defaultLoggerName);
     }
 }

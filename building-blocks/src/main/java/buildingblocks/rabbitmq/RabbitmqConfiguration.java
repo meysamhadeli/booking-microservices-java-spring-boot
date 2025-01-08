@@ -61,13 +61,18 @@ public class RabbitmqConfiguration {
 
 
     @Bean
-    public AsyncRabbitTemplate template(ConnectionFactory connectionFactory) {
+    public AsyncRabbitTemplate templateAsync(ConnectionFactory connectionFactory) {
         return new AsyncRabbitTemplate(new RabbitTemplate(connectionFactory));
     }
 
     @Bean
-    public RabbitmqPublisher rabbitmqPublisher(RabbitmqOptions rabbitmqOptions, AsyncRabbitTemplate asyncRabbitTemplate) {
-        return new RabbitmqPublisherImpl(rabbitmqOptions, asyncRabbitTemplate);
+    public RabbitTemplate template(ConnectionFactory connectionFactory) {
+        return new RabbitTemplate(connectionFactory);
+    }
+
+    @Bean
+    public RabbitmqPublisher rabbitmqPublisher(RabbitmqOptions rabbitmqOptions, AsyncRabbitTemplate asyncRabbitTemplate, RabbitTemplate rabbitTemplate) {
+        return new RabbitmqPublisherImpl(rabbitmqOptions, asyncRabbitTemplate, rabbitTemplate);
     }
 
     @Bean
