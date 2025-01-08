@@ -1,11 +1,8 @@
 package buildingblocks.jpa;
 
-import buildingblocks.logger.LoggerConfiguration;
+import buildingblocks.flyway.FlywayConfiguration;
 import jakarta.persistence.EntityManagerFactory;
-import org.flywaydb.core.Flyway;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -19,17 +16,12 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@Import(LoggerConfiguration.class)
+@Import({FlywayConfiguration.class})
 public class JpaConfiguration {
 
     @Bean
     public JpaOptions jpaOptions() {
         return new JpaOptions();
-    }
-
-    @Bean
-    public FlywayOptions flywayOptions() {
-        return new FlywayOptions();
     }
 
     @Bean
@@ -69,36 +61,8 @@ public class JpaConfiguration {
     }
 
     @Bean
-    public FlywayMigrationStrategy flywayMigrationStrategy(FlywayOptions flywayOptions, Logger logger) {
-        return flyway -> {
-            if (!flywayOptions.isEnabled()) {
-                logger.info("Flyway migrations are disabled.");
-                return;
-            }
-
-            Flyway configuredFlyway = Flyway.configure()
-                    .dataSource(flyway.getConfiguration().getDataSource())
-                    .locations(flywayOptions.getLocations())
-                    .baselineOnMigrate(flywayOptions.isBaselineOnMigrate())
-                    .baselineVersion(flywayOptions.getBaselineVersion())
-                    .validateOnMigrate(flywayOptions.isValidateOnMigrate())
-                    .cleanDisabled(flywayOptions.isCleanDisabled())
-                    .load();
-
-            logger.info("Starting Flyway migration...");
-            try {
-                configuredFlyway.migrate();
-                logger.info("Flyway migration completed successfully!");
-            } catch (Exception ex) {
-                logger.error("Flyway migration failed: {}", ex.getMessage(), ex);
-                throw ex;
-            }
-        };
-    }
-
-    @Bean
     public AuditorAware<Long> auditorAware() {
-        return new AuditorAwareImpl();
+        return new JpaAuditorAwareImpl();
     }
 
     @Bean

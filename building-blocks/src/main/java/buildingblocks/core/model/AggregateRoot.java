@@ -1,16 +1,15 @@
 package buildingblocks.core.model;
 
 import buildingblocks.core.event.DomainEvent;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public abstract class AggregateRoot<T> {
     private T id;
 

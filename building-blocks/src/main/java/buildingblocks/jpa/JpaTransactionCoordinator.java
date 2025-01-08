@@ -4,8 +4,10 @@ import buildingblocks.core.event.DomainEvent;
 import buildingblocks.core.event.EventMapper;
 import buildingblocks.core.event.IntegrationEvent;
 import buildingblocks.core.model.AggregateRoot;
+import buildingblocks.logger.LoggerConfiguration;
 import buildingblocks.rabbitmq.RabbitmqPublisher;
 import org.slf4j.Logger;
+import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -15,14 +17,15 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @Component
-public class TransactionCoordinator {
+@Import(LoggerConfiguration.class)
+public class JpaTransactionCoordinator {
 
     private final TransactionTemplate transactionTemplate;
     private final RabbitmqPublisher rabbitmqPublisher;
     private final EventMapper eventMapper;
     private final Logger logger;
 
-    public TransactionCoordinator(
+    public JpaTransactionCoordinator(
             PlatformTransactionManager platformTransactionManager,
             RabbitmqPublisher rabbitmqPublisher,
             Logger logger,
