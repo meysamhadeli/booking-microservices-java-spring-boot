@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: api.gateway
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/keycloak-realm/protocol/openid-connect/certs
+
+  cloud:
+    gateway:
+      routes:
+        - id: flight-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/{version}/flight/**
+          filters:
+            - TokenRelay
+
+
+server:
+  port: 8081

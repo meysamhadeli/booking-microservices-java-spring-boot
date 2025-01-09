@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: api.gateway
+
+server:
+  port: 8081

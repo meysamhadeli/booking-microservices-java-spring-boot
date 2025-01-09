@@ -52,7 +52,7 @@ public class KeycloakConfiguration {
         Converter<Jwt, Collection<GrantedAuthority>> combinedConverter = jwt -> {
             Collection<GrantedAuthority> authorities = new HashSet<>();
             authorities.addAll(Objects.requireNonNull(new KeycloakRoleConverter().convert(jwt)));
-            authorities.addAll(Objects.requireNonNull(new KeycloakScopeConverter().convert(jwt)));
+           // authorities.addAll(Objects.requireNonNull(new KeycloakScopeConverter().convert(jwt)));
             return authorities;
         };
 

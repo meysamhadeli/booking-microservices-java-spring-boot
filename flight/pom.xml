@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.booking.microservices.java.spring.boot</groupId>
     <artifactId>flight</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>flight</name>
     <description>Flight</description>
 
@@ -19,6 +19,12 @@
     </properties>
 
     <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <version>3.4.1</version>
+      </dependency>
+
         <dependency>
             <groupId>com.building.blocks</groupId>
             <artifactId>building-blocks</artifactId>
@@ -26,17 +32,11 @@
         </dependency>
 
       <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-boot-starter</artifactId>
-        <version>3.0.0</version>
+        <groupId>org.axonframework</groupId>
+        <artifactId>axon-spring-boot-starter</artifactId>
+        <version>4.10.0</version>
       </dependency>
 
-
-      <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <build>
