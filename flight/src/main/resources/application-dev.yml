@@ -38,19 +38,6 @@ spring:
 
   security:
     oauth2:
-      client:
-        registration:
-          oauth2-client-credentials:
-            client-id: ${OAUTH2_CLIENT_ID}
-            client-secret: ${OAUTH2_CLIENT_SECRET}
-            scope:
-              - openid
-              - profile
-              - roles
-            authorization-grant-type: client_credentials
-        provider:
-          oauth2-client-credentials:
-            issuer-uri: http://localhost:8080/realms/keycloak-realm
       resourceserver:
         jwt:
           jwk-set-uri: http://localhost:8080/realms/keycloak-realm/protocol/openid-connect/certs
