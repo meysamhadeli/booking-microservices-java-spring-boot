@@ -29,11 +29,18 @@ services:
     container_name: postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"
-    #https://docs.docker.com/compose/environment-variables/env-file/#parameter-expansion
+      - '5432:5432'
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=logical"
+      - "-c"
+      - "max_prepared_transactions=10"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - infrastructure
 
@@ -254,6 +261,35 @@ services:
        - elasticsearch
      networks:
        - infrastructure
+
+    #######################################################
+    # keycloak
+    #######################################################
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    restart: unless-stopped
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin_keycloak
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_LOG_LEVEL: info
+      KC_METRICS_ENABLED: true
+      KC_HEALTH_ENABLED: true
+    ports:
+      - "8080:8080"
+    command: start-dev
+    depends_on:
+      - postgres
+    networks:
+      - infrastructure
        
 networks:
   infrastructure:
@@ -262,3 +298,4 @@ networks:
     
 volumes:
   elastic-data:
+  postgres-data:

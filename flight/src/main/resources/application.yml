@@ -47,3 +47,6 @@ logging:
 axon:
   axonserver:
     enabled: false
+
+server:
+  port: 8082

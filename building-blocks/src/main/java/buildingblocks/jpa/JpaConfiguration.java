@@ -1,11 +1,9 @@
 package buildingblocks.jpa;
 
-import buildingblocks.flyway.FlywayConfiguration;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -18,7 +16,6 @@ import java.util.Properties;
 
 @Configuration
 @EnableJpaAuditing
-@Import({FlywayConfiguration.class})
 public class JpaConfiguration {
 
     @Bean
