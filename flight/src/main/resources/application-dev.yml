@@ -1,7 +1,8 @@
 spring:
   application:
     name: flight
-
+#  main:
+#    allow-circular-references: false
   jpa:
     datasource-url: jdbc:postgresql://localhost:5432/flight_spring
     datasource-username: postgres

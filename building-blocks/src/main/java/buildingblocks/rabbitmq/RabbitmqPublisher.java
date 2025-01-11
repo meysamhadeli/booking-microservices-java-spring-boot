@@ -32,7 +32,7 @@ class RabbitmqPublisherImpl implements RabbitmqPublisher {
         return this.asyncRabbitTemplate.convertSendAndReceive(
                 rabbitmqOptions.getExchangeName(),
                 rabbitmqOptions.getExchangeName() + "_routing_key",
-                JsonConverter.serialize(message),
+                JsonConverter.serializeObject(message),
                 messageProperties -> {
                     MessageProperties props = messageProperties.getMessageProperties();
                     props.setContentType(MessageProperties.CONTENT_TYPE_JSON);
@@ -48,7 +48,7 @@ class RabbitmqPublisherImpl implements RabbitmqPublisher {
         this.rabbitTemplate.convertAndSend(
                 rabbitmqOptions.getExchangeName(),
                 rabbitmqOptions.getExchangeName() + "_routing_key",
-                JsonConverter.serialize(message),
+                JsonConverter.serializeObject(message),
                 messageProperties -> {
                     MessageProperties props = messageProperties.getMessageProperties();
                     props.setContentType(MessageProperties.CONTENT_TYPE_JSON);

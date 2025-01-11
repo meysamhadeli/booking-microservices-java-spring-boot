@@ -1,13 +1,18 @@
 package buildingblocks.rabbitmq;
 
+import buildingblocks.outboxprocessor.PersistMessageProcessor;
+import buildingblocks.outboxprocessor.PersistMessageProcessorConfiguration;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 
 @Configuration
 public class RabbitmqConfiguration {
@@ -76,7 +81,8 @@ public class RabbitmqConfiguration {
     }
 
     @Bean
-    public RabbitmqReceiver rabbitmqReceiver(RabbitmqOptions rabbitmqOptions, ConnectionFactory connectionFactory) {
-        return new RabbitmqReceiverImpl(this);
+    @ConditionalOnMissingClass
+    public RabbitmqReceiver rabbitmqReceiver(PersistMessageProcessor persistMessageProcessor) {
+        return new RabbitmqReceiverImpl(this, persistMessageProcessor);
     }
 }

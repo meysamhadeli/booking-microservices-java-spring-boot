@@ -3,13 +3,13 @@ package buildingblocks.flyway;
 import buildingblocks.logger.LoggerConfiguration;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import(LoggerConfiguration.class)
 public class FlywayConfiguration {
     @Bean
     public FlywayOptions flywayOptions() {
@@ -17,6 +17,7 @@ public class FlywayConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingClass
     public FlywayMigrationStrategy flywayMigrationStrategy(FlywayOptions flywayOptions, Logger logger) {
         return flyway -> {
             if (!flywayOptions.isEnabled()) {

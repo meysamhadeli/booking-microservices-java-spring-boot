@@ -1,7 +1,11 @@
 package buildingblocks.jpa;
 
+import buildingblocks.core.event.EventMapper;
+import buildingblocks.outboxprocessor.PersistMessageProcessor;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -11,6 +15,8 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.transaction.PlatformTransactionManager;
+
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -35,12 +41,11 @@ public class JpaConfiguration {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaOptions jpaOptions)
-    {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaOptions jpaOptions) {
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 
         factoryBean.setDataSource(dataSource);
-        factoryBean.setPackagesToScan(jpaOptions.getPackagesToScan());
+        factoryBean.setPackagesToScan(jpaOptions.getPackagesToScan(), "buildingblocks");
         factoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         Properties jpaProperties = new Properties();
@@ -68,5 +73,15 @@ public class JpaConfiguration {
     public HibernateGlobalFilter hibernateFilterConfigurer(EntityManagerFactory entityManagerFactory) {
         SessionFactory sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
         return new HibernateGlobalFilter(sessionFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingClass
+    public JpaTransactionCoordinator transactionCoordinator(
+            PlatformTransactionManager platformTransactionManager,
+            PersistMessageProcessor persistMessageProcessor,
+            Logger logger,
+            EventMapper eventMapper) {
+        return new JpaTransactionCoordinator(platformTransactionManager, persistMessageProcessor, logger, eventMapper);
     }
 }
