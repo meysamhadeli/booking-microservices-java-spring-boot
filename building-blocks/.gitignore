@@ -23,5 +23,21 @@
 hs_err_pid*
 replay_pid*
 
-# JetBrains
-.idea/
+# VS Code
+.vscode/
+
+# IntelliJ IDEA
+/.idea/
+/*.iml
+
+# Eclipse
+/.classpath
+/.project
+/.settings/
+
+# Maven build directory
+/target
+
+# OS-specific files
+.DS_Store
+Thumbs.db
