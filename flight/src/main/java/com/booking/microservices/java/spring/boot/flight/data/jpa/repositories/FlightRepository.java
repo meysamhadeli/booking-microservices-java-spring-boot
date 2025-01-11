@@ -2,6 +2,7 @@ package com.booking.microservices.java.spring.boot.flight.data.jpa.repositories;
 
 import com.booking.microservices.java.spring.boot.flight.data.jpa.entities.FlightEntity;
 import com.booking.microservices.java.spring.boot.flight.flights.exceptions.FlightAlreadyExistException;
+import com.booking.microservices.java.spring.boot.flight.flights.features.create.Mappings;
 import com.booking.microservices.java.spring.boot.flight.flights.models.Flight;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -28,13 +29,13 @@ class FlightRepositoryCustomImpl implements FlightRepositoryCustom {
   @Override
   public Flight create(Flight flight) {
 
-    FlightEntity entity = FlightEntity.toEntity(flight);
+    FlightEntity entity = Mappings.toFlightEntity(flight);
     FlightEntity existingEntity = entityManager.find(FlightEntity.class, flight.getId().value());
     if (existingEntity != null) {
       throw new FlightAlreadyExistException();
     }
     entityManager.persist(entity);
 
-    return entity.toAggregate();
+    return Mappings.toFlightAggregate(entity);
   }
 }

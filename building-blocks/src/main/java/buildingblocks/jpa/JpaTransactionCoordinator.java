@@ -7,10 +7,8 @@ import buildingblocks.core.model.AggregateRoot;
 import buildingblocks.outboxprocessor.PersistMessageProcessor;
 import org.slf4j.Logger;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -45,6 +43,8 @@ public class JpaTransactionCoordinator {
                     List<IntegrationEvent> integrationEvents = events.stream().map(eventMapper::MapToIntegrationEvent).toList();
 
                     integrationEvents.forEach(persistMessageProcessor::publishMessage);
+
+                    aggregateRoot.clearDomainEvents();
 
                     logger.info("Transaction successfully committed.");
                     return aggregate;

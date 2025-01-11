@@ -9,9 +9,10 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@EqualsAndHashCode
+@Getter
 public abstract class AggregateRoot<T> {
-    private T id;
+    protected T id;
 
     private static final  List<DomainEvent> domainEvents = new ArrayList<>();
 

@@ -27,7 +27,7 @@ public class CreateFlightCommandHandler {
   public CompletableFuture<FlightDto> handle(CreateFlightCommand command) {
     return CompletableFuture.supplyAsync(() -> {
       var result = jpaTransactionCoordinator.executeWithEvents(() -> {
-        Flight flight = Mappings.toFlight(command);
+        Flight flight = Mappings.toFlightAggregate(command);
         return flightRepository.create(flight);
       });
       return Mappings.toFlightDto(result);

@@ -6,6 +6,10 @@ import com.booking.microservices.java.spring.boot.flight.airports.valueobjects.A
 import com.booking.microservices.java.spring.boot.flight.flights.enums.FlightStatus;
 import com.booking.microservices.java.spring.boot.flight.flights.models.Flight;
 import com.booking.microservices.java.spring.boot.flight.flights.valueobjects.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -15,6 +19,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "flights")
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor // Required by JPA
+@AllArgsConstructor
+@Getter
 public class FlightEntity extends BaseEntity<UUID> {
 
     private String flightNumber;
@@ -38,12 +45,8 @@ public class FlightEntity extends BaseEntity<UUID> {
 
     private BigDecimal price;
 
-    // JPA constructor
-    protected FlightEntity() {
-    }
-
     public FlightEntity(UUID id, String flightNumber, UUID aircraftId, UUID departureAirportId, UUID arriveAirportId, BigDecimal durationMinutes, FlightStatus status, BigDecimal price, LocalDateTime arriveDate, LocalDateTime departureDate, LocalDateTime flightDate) {
-        this.setId(id);;
+        this.id = id;;
         this.flightNumber = flightNumber;
         this.aircraftId = aircraftId;
         this.departureAirportId = departureAirportId;
@@ -54,38 +57,6 @@ public class FlightEntity extends BaseEntity<UUID> {
         this.arriveDate = arriveDate;
         this.departureDate = departureDate;
         this.flightDate = flightDate;
-    }
-
-    public static FlightEntity toEntity(Flight flight) {
-        return new FlightEntity(
-                flight.getId().value(),
-                flight.getFlightNumber().value(),
-                flight.getAircraftId().value(),
-                flight.getDepartureAirportId().value(),
-                flight.getArriveAirportId().value(),
-                flight.getDurationMinutes().value(),
-                flight.getStatus(),
-                flight.getPrice().value(),
-                flight.getArriveDate().value(),
-                flight.getDepartureDate().value(),
-                flight.getFlightDate().value()
-        );
-    }
-
-    public Flight toAggregate() {
-        return new Flight(
-                new FlightId(this.getId()),
-                new FlightNumber(this.flightNumber),
-                new AircraftId(this.aircraftId),
-                new AirportId(this.arriveAirportId),
-                new AirportId(this.departureAirportId),
-                new DurationMinutes(this.durationMinutes),
-                this.status,
-                new Price(this.price),
-                new ArriveDate(this.arriveDate),
-                new DepartureDate(this.departureDate),
-                new FlightDate(this.flightDate)
-        );
     }
 }
 
