@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.springframework.amqp.core.Message;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +28,6 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
     private final QPersistMessageEntity qPersistMessageEntity = QPersistMessageEntity.persistMessageEntity;
 
     public PersistMessageProcessorImpl(
-            DataSource dataSource,
             EntityManager entityManager,
             RabbitmqPublisher rabbitmqPublisher,
             Logger logger) {
@@ -37,9 +35,6 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
         this.rabbitmqPublisher = rabbitmqPublisher;
         this.entityManager = entityManager;
         this.logger = logger;
-
-        // Initialize the table
-        new PersistMessageTableInitializer(dataSource).initialize();
     }
 
     public <T extends IntegrationEvent> void publishMessage(T message) {

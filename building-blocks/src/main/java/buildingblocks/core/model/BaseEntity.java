@@ -14,45 +14,23 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @MappedSuperclass
-@FilterDef(name = "softDeleteFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
+@FilterDef(name = "softDeleteFilter", parameters = @ParamDef(name = "isDeleted", type = boolean.class))
 @Filter(name = "softDeleteFilter", condition = "is_deleted = :isDeleted")
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
+@NoArgsConstructor // Required by JPA
 @AllArgsConstructor
+@Getter
 public abstract class BaseEntity<T> {
     @Id
-    private T id;
+    protected T id;
     @CreatedDate
-    private LocalDateTime createdAt;
+    protected LocalDateTime createdAt;
     @CreatedBy
-    private Long createdBy;
+    protected Long createdBy;
     @LastModifiedDate
-    private LocalDateTime lastModified;
+    protected LocalDateTime lastModified;
     @LastModifiedBy
-    private Long lastModifiedBy;
+    protected Long lastModifiedBy;
     @Version
-    private Long version;
-    private Boolean isDeleted;
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-
-        BaseEntity<?> that = (BaseEntity<?>) o;
-        return Objects.equals(id, that.id) && Objects.equals(createdAt, that.createdAt) && Objects.equals(createdBy, that.createdBy) && Objects.equals(lastModified, that.lastModified) && Objects.equals(lastModifiedBy, that.lastModifiedBy) && Objects.equals(version, that.version) && Objects.equals(isDeleted, that.isDeleted);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hashCode(id);
-        result = 31 * result + Objects.hashCode(createdAt);
-        result = 31 * result + Objects.hashCode(createdBy);
-        result = 31 * result + Objects.hashCode(lastModified);
-        result = 31 * result + Objects.hashCode(lastModifiedBy);
-        result = 31 * result + Objects.hashCode(version);
-        result = 31 * result + Objects.hashCode(isDeleted);
-        return result;
-    }
+    protected Long version;
+    protected boolean isDeleted = false;
 }

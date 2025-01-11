@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
-import javax.sql.DataSource;
 
 @Configuration
 public class PersistMessageProcessorConfiguration {
@@ -16,11 +15,10 @@ public class PersistMessageProcessorConfiguration {
     @Bean
     @ConditionalOnMissingClass
     public PersistMessageProcessor persistMessageProcessor(
-            DataSource dataSource,
             EntityManager entityManager,
             RabbitmqPublisher rabbitmqPublisher,
             Logger logger) {
-        return new PersistMessageProcessorImpl(dataSource, entityManager, rabbitmqPublisher, logger);
+        return new PersistMessageProcessorImpl(entityManager, rabbitmqPublisher, logger);
     }
 
     @Bean
