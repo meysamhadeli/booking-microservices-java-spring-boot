@@ -1,6 +1,8 @@
 package com.booking.microservices.java.spring.boot.flight.flights;
 
-import buildingblocks.contracts.FlightContracts;
+import buildingblocks.contracts.flight.FlightCreated;
+import buildingblocks.contracts.flight.FlightDeleted;
+import buildingblocks.contracts.flight.FlightUpdated;
 import buildingblocks.core.event.EventMapper;
 import buildingblocks.core.event.DomainEvent;
 import buildingblocks.core.event.IntegrationEvent;
@@ -14,9 +16,9 @@ public class EventMapperImpl implements EventMapper {
   @Override
   public IntegrationEvent MapToIntegrationEvent(DomainEvent event) {
       return switch (event) {
-        case FlightCreatedDomainEvent e -> new FlightContracts.FlightCreated(e.id());
-        case FlightUpdatedDomainEvent e -> new FlightContracts.FlightUpdated(e.id());
-        case FlightDeletedDomainEvent e -> new FlightContracts.FlightDeleted(e.id());
+        case FlightCreatedDomainEvent e -> new FlightCreated(e.id());
+        case FlightUpdatedDomainEvent e -> new FlightUpdated(e.id());
+        case FlightDeletedDomainEvent e -> new FlightDeleted(e.id());
         default -> null;
       };
   }

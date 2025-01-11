@@ -4,34 +4,31 @@ import buildingblocks.core.event.DomainEvent;
 import buildingblocks.core.event.EventMapper;
 import buildingblocks.core.event.IntegrationEvent;
 import buildingblocks.core.model.AggregateRoot;
-import buildingblocks.logger.LoggerConfiguration;
-import buildingblocks.rabbitmq.RabbitmqPublisher;
+import buildingblocks.outboxprocessor.PersistMessageProcessor;
 import org.slf4j.Logger;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
+
 import java.util.List;
 import java.util.function.Supplier;
 
-@Component
-@Import(LoggerConfiguration.class)
+@Configuration
 public class JpaTransactionCoordinator {
 
     private final TransactionTemplate transactionTemplate;
-    private final RabbitmqPublisher rabbitmqPublisher;
+    private final PersistMessageProcessor persistMessageProcessor;
     private final EventMapper eventMapper;
     private final Logger logger;
 
     public JpaTransactionCoordinator(
             PlatformTransactionManager platformTransactionManager,
-            RabbitmqPublisher rabbitmqPublisher,
+            PersistMessageProcessor persistMessageProcessor,
             Logger logger,
             EventMapper eventMapper) {
         this.transactionTemplate = new TransactionTemplate(platformTransactionManager);
-        this.rabbitmqPublisher = rabbitmqPublisher;
+        this.persistMessageProcessor = persistMessageProcessor;
         this.eventMapper = eventMapper;
         this.logger = logger;
     }
@@ -44,7 +41,11 @@ public class JpaTransactionCoordinator {
 
                 // Validate the result is an AggregateRoot
                 if (aggregate instanceof AggregateRoot<?> aggregateRoot) {
-                    handleAggregateRoot(aggregateRoot);
+                    List<DomainEvent> events = aggregateRoot.getDomainEvents();
+                    List<IntegrationEvent> integrationEvents = events.stream().map(eventMapper::MapToIntegrationEvent).toList();
+
+                    integrationEvents.forEach(persistMessageProcessor::publishMessage);
+
                     logger.info("Transaction successfully committed.");
                     return aggregate;
                 }
@@ -55,25 +56,6 @@ public class JpaTransactionCoordinator {
 
                 logger.error("Transaction is rolled back.");
                 throw ex;
-            }
-        });
-    }
-
-    private void handleAggregateRoot(AggregateRoot<?> aggregateRoot) {
-        // After successful transaction, publish events
-        List<DomainEvent> events = aggregateRoot.getDomainEvents();
-        List<IntegrationEvent> integrationEvents = events.stream().map(eventMapper::MapToIntegrationEvent).toList();
-        publishEventsAfterCommit(integrationEvents);
-
-        aggregateRoot.clearDomainEvents();
-    }
-
-    private void publishEventsAfterCommit(List<IntegrationEvent> events) {
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                // Publish each event to the broker
-                events.forEach(rabbitmqPublisher::publish);
             }
         });
     }

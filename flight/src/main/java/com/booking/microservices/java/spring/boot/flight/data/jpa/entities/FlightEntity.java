@@ -65,7 +65,7 @@ public class FlightEntity extends BaseEntity<UUID> {
                 flight.getArriveAirportId().value(),
                 flight.getDurationMinutes().value(),
                 flight.getStatus(),
-                flight.getDurationMinutes().value(),
+                flight.getPrice().value(),
                 flight.getArriveDate().value(),
                 flight.getDepartureDate().value(),
                 flight.getFlightDate().value()
