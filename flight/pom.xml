@@ -19,23 +19,12 @@
     </properties>
 
     <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-        <version>3.4.1</version>
-      </dependency>
 
         <dependency>
             <groupId>com.building.blocks</groupId>
             <artifactId>building-blocks</artifactId>
             <version>1.0.0</version>
         </dependency>
-
-      <dependency>
-        <groupId>org.axonframework</groupId>
-        <artifactId>axon-spring-boot-starter</artifactId>
-        <version>4.10.0</version>
-      </dependency>
 
     </dependencies>
 

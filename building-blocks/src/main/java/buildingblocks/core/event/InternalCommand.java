@@ -1,4 +1,4 @@
 package buildingblocks.core.event;
 
-public class InternalCommand implements IEvent {
+public interface InternalCommand extends IEvent {
 }

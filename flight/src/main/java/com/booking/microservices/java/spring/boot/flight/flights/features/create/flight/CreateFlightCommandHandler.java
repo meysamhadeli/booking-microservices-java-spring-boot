@@ -1,6 +1,7 @@
 package com.booking.microservices.java.spring.boot.flight.flights.features.create.flight;
 
 import com.booking.microservices.java.spring.boot.flight.data.jpa.repositories.FlightRepository;
+import com.booking.microservices.java.spring.boot.flight.data.mongo.repositories.FlightReadRepository;
 import com.booking.microservices.java.spring.boot.flight.flights.dtos.FlightDto;
 import com.booking.microservices.java.spring.boot.flight.flights.features.create.Mappings;
 import com.booking.microservices.java.spring.boot.flight.flights.models.Flight;
@@ -29,7 +30,7 @@ public class CreateFlightCommandHandler {
       var result = jpaTransactionCoordinator.executeWithEvents(() -> {
         Flight flight = Mappings.toFlightAggregate(command);
         return flightRepository.create(flight);
-      });
+      }, command.getClass());
       return Mappings.toFlightDto(result);
     });
   }

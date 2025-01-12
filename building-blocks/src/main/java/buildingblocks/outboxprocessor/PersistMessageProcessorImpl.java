@@ -9,6 +9,8 @@ import buildingblocks.rabbitmq.RabbitmqPublisher;
 import buildingblocks.utils.jsonconverter.JsonConverter;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.springboot.autoconfig.AxonAutoConfiguration;
 import org.slf4j.Logger;
 import org.springframework.amqp.core.Message;
 import org.springframework.context.annotation.Configuration;
@@ -17,12 +19,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Configuration
-@Import({PersistMessageProcessorConfiguration.class, RabbitmqConfiguration.class, JpaConfiguration.class, LoggerConfiguration.class})
+@Import({PersistMessageProcessorConfiguration.class, RabbitmqConfiguration.class, JpaConfiguration.class, LoggerConfiguration.class, AxonAutoConfiguration.class})
 public class PersistMessageProcessorImpl implements PersistMessageProcessor {
     private final RabbitmqPublisher rabbitmqPublisher;
     private final EntityManager entityManager;
     private final JPAQueryFactory queryFactory;
     private final Logger logger;
+    private final CommandGateway commandGateway;
 
     // Generated Q class from QueryDSL
     private final QPersistMessageEntity qPersistMessageEntity = QPersistMessageEntity.persistMessageEntity;
@@ -30,11 +33,13 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
     public PersistMessageProcessorImpl(
             EntityManager entityManager,
             RabbitmqPublisher rabbitmqPublisher,
-            Logger logger) {
+            Logger logger,
+            CommandGateway commandGateway) {
         this.queryFactory = new JPAQueryFactory(entityManager);
         this.rabbitmqPublisher = rabbitmqPublisher;
         this.entityManager = entityManager;
         this.logger = logger;
+        this.commandGateway = commandGateway;
     }
 
     public <T extends IntegrationEvent> void publishMessage(T message) {
@@ -123,10 +128,11 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
 
     private boolean processInternal(PersistMessageEntity message) {
         try {
-            Class<?> type = Class.forName(message.getDataType());
-            String serializedMessage = JsonConverter.serializeObject(message);
+            Class<?> dataType = Class.forName(message.getDataType());
 
-            Object data = JsonConverter.deserialize(serializedMessage, type);
+            Object data = JsonConverter.deserialize(message.getData(), dataType);
+
+            commandGateway.send(data);
 
             logger.info("InternalCommand with id: {} and delivery type: {} processed from the persistence message store.",
                     message.getId(), message.getDeliveryType().toString());

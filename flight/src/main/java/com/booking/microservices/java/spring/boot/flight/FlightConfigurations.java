@@ -1,9 +1,11 @@
 package com.booking.microservices.java.spring.boot.flight;
 
+import buildingblocks.core.event.EventDispatcherConfiguration;
 import buildingblocks.flyway.FlywayConfiguration;
 import buildingblocks.jpa.JpaConfiguration;
 import buildingblocks.keycloak.KeycloakConfiguration;
 import buildingblocks.logger.LoggerConfiguration;
+import buildingblocks.mongo.MongoConfiguration;
 import buildingblocks.otel.collector.OtelCollectorConfiguration;
 import buildingblocks.outboxprocessor.PersistMessageProcessorConfiguration;
 import buildingblocks.rabbitmq.RabbitmqConfiguration;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @Import({
   JpaConfiguration.class,
+  MongoConfiguration.class,
   LoggerConfiguration.class,
   FlywayConfiguration.class,
   RabbitmqConfiguration.class,
@@ -22,7 +25,8 @@ import org.springframework.context.annotation.Import;
   SwaggerConfiguration.class,
   KeycloakConfiguration.class,
   ThreadPoolConfiguration.class,
-  PersistMessageProcessorConfiguration.class
+  PersistMessageProcessorConfiguration.class,
+  EventDispatcherConfiguration.class
 })
 public class FlightConfigurations {
 }

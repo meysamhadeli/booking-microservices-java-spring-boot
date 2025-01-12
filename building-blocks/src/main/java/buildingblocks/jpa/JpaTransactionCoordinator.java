@@ -1,8 +1,6 @@
 package buildingblocks.jpa;
 
-import buildingblocks.core.event.DomainEvent;
-import buildingblocks.core.event.EventMapper;
-import buildingblocks.core.event.IntegrationEvent;
+import buildingblocks.core.event.*;
 import buildingblocks.core.model.AggregateRoot;
 import buildingblocks.outboxprocessor.PersistMessageProcessor;
 import org.slf4j.Logger;
@@ -16,22 +14,19 @@ import java.util.function.Supplier;
 public class JpaTransactionCoordinator {
 
     private final TransactionTemplate transactionTemplate;
-    private final PersistMessageProcessor persistMessageProcessor;
-    private final EventMapper eventMapper;
     private final Logger logger;
+    private final EventDispatcher eventDispatcher;
 
     public JpaTransactionCoordinator(
             PlatformTransactionManager platformTransactionManager,
-            PersistMessageProcessor persistMessageProcessor,
             Logger logger,
-            EventMapper eventMapper) {
+            EventDispatcher eventDispatcher) {
         this.transactionTemplate = new TransactionTemplate(platformTransactionManager);
-        this.persistMessageProcessor = persistMessageProcessor;
-        this.eventMapper = eventMapper;
         this.logger = logger;
+        this.eventDispatcher = eventDispatcher;
     }
 
-    public <T extends AggregateRoot<?>> T executeWithEvents(Supplier<T> action) {
+    public <T extends AggregateRoot<?>> T executeWithEvents(Supplier<T> action, Class<?> type) {
         return transactionTemplate.execute(status -> {
             try {
                 // Execute the transactional logic
@@ -39,10 +34,9 @@ public class JpaTransactionCoordinator {
 
                 // Validate the result is an AggregateRoot
                 if (aggregate instanceof AggregateRoot<?> aggregateRoot) {
-                    List<DomainEvent> events = aggregateRoot.getDomainEvents();
-                    List<IntegrationEvent> integrationEvents = events.stream().map(eventMapper::MapToIntegrationEvent).toList();
+                    List<DomainEvent> domainEvents = aggregateRoot.getDomainEvents();
 
-                    integrationEvents.forEach(persistMessageProcessor::publishMessage);
+                    this.eventDispatcher.send(domainEvents, type);
 
                     aggregateRoot.clearDomainEvents();
 
