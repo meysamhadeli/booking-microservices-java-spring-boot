@@ -3,8 +3,10 @@ package com.booking.microservices.java.spring.boot.flight.flights.features.creat
 import com.booking.microservices.java.spring.boot.flight.aircrafts.valueobjects.AircraftId;
 import com.booking.microservices.java.spring.boot.flight.airports.valueobjects.AirportId;
 import com.booking.microservices.java.spring.boot.flight.data.jpa.entities.FlightEntity;
+import com.booking.microservices.java.spring.boot.flight.data.mongo.entities.FlightDocument;
 import com.booking.microservices.java.spring.boot.flight.flights.dtos.FlightDto;
 import com.booking.microservices.java.spring.boot.flight.flights.features.create.flight.CreateFlightCommand;
+import com.booking.microservices.java.spring.boot.flight.flights.features.create.flight.CreateFlightMongoCommand;
 import com.booking.microservices.java.spring.boot.flight.flights.features.create.flight.CreateFlightRequestDto;
 import com.booking.microservices.java.spring.boot.flight.flights.models.Flight;
 import com.booking.microservices.java.spring.boot.flight.flights.valueobjects.*;
@@ -24,7 +26,8 @@ public final class Mappings {
       flight.getPrice().value(),
       flight.getArriveDate().value(),
       flight.getDepartureDate().value(),
-      flight.getFlightDate().value()
+      flight.getFlightDate().value(),
+      flight.isDeleted()
     );
   }
 
@@ -61,6 +64,7 @@ public final class Mappings {
     );
   }
 
+
   public static Flight toFlightAggregate(CreateFlightCommand createFlightCommand) {
    return Flight.create(
       new FlightId(createFlightCommand.id()),
@@ -75,6 +79,23 @@ public final class Mappings {
      createFlightCommand.status(),
       new Price(createFlightCommand.price()),
       false
+    );
+  }
+
+  public static FlightDocument toFlightDocument(CreateFlightMongoCommand createFlightMongoCommand) {
+    return new FlightDocument(
+      createFlightMongoCommand.id(),
+      createFlightMongoCommand.flightNumber(),
+      createFlightMongoCommand.aircraftId(),
+      createFlightMongoCommand.departureAirportId(),
+      createFlightMongoCommand.arriveAirportId(),
+      createFlightMongoCommand.durationMinutes(),
+      createFlightMongoCommand.status(),
+      createFlightMongoCommand.price(),
+      createFlightMongoCommand.arriveDate(),
+      createFlightMongoCommand.departureDate(),
+      createFlightMongoCommand.flightDate(),
+      createFlightMongoCommand.isDeleted()
     );
   }
 

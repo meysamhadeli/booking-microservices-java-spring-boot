@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record CreateFlightCommand(
+public record CreateFlightMongoCommand(
   UUID id,
   String flightNumber,
   UUID aircraftId,
@@ -18,5 +18,7 @@ public record CreateFlightCommand(
   BigDecimal durationMinutes,
   LocalDateTime flightDate,
   FlightStatus status,
-  BigDecimal price) implements InternalCommand {
+  BigDecimal price,
+  boolean isDeleted) implements InternalCommand {
 }
+

@@ -2,6 +2,7 @@ package buildingblocks.outboxprocessor;
 
 import buildingblocks.rabbitmq.RabbitmqPublisher;
 import jakarta.persistence.EntityManager;
+import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.slf4j.Logger;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +18,9 @@ public class PersistMessageProcessorConfiguration {
     public PersistMessageProcessor persistMessageProcessor(
             EntityManager entityManager,
             RabbitmqPublisher rabbitmqPublisher,
-            Logger logger) {
-        return new PersistMessageProcessorImpl(entityManager, rabbitmqPublisher, logger);
+            Logger logger,
+            CommandGateway commandGateway) {
+        return new PersistMessageProcessorImpl(entityManager, rabbitmqPublisher, logger, commandGateway);
     }
 
     @Bean
@@ -31,3 +33,4 @@ public class PersistMessageProcessorConfiguration {
         return new PersistMessageBackgroundJob(taskScheduler, persistMessageProcessor, logger, transactionManager);
     }
 }
+

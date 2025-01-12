@@ -1,10 +1,10 @@
 spring:
   application:
     name: flight
-#  main:
-#    allow-circular-references: false
+  main:
+    allow-circular-references: false
   jpa:
-    datasource-url: jdbc:postgresql://localhost:5432/flight_spring
+    datasource-url: jdbc:postgresql://localhost:5432/flight_write
     datasource-username: postgres
     datasource-password: postgres
     datasource-driver-class-name: org.postgresql.Driver
@@ -14,6 +14,11 @@ spring:
     hibernate-show_sql: false
     hibernate-format_sql: false
     hibernate-physical-naming-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/flight_read
+      database: flight_read
 
   flyway:
     enabled: true

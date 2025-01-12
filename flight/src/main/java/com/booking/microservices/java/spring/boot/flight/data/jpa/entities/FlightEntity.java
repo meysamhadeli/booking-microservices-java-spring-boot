@@ -45,7 +45,7 @@ public class FlightEntity extends BaseEntity<UUID> {
 
     private BigDecimal price;
 
-    public FlightEntity(UUID id, String flightNumber, UUID aircraftId, UUID departureAirportId, UUID arriveAirportId, BigDecimal durationMinutes, FlightStatus status, BigDecimal price, LocalDateTime arriveDate, LocalDateTime departureDate, LocalDateTime flightDate) {
+    public FlightEntity(UUID id, String flightNumber, UUID aircraftId, UUID departureAirportId, UUID arriveAirportId, BigDecimal durationMinutes, FlightStatus status, BigDecimal price, LocalDateTime arriveDate, LocalDateTime departureDate, LocalDateTime flightDate, boolean isDeleted) {
         this.id = id;;
         this.flightNumber = flightNumber;
         this.aircraftId = aircraftId;
@@ -57,6 +57,7 @@ public class FlightEntity extends BaseEntity<UUID> {
         this.arriveDate = arriveDate;
         this.departureDate = departureDate;
         this.flightDate = flightDate;
+        this.isDeleted = isDeleted;
     }
 }
 

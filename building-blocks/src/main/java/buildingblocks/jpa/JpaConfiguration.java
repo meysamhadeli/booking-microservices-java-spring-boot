@@ -1,8 +1,13 @@
 package buildingblocks.jpa;
 
+import buildingblocks.core.event.EventDispatcher;
 import buildingblocks.core.event.EventMapper;
 import buildingblocks.outboxprocessor.PersistMessageProcessor;
+import buildingblocks.outboxprocessor.PersistMessageProcessorImpl;
+import buildingblocks.rabbitmq.RabbitmqPublisher;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
@@ -16,7 +21,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.transaction.PlatformTransactionManager;
-
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -79,9 +83,8 @@ public class JpaConfiguration {
     @ConditionalOnMissingClass
     public JpaTransactionCoordinator transactionCoordinator(
             PlatformTransactionManager platformTransactionManager,
-            PersistMessageProcessor persistMessageProcessor,
             Logger logger,
-            EventMapper eventMapper) {
-        return new JpaTransactionCoordinator(platformTransactionManager, persistMessageProcessor, logger, eventMapper);
+            EventDispatcher eventDispatcher) {
+        return new JpaTransactionCoordinator(platformTransactionManager, logger, eventDispatcher);
     }
 }
