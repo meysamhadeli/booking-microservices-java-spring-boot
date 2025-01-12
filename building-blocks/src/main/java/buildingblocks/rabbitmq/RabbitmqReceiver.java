@@ -27,8 +27,8 @@ class RabbitmqReceiverImpl implements RabbitmqReceiver {
     public MessageListenerContainer addListeners(List<MessageListener> handlers) {
 
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(this.rabbitmqConfiguration.connectionFactory(rabbitmqConfiguration.rabbitmqOptions()));
-        container.setQueueNames(this.rabbitmqConfiguration.getQueueName(rabbitmqConfiguration.rabbitmqOptions()));
+        container.setConnectionFactory(this.rabbitmqConfiguration.rabbitmqConnectionFactory());
+        container.setQueueNames(this.rabbitmqConfiguration.getQueueName());
 
         if (!handlers.isEmpty()) {
             handlers.forEach(handler -> {

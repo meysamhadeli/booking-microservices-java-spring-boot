@@ -1,22 +1,22 @@
 package buildingblocks.jpa;
 
 import buildingblocks.core.event.EventDispatcher;
-import buildingblocks.core.event.EventMapper;
-import buildingblocks.outboxprocessor.PersistMessageProcessor;
-import buildingblocks.outboxprocessor.PersistMessageProcessorImpl;
-import buildingblocks.rabbitmq.RabbitmqPublisher;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateProperties;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateSettings;
+import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,38 +28,45 @@ import java.util.Properties;
 @EnableJpaAuditing
 public class JpaConfiguration {
 
-    @Bean
-    public JpaOptions jpaOptions() {
-        return new JpaOptions();
-    }
+    @Value("${spring.jpa.entity-packages-to-scan}")
+    private String entityPackagesToScan;
 
     @Bean
     @ConditionalOnMissingBean
-    public DataSource dataSource(JpaOptions jpaOptions) {
+    public DataSource dataSource(DataSourceProperties dataSourceProperties) {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(jpaOptions.getDatasourceDriverClassName());
-        dataSource.setUrl(jpaOptions.getDatasourceUrl());
-        dataSource.setUsername(jpaOptions.getDatasourceUsername());
-        dataSource.setPassword(jpaOptions.getDatasourcePassword());
+        dataSource.setDriverClassName(dataSourceProperties.getDriverClassName());
+        dataSource.setUrl(dataSourceProperties.getUrl());
+        dataSource.setUsername(dataSourceProperties.getUsername());
+        dataSource.setPassword(dataSourceProperties.getPassword());
         return dataSource;
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaOptions jpaOptions) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+            DataSource dataSource,
+            JpaProperties jpaProperties,
+            HibernateProperties hibernateProperties) {
+
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 
+        // Set the datasource
         factoryBean.setDataSource(dataSource);
-        factoryBean.setPackagesToScan(jpaOptions.getPackagesToScan(), "buildingblocks");
-        factoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
-        Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.hbm2ddl.auto", jpaOptions.getHibernateDdlAuto());
-        jpaProperties.put("hibernate.column_ordering_strategy", jpaOptions.getHibernateColumnOrderingStrategy());
-        jpaProperties.put("hibernate.show_sql", jpaOptions.getHibernateShowSql());
-        jpaProperties.put("hibernate.format_sql", jpaOptions.getHibernateFormatSql());
-        jpaProperties.put("hibernate.physical_naming_strategy", jpaOptions.getHibernatePhysicalNamingStrategy());
+        // Set packages to scan from configuration
+        factoryBean.setPackagesToScan(entityPackagesToScan, "buildingblocks");
 
-        factoryBean.setJpaProperties(jpaProperties);
+        // Set JPA vendor adapter
+        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        factoryBean.setJpaVendorAdapter(vendorAdapter);
+
+        // Merge JPA and Hibernate properties
+        Properties properties = new Properties();
+        properties.putAll(hibernateProperties.determineHibernateProperties(jpaProperties.getProperties(), new HibernateSettings()));
+        properties.putAll(jpaProperties.getProperties());
+
+        factoryBean.setJpaProperties(properties);
+
         return factoryBean;
     }
 

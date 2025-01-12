@@ -5,6 +5,7 @@ import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.scheduling.annotation.Async;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -16,12 +17,12 @@ public interface RabbitmqPublisher {
 }
 
 class RabbitmqPublisherImpl implements RabbitmqPublisher {
-    private final RabbitmqOptions rabbitmqOptions;
+    private final RabbitProperties rabbitProperties;
     private final AsyncRabbitTemplate asyncRabbitTemplate;
     private final RabbitTemplate rabbitTemplate;
 
-    public RabbitmqPublisherImpl(RabbitmqOptions rabbitmqOptions, AsyncRabbitTemplate asyncRabbitTemplate, RabbitTemplate rabbitTemplate) {
-        this.rabbitmqOptions = rabbitmqOptions;
+    public RabbitmqPublisherImpl(RabbitProperties rabbitProperties, AsyncRabbitTemplate asyncRabbitTemplate, RabbitTemplate rabbitTemplate) {
+        this.rabbitProperties = rabbitProperties;
         this.asyncRabbitTemplate = asyncRabbitTemplate;
         this.rabbitTemplate = rabbitTemplate;
     }
@@ -30,8 +31,8 @@ class RabbitmqPublisherImpl implements RabbitmqPublisher {
     @Async
     public <T> CompletableFuture<Void> publishAsync(T message) {
         return this.asyncRabbitTemplate.convertSendAndReceive(
-                rabbitmqOptions.getExchangeName(),
-                rabbitmqOptions.getExchangeName() + "_routing_key",
+                rabbitProperties.getTemplate().getExchange(),
+                rabbitProperties.getTemplate().getExchange() + "_routing_key",
                 JsonConverter.serializeObject(message),
                 messageProperties -> {
                     MessageProperties props = messageProperties.getMessageProperties();
@@ -46,8 +47,8 @@ class RabbitmqPublisherImpl implements RabbitmqPublisher {
     @Override
     public <T> void publish(T message) {
         this.rabbitTemplate.convertAndSend(
-                rabbitmqOptions.getExchangeName(),
-                rabbitmqOptions.getExchangeName() + "_routing_key",
+                rabbitProperties.getTemplate().getExchange(),
+                rabbitProperties.getTemplate().getExchange() + "_routing_key",
                 JsonConverter.serializeObject(message),
                 messageProperties -> {
                     MessageProperties props = messageProperties.getMessageProperties();
