@@ -3,17 +3,22 @@ spring:
     name: flight
   main:
     allow-circular-references: false
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/flight_write
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
   jpa:
-    datasource-url: jdbc:postgresql://localhost:5432/flight_write
-    datasource-username: postgres
-    datasource-password: postgres
-    datasource-driver-class-name: org.postgresql.Driver
-    hibernate-ddl-auto: validate
-    packagesToScan: com.booking.microservices.java.spring.boot.flight
-    hibernate-column_ordering_strategy: legacy
-    hibernate-show_sql: false
-    hibernate-format_sql: false
-    hibernate-physical-naming-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    entity-packages-to-scan: com.booking.microservices.java.spring.boot.flight
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        column_ordering_strategy: legacy
+        physical_naming_strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: false
+    properties.hibernate.format_sql: false
 
   data:
     mongodb:
@@ -33,8 +38,9 @@ spring:
     port: 5672
     username: guest
     password: guest
-    exchangeName: flight
-    exchangeType: topic
+    template:
+      exchange: flight
+      exchange-type: topic
 
   otel:
     collector:
