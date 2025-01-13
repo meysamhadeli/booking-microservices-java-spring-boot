@@ -4,6 +4,10 @@ spring:
   main:
     allow-circular-references: false
 
+  mvc:
+    problemdetails:
+      enabled: true
+
   datasource:
     url: jdbc:postgresql://localhost:5432/flight_write
     username: postgres
