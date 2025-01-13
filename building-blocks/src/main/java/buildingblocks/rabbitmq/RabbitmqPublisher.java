@@ -1,6 +1,6 @@
 package buildingblocks.rabbitmq;
 
-import buildingblocks.utils.jsonconverter.JsonConverter;
+import buildingblocks.utils.jsonconverter.JsonConverterUtils;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
@@ -33,7 +33,7 @@ class RabbitmqPublisherImpl implements RabbitmqPublisher {
         return this.asyncRabbitTemplate.convertSendAndReceive(
                 rabbitProperties.getTemplate().getExchange(),
                 rabbitProperties.getTemplate().getExchange() + "_routing_key",
-                JsonConverter.serializeObject(message),
+                JsonConverterUtils.serializeObject(message),
                 messageProperties -> {
                     MessageProperties props = messageProperties.getMessageProperties();
                     props.setContentType(MessageProperties.CONTENT_TYPE_JSON);
@@ -49,7 +49,7 @@ class RabbitmqPublisherImpl implements RabbitmqPublisher {
         this.rabbitTemplate.convertAndSend(
                 rabbitProperties.getTemplate().getExchange(),
                 rabbitProperties.getTemplate().getExchange() + "_routing_key",
-                JsonConverter.serializeObject(message),
+                JsonConverterUtils.serializeObject(message),
                 messageProperties -> {
                     MessageProperties props = messageProperties.getMessageProperties();
                     props.setContentType(MessageProperties.CONTENT_TYPE_JSON);

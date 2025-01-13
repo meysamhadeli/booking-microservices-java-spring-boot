@@ -2,7 +2,6 @@ package buildingblocks.jpa;
 
 import buildingblocks.core.event.*;
 import buildingblocks.core.model.AggregateRoot;
-import buildingblocks.outboxprocessor.PersistMessageProcessor;
 import org.slf4j.Logger;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;

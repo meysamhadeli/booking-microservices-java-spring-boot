@@ -6,7 +6,7 @@ import buildingblocks.jpa.JpaConfiguration;
 import buildingblocks.logger.LoggerConfiguration;
 import buildingblocks.rabbitmq.RabbitmqConfiguration;
 import buildingblocks.rabbitmq.RabbitmqPublisher;
-import buildingblocks.utils.jsonconverter.JsonConverter;
+import buildingblocks.utils.jsonconverter.JsonConverterUtils;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -113,7 +113,7 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
         try {
             Class<?> dataType = Class.forName(message.getDataType());
 
-            Object data = JsonConverter.deserialize(message.getData(), dataType);
+            Object data = JsonConverterUtils.deserialize(message.getData(), dataType);
 
             rabbitmqPublisher.publish(data);
 
@@ -130,7 +130,7 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
         try {
             Class<?> dataType = Class.forName(message.getDataType());
 
-            Object data = JsonConverter.deserialize(message.getData(), dataType);
+            Object data = JsonConverterUtils.deserialize(message.getData(), dataType);
 
             commandGateway.send(data);
 
@@ -150,7 +150,7 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
 
         PersistMessageEntity persistMessageEntity = PersistMessageEntity.create(
                 dataType,
-                JsonConverter.serializeObject(message),
+                JsonConverterUtils.serializeObject(message),
                 deliveryType
         );
 

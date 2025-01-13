@@ -8,7 +8,7 @@
         <version>3.4.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.booking.microservices.java.spring.boot</groupId>
+    <groupId>io.bookingmicroservices</groupId>
     <artifactId>flight</artifactId>
     <version>1.0.0</version>
     <name>flight</name>
@@ -21,8 +21,8 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.building.blocks</groupId>
-            <artifactId>building-blocks</artifactId>
+            <groupId>io.buildingblocks</groupId>
+            <artifactId>buildingblocks</artifactId>
             <version>1.0.0</version>
         </dependency>
 
