@@ -1,8 +1,8 @@
 package io.bookingmicroservices.flight.flights.features.createflight;
 
+import buildingblocks.mediator.abstractions.IMediator;
 import io.bookingmicroservices.flight.flights.dtos.FlightDto;
 import io.bookingmicroservices.flight.flights.features.Mappings;
-import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,16 +15,16 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping(path = "api/v1/flight")
 public class CreateFlightController {
 
-  private final CommandGateway commandGateway;
+  private final IMediator mediator;
 
-  public CreateFlightController(CommandGateway commandGateway) {
-    this.commandGateway = commandGateway;
+  public CreateFlightController(IMediator mediator) {
+    this.mediator = mediator;
   }
 
   @PostMapping()
   @PreAuthorize("hasAuthority('ADMIN')")
-  public CompletableFuture<ResponseEntity<FlightDto>> createFlight(@RequestBody CreateFlightRequestDto createFlightRequestDto) {
+  public CompletableFuture<ResponseEntity<FlightDto>> createFlight(@RequestBody CreateFlightRequestDto createFlightRequestDto) throws Exception {
     CreateFlightCommand command = Mappings.toCreateFlightCommand(createFlightRequestDto);
-    return commandGateway.send(command);
+    return this.mediator.send(command).thenApplyAsync(ResponseEntity::ok);
   }
 }

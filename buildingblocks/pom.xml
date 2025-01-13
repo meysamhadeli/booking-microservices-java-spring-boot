@@ -106,13 +106,6 @@
 			<version>2.2.27</version>
 		</dependency>
 
-		<!-- Axon -->
-		<dependency>
-			<groupId>org.axonframework</groupId>
-			<artifactId>axon-spring-boot-starter</artifactId>
-			<version>4.10.0</version>
-		</dependency>
-
 		<!-- OpenTelemetry -->
 		<dependency>
 			<groupId>io.opentelemetry</groupId>

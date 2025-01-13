@@ -2,19 +2,18 @@ package io.bookingmicroservices.flight.flights.features.createflight;
 
 import buildingblocks.core.exception.ValidationException;
 import buildingblocks.jpa.JpaTransactionCoordinator;
+import buildingblocks.mediator.abstractions.commands.ICommandHandler;
 import io.bookingmicroservices.flight.data.jpa.repositories.FlightRepository;
 import io.bookingmicroservices.flight.flights.dtos.FlightDto;
 import io.bookingmicroservices.flight.flights.features.Mappings;
 import io.bookingmicroservices.flight.flights.models.Flight;
-import org.axonframework.commandhandling.CommandHandler;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 import java.util.concurrent.CompletableFuture;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 
-@Component
-public class CreateFlightCommandHandler {
+@Service
+public class CreateFlightCommandHandler implements ICommandHandler<CreateFlightCommand, CompletableFuture<FlightDto> > {
   private final FlightRepository flightRepository;
   private final CreateFlightCommandValidator validator;
   private final JpaTransactionCoordinator jpaTransactionCoordinator;
@@ -28,10 +27,9 @@ public class CreateFlightCommandHandler {
     this.jpaTransactionCoordinator = jpaTransactionCoordinator;
   }
 
-  @CommandHandler
-  @Async
-  public CompletableFuture<FlightDto> handle(CreateFlightCommand command) {
-    // Create errors container
+  @Override
+  public CompletableFuture<FlightDto> handle(CreateFlightCommand command) throws Exception {
+    //Create errors container
     DataBinder dataBinder = new DataBinder(command);
     dataBinder.setValidator(validator);
 
