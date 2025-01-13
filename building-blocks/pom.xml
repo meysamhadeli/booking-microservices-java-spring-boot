@@ -8,8 +8,8 @@
 		<version>3.4.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.building.blocks</groupId>
-	<artifactId>building-blocks</artifactId>
+	<groupId>io.buildingblocks</groupId>
+	<artifactId>buildingblocks</artifactId>
 	<version>1.0.0</version>
 	<name>building-blocks</name>
 	<description>Building Blocks</description>

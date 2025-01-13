@@ -14,7 +14,7 @@ spring:
     password: postgres
     driver-class-name: org.postgresql.Driver
   jpa:
-    entity-packages-to-scan: com.booking.microservices.java.spring.boot.flight
+    entity-packages-to-scan: io.bookingmicroservices.flight
     hibernate:
       ddl-auto: validate
     properties:
