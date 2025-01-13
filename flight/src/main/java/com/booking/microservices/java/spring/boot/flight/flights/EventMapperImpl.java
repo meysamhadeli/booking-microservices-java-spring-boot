@@ -9,8 +9,8 @@ import buildingblocks.core.event.IntegrationEvent;
 import buildingblocks.core.event.InternalCommand;
 import com.booking.microservices.java.spring.boot.flight.flights.events.FlightDeletedDomainEvent;
 import com.booking.microservices.java.spring.boot.flight.flights.events.FlightUpdatedDomainEvent;
-import com.booking.microservices.java.spring.boot.flight.flights.features.create.flight.CreateFlightMongoCommand;
-import com.booking.microservices.java.spring.boot.flight.flights.features.create.flight.FlightCreatedDomainEvent;
+import com.booking.microservices.java.spring.boot.flight.flights.features.createflight.CreateFlightMongoCommand;
+import com.booking.microservices.java.spring.boot.flight.flights.features.createflight.FlightCreatedDomainEvent;
 import org.springframework.stereotype.Component;
 
 @Component

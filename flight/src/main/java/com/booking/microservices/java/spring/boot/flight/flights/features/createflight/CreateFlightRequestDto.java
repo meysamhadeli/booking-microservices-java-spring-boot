@@ -1,14 +1,12 @@
-package com.booking.microservices.java.spring.boot.flight.flights.features.create.flight;
+package com.booking.microservices.java.spring.boot.flight.flights.features.createflight;
 
-import buildingblocks.core.event.DomainEvent;
 import com.booking.microservices.java.spring.boot.flight.flights.enums.FlightStatus;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
-public record FlightCreatedDomainEvent(
-  UUID id,
+public record CreateFlightRequestDto(
   String flightNumber,
   UUID aircraftId,
   UUID departureAirportId,
@@ -18,8 +16,5 @@ public record FlightCreatedDomainEvent(
   BigDecimal durationMinutes,
   LocalDateTime flightDate,
   FlightStatus status,
-  BigDecimal price,
-  boolean isDeleted) implements DomainEvent {
+  BigDecimal price){
 }
-
-

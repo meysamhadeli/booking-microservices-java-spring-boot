@@ -1,13 +1,13 @@
-package com.booking.microservices.java.spring.boot.flight.flights.features.create;
+package com.booking.microservices.java.spring.boot.flight.flights.features;
 
 import com.booking.microservices.java.spring.boot.flight.aircrafts.valueobjects.AircraftId;
 import com.booking.microservices.java.spring.boot.flight.airports.valueobjects.AirportId;
 import com.booking.microservices.java.spring.boot.flight.data.jpa.entities.FlightEntity;
 import com.booking.microservices.java.spring.boot.flight.data.mongo.entities.FlightDocument;
 import com.booking.microservices.java.spring.boot.flight.flights.dtos.FlightDto;
-import com.booking.microservices.java.spring.boot.flight.flights.features.create.flight.CreateFlightCommand;
-import com.booking.microservices.java.spring.boot.flight.flights.features.create.flight.CreateFlightMongoCommand;
-import com.booking.microservices.java.spring.boot.flight.flights.features.create.flight.CreateFlightRequestDto;
+import com.booking.microservices.java.spring.boot.flight.flights.features.createflight.CreateFlightCommand;
+import com.booking.microservices.java.spring.boot.flight.flights.features.createflight.CreateFlightMongoCommand;
+import com.booking.microservices.java.spring.boot.flight.flights.features.createflight.CreateFlightRequestDto;
 import com.booking.microservices.java.spring.boot.flight.flights.models.Flight;
 import com.booking.microservices.java.spring.boot.flight.flights.valueobjects.*;
 import com.github.f4b6a3.uuid.UuidCreator;
