@@ -11,7 +11,7 @@
 	<groupId>io.bookingmicroservices</groupId>
 	<artifactId>apigateway</artifactId>
 	<version>1.0.0</version>
-	<name>api-gateway</name>
+	<name>apigateway</name>
 	<description>ApiGateway</description>
 
 	<properties>
