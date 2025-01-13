@@ -1,27 +1,26 @@
 package io.bookingmicroservices.flight.flights.features.createflight;
 
+import buildingblocks.mediator.abstractions.commands.ICommandHandler;
+import buildingblocks.mediator.abstractions.requests.Unit;
 import io.bookingmicroservices.flight.data.mongo.entities.FlightDocument;
 import io.bookingmicroservices.flight.data.mongo.repositories.FlightReadRepository;
 import io.bookingmicroservices.flight.flights.exceptions.FlightAlreadyExistException;
 import io.bookingmicroservices.flight.flights.features.Mappings;
-import org.axonframework.commandhandling.CommandHandler;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import java.util.concurrent.CompletableFuture;
 
-@Component
-public class CreateFlightMongoCommandHandler {
+
+@Service
+public class CreateFlightMongoCommandHandler implements ICommandHandler<CreateFlightMongoCommand, CompletableFuture<Unit>> {
   private final FlightReadRepository flightReadRepository;
 
   public CreateFlightMongoCommandHandler(FlightReadRepository flightReadRepository) {
     this.flightReadRepository = flightReadRepository;
   }
 
-  @CommandHandler
-  @Async
-  public CompletableFuture<Void> handle(CreateFlightMongoCommand command) {
+  public CompletableFuture<Unit> handle(CreateFlightMongoCommand command) {
 
-    return CompletableFuture.runAsync(() -> {
+    return CompletableFuture.supplyAsync(() -> {
       FlightDocument flightDocument = Mappings.toFlightDocument(command);
 
       var flightExist = flightReadRepository.findByFlightIdAndIsDeletedFalse(flightDocument.getFlightId());
@@ -31,6 +30,8 @@ public class CreateFlightMongoCommandHandler {
       }
 
       flightReadRepository.save(flightDocument);
+
+      return Unit.VALUE;
     });
   }
 }

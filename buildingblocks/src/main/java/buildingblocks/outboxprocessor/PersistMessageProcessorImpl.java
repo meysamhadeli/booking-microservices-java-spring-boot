@@ -2,30 +2,37 @@ package buildingblocks.outboxprocessor;
 
 import buildingblocks.core.event.IntegrationEvent;
 import buildingblocks.core.event.InternalCommand;
+import buildingblocks.core.model.AggregateRoot;
 import buildingblocks.jpa.JpaConfiguration;
 import buildingblocks.logger.LoggerConfiguration;
+import buildingblocks.mediator.MediatorConfiguration;
+import buildingblocks.mediator.abstractions.IMediator;
+import buildingblocks.mediator.abstractions.commands.ICommand;
+import buildingblocks.mediator.abstractions.requests.Unit;
 import buildingblocks.rabbitmq.RabbitmqConfiguration;
 import buildingblocks.rabbitmq.RabbitmqPublisher;
 import buildingblocks.utils.jsonconverter.JsonConverterUtils;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.axonframework.springboot.autoconfig.AxonAutoConfiguration;
 import org.slf4j.Logger;
 import org.springframework.amqp.core.Message;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Configuration
-@Import({PersistMessageProcessorConfiguration.class, RabbitmqConfiguration.class, JpaConfiguration.class, LoggerConfiguration.class, AxonAutoConfiguration.class})
+@Import({PersistMessageProcessorConfiguration.class, RabbitmqConfiguration.class, JpaConfiguration.class, LoggerConfiguration.class})
 public class PersistMessageProcessorImpl implements PersistMessageProcessor {
     private final RabbitmqPublisher rabbitmqPublisher;
     private final EntityManager entityManager;
     private final JPAQueryFactory queryFactory;
     private final Logger logger;
-    private final CommandGateway commandGateway;
+    private final IMediator mediator;
+    private final ApplicationContext applicationContext;
 
     // Generated Q class from QueryDSL
     private final QPersistMessageEntity qPersistMessageEntity = QPersistMessageEntity.persistMessageEntity;
@@ -34,12 +41,14 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
             EntityManager entityManager,
             RabbitmqPublisher rabbitmqPublisher,
             Logger logger,
-            CommandGateway commandGateway) {
+            IMediator mediator,
+            ApplicationContext applicationContext) {
         this.queryFactory = new JPAQueryFactory(entityManager);
         this.rabbitmqPublisher = rabbitmqPublisher;
         this.entityManager = entityManager;
         this.logger = logger;
-        this.commandGateway = commandGateway;
+        this.mediator = mediator;
+        this.applicationContext = applicationContext;
     }
 
     public <T extends IntegrationEvent> void publishMessage(T message) {
@@ -50,7 +59,7 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
         savePersistMessage(message, MessageDeliveryType.Internal, message.getClass().getTypeName());
     }
 
-    public  <T extends Message> UUID addReceivedMessage(T message) {
+    public <T extends Message> UUID addReceivedMessage(T message) {
         return savePersistMessage(message, MessageDeliveryType.Inbox, message.getClass().getTypeName()).getId();
     }
 
@@ -132,12 +141,18 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
 
             Object data = JsonConverterUtils.deserialize(message.getData(), dataType);
 
-            commandGateway.send(data);
+            if (data instanceof InternalCommand && data instanceof ICommand<?> command) {
 
-            logger.info("InternalCommand with id: {} and delivery type: {} processed from the persistence message store.",
-                    message.getId(), message.getDeliveryType().toString());
+                mediator.send(command);
 
-            return true;
+                logger.info("InternalCommand with id: {} and delivery type: {} processed from the persistence message store.",
+                        message.getId(), message.getDeliveryType().toString());
+
+                return true;
+            }
+
+            return false;
+
         } catch (Exception ex) {
             throw new RuntimeException("Failed to process internal message: " + message.getId(), ex);
         }
