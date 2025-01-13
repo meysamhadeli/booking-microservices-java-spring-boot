@@ -8,6 +8,7 @@ import buildingblocks.logger.LoggerConfiguration;
 import buildingblocks.mongo.MongoConfiguration;
 import buildingblocks.otel.collector.OtelCollectorConfiguration;
 import buildingblocks.outboxprocessor.PersistMessageProcessorConfiguration;
+import buildingblocks.problemdetails.CustomProblemDetailsHandler;
 import buildingblocks.rabbitmq.RabbitmqConfiguration;
 import buildingblocks.swagger.SwaggerConfiguration;
 import buildingblocks.threadpool.ThreadPoolConfiguration;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import({
+  CustomProblemDetailsHandler.class,
   JpaConfiguration.class,
   MongoConfiguration.class,
   LoggerConfiguration.class,

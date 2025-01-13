@@ -28,6 +28,9 @@ public class KeycloakConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                .exceptionHandling(exception -> {
+                    exception.authenticationEntryPoint(new CustomAuthenticationEntryPoint());
+                })
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
