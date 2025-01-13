@@ -1,7 +1,7 @@
-package com.booking.microservices.java.spring.boot.flight.flights.features.create.flight;
+package com.booking.microservices.java.spring.boot.flight.flights.features.createflight;
 
 import com.booking.microservices.java.spring.boot.flight.flights.dtos.FlightDto;
-import com.booking.microservices.java.spring.boot.flight.flights.features.create.Mappings;
+import com.booking.microservices.java.spring.boot.flight.flights.features.Mappings;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

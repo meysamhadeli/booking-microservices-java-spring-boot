@@ -2,7 +2,7 @@ package com.booking.microservices.java.spring.boot.flight.data.jpa.repositories;
 
 import com.booking.microservices.java.spring.boot.flight.data.jpa.entities.FlightEntity;
 import com.booking.microservices.java.spring.boot.flight.flights.exceptions.FlightAlreadyExistException;
-import com.booking.microservices.java.spring.boot.flight.flights.features.create.Mappings;
+import com.booking.microservices.java.spring.boot.flight.flights.features.Mappings;
 import com.booking.microservices.java.spring.boot.flight.flights.models.Flight;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -6,7 +6,7 @@ import com.booking.microservices.java.spring.boot.flight.airports.valueobjects.A
 import com.booking.microservices.java.spring.boot.flight.flights.enums.FlightStatus;
 import com.booking.microservices.java.spring.boot.flight.flights.events.FlightDeletedDomainEvent;
 import com.booking.microservices.java.spring.boot.flight.flights.events.FlightUpdatedDomainEvent;
-import com.booking.microservices.java.spring.boot.flight.flights.features.create.flight.FlightCreatedDomainEvent;
+import com.booking.microservices.java.spring.boot.flight.flights.features.createflight.FlightCreatedDomainEvent;
 import com.booking.microservices.java.spring.boot.flight.flights.valueobjects.*;
 import lombok.*;
 

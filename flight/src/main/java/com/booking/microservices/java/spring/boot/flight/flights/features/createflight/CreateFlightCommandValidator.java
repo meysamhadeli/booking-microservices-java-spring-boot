@@ -1,4 +1,4 @@
-package com.booking.microservices.java.spring.boot.flight.flights.features.create.flight;
+package com.booking.microservices.java.spring.boot.flight.flights.features.createflight;
 
 import com.booking.microservices.java.spring.boot.flight.flights.enums.FlightStatus;
 import org.springframework.stereotype.Component;

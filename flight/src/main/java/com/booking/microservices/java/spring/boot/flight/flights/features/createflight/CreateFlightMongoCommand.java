@@ -1,12 +1,14 @@
-package com.booking.microservices.java.spring.boot.flight.flights.features.create.flight;
+package com.booking.microservices.java.spring.boot.flight.flights.features.createflight;
 
+import buildingblocks.core.event.InternalCommand;
 import com.booking.microservices.java.spring.boot.flight.flights.enums.FlightStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record CreateFlightRequestDto(
+public record CreateFlightMongoCommand(
+  UUID id,
   String flightNumber,
   UUID aircraftId,
   UUID departureAirportId,
@@ -16,5 +18,7 @@ public record CreateFlightRequestDto(
   BigDecimal durationMinutes,
   LocalDateTime flightDate,
   FlightStatus status,
-  BigDecimal price){
+  BigDecimal price,
+  boolean isDeleted) implements InternalCommand {
 }
+
