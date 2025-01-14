@@ -12,7 +12,7 @@ public class LogPipelineBehavior<TRequest extends IRequest<TResponse>, TResponse
     private static final Logger logger = LoggerFactory.getLogger(LogPipelineBehavior.class);
 
     @Override
-    public TResponse handle(TRequest request, RequestHandlerDelegate<TResponse> next) throws Exception {
+    public TResponse handle(TRequest request, RequestHandlerDelegate<TResponse> next) {
         long startTime = System.currentTimeMillis();
 
         logger.info("Handling request of type: {}", request.getClass().getSimpleName());
