@@ -63,9 +63,5 @@ logging:
   level:
     root: INFO
 
-axon:
-  axonserver:
-    enabled: false
-
 server:
   port: 8082

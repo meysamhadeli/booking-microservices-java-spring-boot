@@ -2,13 +2,10 @@ package buildingblocks.outboxprocessor;
 
 import buildingblocks.core.event.IntegrationEvent;
 import buildingblocks.core.event.InternalCommand;
-import buildingblocks.core.model.AggregateRoot;
 import buildingblocks.jpa.JpaConfiguration;
 import buildingblocks.logger.LoggerConfiguration;
-import buildingblocks.mediator.MediatorConfiguration;
 import buildingblocks.mediator.abstractions.IMediator;
 import buildingblocks.mediator.abstractions.commands.ICommand;
-import buildingblocks.mediator.abstractions.requests.Unit;
 import buildingblocks.rabbitmq.RabbitmqConfiguration;
 import buildingblocks.rabbitmq.RabbitmqPublisher;
 import buildingblocks.utils.jsonconverter.JsonConverterUtils;
@@ -16,13 +13,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.springframework.amqp.core.Message;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Configuration
 @Import({PersistMessageProcessorConfiguration.class, RabbitmqConfiguration.class, JpaConfiguration.class, LoggerConfiguration.class})
@@ -32,7 +26,6 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
     private final JPAQueryFactory queryFactory;
     private final Logger logger;
     private final IMediator mediator;
-    private final ApplicationContext applicationContext;
 
     // Generated Q class from QueryDSL
     private final QPersistMessageEntity qPersistMessageEntity = QPersistMessageEntity.persistMessageEntity;
@@ -41,14 +34,12 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
             EntityManager entityManager,
             RabbitmqPublisher rabbitmqPublisher,
             Logger logger,
-            IMediator mediator,
-            ApplicationContext applicationContext) {
+            IMediator mediator) {
         this.queryFactory = new JPAQueryFactory(entityManager);
         this.rabbitmqPublisher = rabbitmqPublisher;
         this.entityManager = entityManager;
         this.logger = logger;
         this.mediator = mediator;
-        this.applicationContext = applicationContext;
     }
 
     public <T extends IntegrationEvent> void publishMessage(T message) {

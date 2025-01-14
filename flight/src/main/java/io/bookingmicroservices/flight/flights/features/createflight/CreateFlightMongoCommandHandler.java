@@ -7,20 +7,18 @@ import io.bookingmicroservices.flight.data.mongo.repositories.FlightReadReposito
 import io.bookingmicroservices.flight.flights.exceptions.FlightAlreadyExistException;
 import io.bookingmicroservices.flight.flights.features.Mappings;
 import org.springframework.stereotype.Service;
-import java.util.concurrent.CompletableFuture;
 
 
 @Service
-public class CreateFlightMongoCommandHandler implements ICommandHandler<CreateFlightMongoCommand, CompletableFuture<Unit>> {
+public class CreateFlightMongoCommandHandler implements ICommandHandler<CreateFlightMongoCommand, Unit> {
   private final FlightReadRepository flightReadRepository;
 
   public CreateFlightMongoCommandHandler(FlightReadRepository flightReadRepository) {
     this.flightReadRepository = flightReadRepository;
   }
 
-  public CompletableFuture<Unit> handle(CreateFlightMongoCommand command) {
+  public Unit handle(CreateFlightMongoCommand command) {
 
-    return CompletableFuture.supplyAsync(() -> {
       FlightDocument flightDocument = Mappings.toFlightDocument(command);
 
       var flightExist = flightReadRepository.findByFlightIdAndIsDeletedFalse(flightDocument.getFlightId());
@@ -32,6 +30,5 @@ public class CreateFlightMongoCommandHandler implements ICommandHandler<CreateFl
       flightReadRepository.save(flightDocument);
 
       return Unit.VALUE;
-    });
   }
 }

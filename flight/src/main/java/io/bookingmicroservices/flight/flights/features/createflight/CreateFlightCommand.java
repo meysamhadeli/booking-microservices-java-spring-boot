@@ -7,7 +7,6 @@ import io.bookingmicroservices.flight.flights.enums.FlightStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public record CreateFlightCommand(
   UUID id,
@@ -20,5 +19,5 @@ public record CreateFlightCommand(
   BigDecimal durationMinutes,
   LocalDateTime flightDate,
   FlightStatus status,
-  BigDecimal price) implements ICommand<CompletableFuture<FlightDto>>, InternalCommand {
+  BigDecimal price) implements ICommand<FlightDto>, InternalCommand {
 }

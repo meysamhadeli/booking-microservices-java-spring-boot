@@ -6,6 +6,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +15,8 @@ import java.util.List;
 public abstract class AggregateRoot<T> {
     protected T id;
 
-    private static final  List<DomainEvent> domainEvents = new ArrayList<>();
+    // Use CopyOnWriteArrayList for thread-safe concurrent access
+    private final CopyOnWriteArrayList<DomainEvent> domainEvents = new CopyOnWriteArrayList<>();
 
     public List<DomainEvent> getDomainEvents() {
         return Collections.unmodifiableList(domainEvents);

@@ -47,7 +47,7 @@ class Mediator implements IMediator {
         this.applicationContext = applicationContext;
     }
 
-    public <TResponse> TResponse send(IRequest<TResponse> request) throws Exception {
+    public <TResponse> TResponse send(IRequest<TResponse> request) {
         ValidationUtils.notBeNull(request, "request");
 
         var requestHandler = resolveRequestHandler(request, applicationContext);
@@ -64,7 +64,7 @@ class Mediator implements IMediator {
     }
 
     @Override
-    public <TResponse> TResponse send(ICommand<TResponse> command) throws Exception {
+    public <TResponse> TResponse send(ICommand<TResponse> command) {
         ValidationUtils.notBeNull(command, "command");
 
         var commandHandler = resolveCommandHandler(command, applicationContext);
@@ -81,7 +81,7 @@ class Mediator implements IMediator {
     }
 
     @Override
-    public <TResponse> TResponse send(IQuery<TResponse> query) throws Exception {
+    public <TResponse> TResponse send(IQuery<TResponse> query) {
         ValidationUtils.notBeNull(query, "query");
 
         var queryHandler = resolveQueryHandler(query, applicationContext);
@@ -98,7 +98,7 @@ class Mediator implements IMediator {
     }
 
     @Override
-    public <TNotification extends INotification> Void publish(TNotification notification) throws Exception {
+    public <TNotification extends INotification> Void publish(TNotification notification) {
         ValidationUtils.notBeNull(notification, "notification");
 
         var notificationHandler = resolveNotificationHandler(notification, applicationContext);

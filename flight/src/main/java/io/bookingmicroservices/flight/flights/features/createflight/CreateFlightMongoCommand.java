@@ -4,11 +4,9 @@ import buildingblocks.core.event.InternalCommand;
 import buildingblocks.mediator.abstractions.commands.ICommand;
 import buildingblocks.mediator.abstractions.requests.Unit;
 import io.bookingmicroservices.flight.flights.enums.FlightStatus;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public record CreateFlightMongoCommand(
   UUID id,
@@ -22,6 +20,6 @@ public record CreateFlightMongoCommand(
   LocalDateTime flightDate,
   FlightStatus status,
   BigDecimal price,
-  boolean isDeleted) implements ICommand<CompletableFuture<Unit>>, InternalCommand {
+  boolean isDeleted) implements ICommand<Unit>, InternalCommand {
 }
 

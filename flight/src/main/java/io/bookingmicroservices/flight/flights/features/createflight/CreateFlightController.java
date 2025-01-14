@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping(path = "api/v1/flight")
@@ -23,8 +22,9 @@ public class CreateFlightController {
 
   @PostMapping()
   @PreAuthorize("hasAuthority('ADMIN')")
-  public CompletableFuture<ResponseEntity<FlightDto>> createFlight(@RequestBody CreateFlightRequestDto createFlightRequestDto) throws Exception {
+  public ResponseEntity<FlightDto> createFlight(@RequestBody CreateFlightRequestDto createFlightRequestDto) throws Exception {
     CreateFlightCommand command = Mappings.toCreateFlightCommand(createFlightRequestDto);
-    return this.mediator.send(command).thenApplyAsync(ResponseEntity::ok);
+    var result = this.mediator.send(command);
+    return ResponseEntity.ok().body(result);
   }
 }

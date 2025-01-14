@@ -25,7 +25,7 @@ public class PersistMessageProcessorConfiguration {
             Logger logger,
             IMediator mediator,
             ApplicationContext applicationContext) {
-        return new PersistMessageProcessorImpl(entityManager, rabbitmqPublisher, logger, mediator, applicationContext);
+        return new PersistMessageProcessorImpl(entityManager, rabbitmqPublisher, logger, mediator);
     }
 
     @Bean
