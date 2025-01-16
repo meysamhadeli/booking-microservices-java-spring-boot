@@ -16,7 +16,7 @@ public abstract class AggregateRoot<T> {
     protected T id;
 
     // Use CopyOnWriteArrayList for thread-safe concurrent access
-    private final CopyOnWriteArrayList<DomainEvent> domainEvents = new CopyOnWriteArrayList<>();
+    private static final CopyOnWriteArrayList<DomainEvent> domainEvents = new CopyOnWriteArrayList<>();
 
     public List<DomainEvent> getDomainEvents() {
         return Collections.unmodifiableList(domainEvents);
