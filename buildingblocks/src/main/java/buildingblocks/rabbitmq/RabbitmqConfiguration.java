@@ -6,6 +6,7 @@ import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,5 +77,10 @@ public class RabbitmqConfiguration {
     @Bean
     public RabbitmqReceiver rabbitmqReceiver(PersistMessageProcessor persistMessageProcessor, PlatformTransactionManager platformTransactionManager) {
         return new RabbitmqReceiverImpl(this, persistMessageProcessor, platformTransactionManager);
+    }
+
+    @Bean
+    public MessageListenerContainer addListeners(RabbitmqReceiver rabbitmqReceiver) {
+        return rabbitmqReceiver.addListeners();
     }
 }
