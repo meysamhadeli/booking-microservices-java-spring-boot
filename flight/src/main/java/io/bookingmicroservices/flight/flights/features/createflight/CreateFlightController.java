@@ -22,7 +22,7 @@ public class CreateFlightController {
 
   @PostMapping()
   @PreAuthorize("hasAuthority('ADMIN')")
-  public ResponseEntity<FlightDto> createFlight(@RequestBody CreateFlightRequestDto createFlightRequestDto) throws Exception {
+  public ResponseEntity<FlightDto> createFlight(@RequestBody CreateFlightRequestDto createFlightRequestDto) {
     CreateFlightCommand command = Mappings.toCreateFlightCommand(createFlightRequestDto);
     var result = this.mediator.send(command);
     return ResponseEntity.ok().body(result);
