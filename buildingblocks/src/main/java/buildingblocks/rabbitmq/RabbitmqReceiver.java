@@ -5,6 +5,7 @@ import buildingblocks.jpa.JpaConfiguration;
 import buildingblocks.outboxprocessor.PersistMessageEntity;
 import buildingblocks.outboxprocessor.PersistMessageProcessor;
 import buildingblocks.outboxprocessor.PersistMessageProcessorConfiguration;
+import buildingblocks.utils.reflection.ReflectionUtils;
 import org.slf4j.Logger;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -21,7 +22,7 @@ import java.util.UUID;
 
 
 public interface RabbitmqReceiver {
-    MessageListenerContainer addListeners(List<MessageListener> handlers);
+    MessageListenerContainer addListeners();
 }
 
 @Configuration
@@ -39,37 +40,38 @@ class RabbitmqReceiverImpl implements RabbitmqReceiver {
     }
 
     @Override
-    public MessageListenerContainer addListeners(List<MessageListener> handlers) {
+    public MessageListenerContainer addListeners() {
 
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(rabbitmqConfiguration.connectionFactory(rabbitmqConfiguration.rabbitmqOptions()));
         container.setQueueNames(rabbitmqConfiguration.getQueueName(rabbitmqConfiguration.rabbitmqOptions()));
 
-        if (!handlers.isEmpty()) {
-            handlers.forEach(handler -> {
-                // Set message listener that routes to appropriate handler
-                container.setMessageListener(message -> {
-                    if (handler != null) {
-                        transactionTemplate.execute(status -> {
-                            try {
-                                // Add the received message to the inbox
-                                UUID id = persistMessageProcessor.addReceivedMessage(message);
-                                PersistMessageEntity persistMessage = persistMessageProcessor.existInboxMessage(id);
+        // Find all MessageListener implementations
+        var handler = ReflectionUtils.getInstanceOfSubclass(MessageListener.class);
+        if (handler != null) {
+            // Set message listener that routes to appropriate handler
+            container.setMessageListener(message -> {
+                if (handler != null) {
+                    transactionTemplate.execute(status -> {
+                        try {
+                            // Add the received message to the inbox
+                            UUID id = persistMessageProcessor.addReceivedMessage(message);
+                            PersistMessageEntity persistMessage = persistMessageProcessor.existInboxMessage(id);
 
-                                if (persistMessage == null) {
-                                    handler.onMessage(message);
-                                    persistMessageProcessor.processInbox(id);
-                                }
-                            } catch (Exception ex) {
-                                status.setRollbackOnly();
-                                throw ex;
+                            if (persistMessage == null) {
+                                handler.onMessage(message);
+                                persistMessageProcessor.processInbox(id);
                             }
-                            return null; // TransactionTemplate requires a return value
-                        });
-                    }
-                });
+                        } catch (Exception ex) {
+                            status.setRollbackOnly();
+                            throw ex;
+                        }
+                        return null; // TransactionTemplate requires a return value
+                    });
+                }
             });
         }
+
         return container;
     }
 }
