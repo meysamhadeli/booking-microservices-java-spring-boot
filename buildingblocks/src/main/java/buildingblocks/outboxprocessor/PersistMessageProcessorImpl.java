@@ -115,12 +115,15 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
 
             Object data = JsonConverterUtils.deserialize(message.getData(), dataType);
 
-            rabbitmqPublisher.publish(data);
+            if (data instanceof IntegrationEvent integrationEvent) {
+                rabbitmqPublisher.publish(integrationEvent);
 
-            logger.info("Message with id: {} and delivery type: {} processed from the persistence message store.",
-                    message.getId(), message.getDeliveryType().toString());
+                logger.info("Message with id: {} and delivery type: {} processed from the persistence message store.",
+                        message.getId(), message.getDeliveryType().toString());
 
-            return true;
+                return true;
+            }
+            return false;
         } catch (Exception ex) {
             throw new RuntimeException("Failed to process outbox message: " + message.getId(), ex);
         }
