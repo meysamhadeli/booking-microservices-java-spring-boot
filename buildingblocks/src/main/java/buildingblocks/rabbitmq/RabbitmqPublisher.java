@@ -54,7 +54,7 @@ class RabbitmqPublisherImpl implements RabbitmqPublisher {
     private <T extends IntegrationEvent> MessagePostProcessor getMessagePostProcessor(T message) {
         return messageProperties -> {
             MessageProperties props = messageProperties.getMessageProperties();
-            props.setMessageId(message.toString());
+            props.setMessageId(message.getEventId().toString());
             props.setType(message.getEventType());
             props.setCorrelationId(UuidCreator.getTimeOrderedEpoch().toString());
             props.setHeader("occurredOn", message.getOccurredOn());

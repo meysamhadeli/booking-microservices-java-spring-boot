@@ -1,5 +1,6 @@
 package buildingblocks.rabbitmq;
 
+import buildingblocks.outboxprocessor.PersistMessageProcessor;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -8,6 +9,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 public class RabbitmqConfiguration {
@@ -28,10 +30,6 @@ public class RabbitmqConfiguration {
 
     public String getQueueName(RabbitmqOptions rabbitmqOptions) {
         return rabbitmqOptions.getExchangeName() + "_queue";
-    }
-
-    public String getRoutingKey(RabbitmqOptions rabbitmqOptions) {
-        return rabbitmqOptions.getExchangeName() + "_routing_key";
     }
 
     @Bean
@@ -76,7 +74,7 @@ public class RabbitmqConfiguration {
     }
 
     @Bean
-    public RabbitmqReceiver rabbitmqReceiver() {
-        return new RabbitmqReceiverImpl(this);
+    public RabbitmqReceiver rabbitmqReceiver(PersistMessageProcessor persistMessageProcessor, PlatformTransactionManager platformTransactionManager) {
+        return new RabbitmqReceiverImpl(this, persistMessageProcessor, platformTransactionManager);
     }
 }
