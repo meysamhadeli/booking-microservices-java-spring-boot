@@ -42,9 +42,8 @@ spring:
     port: 5672
     username: guest
     password: guest
-    template:
-      exchange: flight
-      exchange-type: topic
+    exchange-name: student
+    exchange-type: direct
 
   otel:
     collector:

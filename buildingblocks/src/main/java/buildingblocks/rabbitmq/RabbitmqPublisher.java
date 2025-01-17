@@ -1,28 +1,30 @@
 package buildingblocks.rabbitmq;
 
+
 import buildingblocks.utils.jsonconverter.JsonConverterUtils;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.scheduling.annotation.Async;
+
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public interface RabbitmqPublisher {
+public interface RabbitmqPublisher{
+    @Async
+    <T> void publish(T message);
     @Async
     <T> CompletableFuture<Void> publishAsync(T message);
-    <T> void publish(T message);
 }
 
 class RabbitmqPublisherImpl implements RabbitmqPublisher {
-    private final RabbitProperties rabbitProperties;
+    private final RabbitmqOptions rabbitmqOptions;
     private final AsyncRabbitTemplate asyncRabbitTemplate;
     private final RabbitTemplate rabbitTemplate;
 
-    public RabbitmqPublisherImpl(RabbitProperties rabbitProperties, AsyncRabbitTemplate asyncRabbitTemplate, RabbitTemplate rabbitTemplate) {
-        this.rabbitProperties = rabbitProperties;
+    public RabbitmqPublisherImpl(RabbitmqOptions rabbitmqOptions, AsyncRabbitTemplate asyncRabbitTemplate, RabbitTemplate rabbitTemplate) {
+        this.rabbitmqOptions = rabbitmqOptions;
         this.asyncRabbitTemplate = asyncRabbitTemplate;
         this.rabbitTemplate = rabbitTemplate;
     }
@@ -31,8 +33,8 @@ class RabbitmqPublisherImpl implements RabbitmqPublisher {
     @Async
     public <T> CompletableFuture<Void> publishAsync(T message) {
         return this.asyncRabbitTemplate.convertSendAndReceive(
-                rabbitProperties.getTemplate().getExchange(),
-                rabbitProperties.getTemplate().getExchange() + "_routing_key",
+                rabbitmqOptions.getExchangeName(),
+                this.rabbitmqOptions.getExchangeName() + "_routing_key",
                 JsonConverterUtils.serializeObject(message),
                 messageProperties -> {
                     MessageProperties props = messageProperties.getMessageProperties();
@@ -44,12 +46,11 @@ class RabbitmqPublisherImpl implements RabbitmqPublisher {
                 });
     }
 
-    @Override
     public <T> void publish(T message) {
-        this.rabbitTemplate.convertAndSend(
-                rabbitProperties.getTemplate().getExchange(),
-                rabbitProperties.getTemplate().getExchange() + "_routing_key",
-                JsonConverterUtils.serializeObject(message),
+         this.rabbitTemplate.convertSendAndReceive(
+                rabbitmqOptions.getExchangeName(),
+                this.rabbitmqOptions.getExchangeName() + "_routing_key",
+                 JsonConverterUtils.serializeObject(message),
                 messageProperties -> {
                     MessageProperties props = messageProperties.getMessageProperties();
                     props.setContentType(MessageProperties.CONTENT_TYPE_JSON);
