@@ -42,7 +42,7 @@ spring:
     port: 5672
     username: guest
     password: guest
-    exchange-name: student
+    exchange-name: flight
     exchange-type: direct
 
   otel:
