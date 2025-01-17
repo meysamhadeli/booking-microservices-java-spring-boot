@@ -42,8 +42,9 @@ spring:
     port: 5672
     username: guest
     password: guest
-    exchange-name: flight
-    exchange-type: direct
+    template:
+      exchange: flight
+      exchange-type: direct
 
   otel:
     collector:
