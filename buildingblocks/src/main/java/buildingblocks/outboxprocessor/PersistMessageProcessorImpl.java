@@ -51,7 +51,15 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
     }
 
     public <T extends Message> UUID addReceivedMessage(T message) {
-        return savePersistMessage(message, MessageDeliveryType.Inbox, message.getClass().getTypeName()).getId();
+        try {
+            String msgBodyTypeName = message.getMessageProperties().getType();
+            Class<?> msgBodyType = Class.forName(msgBodyTypeName);
+
+            var msg = JsonConverterUtils.deserialize(message.getBody(), msgBodyType);
+            return savePersistMessage(msg, MessageDeliveryType.Inbox, msgBodyTypeName).getId();
+        } catch (ClassNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     public PersistMessageEntity existInboxMessage(UUID messageId) {
