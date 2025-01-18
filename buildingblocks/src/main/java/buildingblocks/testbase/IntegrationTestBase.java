@@ -49,7 +49,6 @@ public abstract class IntegrationTestBase {
         TestContainers.mongoDb.stop();
     }
 
-
     @AfterEach
     public void cleanDatabase() {
         fixture.cleanupJpa();

@@ -12,6 +12,7 @@ import buildingblocks.problemdetails.CustomProblemDetailsHandler;
 import buildingblocks.rabbitmq.RabbitmqConfiguration;
 import buildingblocks.swagger.SwaggerConfiguration;
 import buildingblocks.threadpool.ThreadPoolConfiguration;
+import buildingblocks.web.WebClientConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Import;
   OtelCollectorConfiguration.class,
   SwaggerConfiguration.class,
   KeycloakConfiguration.class,
+  WebClientConfiguration.class,
   ThreadPoolConfiguration.class,
   PersistMessageProcessorConfiguration.class,
   EventDispatcherConfiguration.class,
