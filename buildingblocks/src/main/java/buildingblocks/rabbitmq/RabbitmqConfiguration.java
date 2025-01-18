@@ -7,11 +7,15 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
+import org.springframework.amqp.rabbit.test.RabbitListenerTest;
+import org.springframework.amqp.rabbit.test.RabbitListenerTestHarness;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
@@ -25,6 +29,7 @@ public class RabbitmqConfiguration {
     public RabbitmqConfiguration(RabbitProperties rabbitProperties) {
         this.rabbitProperties = rabbitProperties;
     }
+
 
     @Bean
     public ConnectionFactory connectionFactory() {
