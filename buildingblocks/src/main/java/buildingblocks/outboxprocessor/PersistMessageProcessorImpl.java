@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.springframework.amqp.core.Message;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -75,6 +76,7 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
         PersistMessageEntity message = queryFactory
                 .selectFrom(qPersistMessageEntity)
                 .where(qPersistMessageEntity.id.eq(messageId)
+                        .and(qPersistMessageEntity.messageStatus.eq(MessageStatus.InProgress))
                         .and(qPersistMessageEntity.deliveryType.eq(deliveryType)))
                 .fetchOne();
 
@@ -85,6 +87,7 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
         boolean processed = switch (deliveryType) {
             case Internal -> processInternal(message);
             case Outbox -> processOutbox(message);
+            case Inbox -> processInbox(message);
             default -> false;
         };
 
@@ -104,17 +107,36 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
         }
     }
 
-    public void processInbox(UUID messageId) {
-        PersistMessageEntity message = queryFactory
-                .selectFrom(qPersistMessageEntity)
-                .where(qPersistMessageEntity.id.eq(messageId)
-                        .and(qPersistMessageEntity.deliveryType.eq(MessageDeliveryType.Inbox))
-                        .and(qPersistMessageEntity.messageStatus.eq(MessageStatus.InProgress)))
-                .fetchOne();
+    public boolean messageIsPublished(Class<?> messageType) {
+        return queryFactory
+                .selectOne()
+                .from(qPersistMessageEntity)
+                .where(qPersistMessageEntity.dataType.eq(messageType.getTypeName())
+                        .and(qPersistMessageEntity.deliveryType.eq(MessageDeliveryType.Outbox))
+                        .and(qPersistMessageEntity.messageStatus.eq(MessageStatus.Processed)))
+                .orderBy(qPersistMessageEntity.created.desc())
+                .limit(1) // Only fetch the last message
+                .fetchOne() != null;
+    }
 
+    public boolean messageIsDelivered(Class<?> messageType) {
+        return queryFactory
+                .selectOne()
+                .from(qPersistMessageEntity)
+                .where(qPersistMessageEntity.dataType.eq(messageType.getTypeName())
+                        .and(qPersistMessageEntity.deliveryType.eq(MessageDeliveryType.Inbox))
+                        .and(qPersistMessageEntity.messageStatus.eq(MessageStatus.Processed)))
+                .orderBy(qPersistMessageEntity.created.desc())
+                .limit(1) // Only fetch the last message
+                .fetchOne() != null;
+    }
+
+    private boolean processInbox(PersistMessageEntity message) {
         if (message != null) {
             changeMessageStatus(message, MessageStatus.Processed);
+            return true;
         }
+        return false;
     }
 
     private boolean processOutbox(PersistMessageEntity message) {
