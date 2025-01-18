@@ -31,6 +31,7 @@ class FlightRepositoryCustomImpl implements FlightRepositoryCustom {
     FlightEntity entity = Mappings.toFlightEntity(flight);
 
     entityManager.persist(entity);
+    entityManager.flush();
 
     return Mappings.toFlightAggregate(entity);
   }

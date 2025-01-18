@@ -2,6 +2,7 @@ package buildingblocks.rabbitmq;
 
 import buildingblocks.core.event.EventDispatcher;
 import buildingblocks.jpa.JpaConfiguration;
+import buildingblocks.outboxprocessor.MessageDeliveryType;
 import buildingblocks.outboxprocessor.PersistMessageEntity;
 import buildingblocks.outboxprocessor.PersistMessageProcessor;
 import buildingblocks.outboxprocessor.PersistMessageProcessorConfiguration;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 public interface RabbitmqReceiver {
     MessageListenerContainer addListeners();
+    boolean messageIsReceived(UUID messageId);
 }
 
 @Configuration
@@ -51,27 +53,30 @@ class RabbitmqReceiverImpl implements RabbitmqReceiver {
         if (handler != null) {
             // Set message listener that routes to appropriate handler
             container.setMessageListener(message -> {
-                if (handler != null) {
-                    transactionTemplate.execute(status -> {
-                        try {
-                            // Add the received message to the inbox
-                            UUID id = persistMessageProcessor.addReceivedMessage(message);
-                            PersistMessageEntity persistMessage = persistMessageProcessor.existInboxMessage(id);
+                transactionTemplate.execute(status -> {
+                    try {
+                        // Add the received message to the inbox
+                        UUID id = persistMessageProcessor.addReceivedMessage(message);
+                        PersistMessageEntity persistMessage = persistMessageProcessor.existInboxMessage(id);
 
-                            if (persistMessage == null) {
-                                handler.onMessage(message);
-                                persistMessageProcessor.processInbox(id);
-                            }
-                        } catch (Exception ex) {
-                            status.setRollbackOnly();
-                            throw ex;
+                        if (persistMessage == null) {
+                            handler.onMessage(message);
+                            persistMessageProcessor.process(id, MessageDeliveryType.Inbox);
                         }
-                        return null; // TransactionTemplate requires a return value
-                    });
-                }
+                    } catch (Exception ex) {
+                        status.setRollbackOnly();
+                        throw ex;
+                    }
+                    return null; // TransactionTemplate requires a return value
+                });
             });
         }
 
         return container;
+    }
+
+    @Override
+    public boolean messageIsReceived(UUID messageId) {
+        return false;
     }
 }
