@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface FlightRepository extends JpaRepository<FlightEntity, UUID>, FlightRepositoryCustom {
-  boolean existsFlightByFlightNumber(String flightNumber);
+  boolean existsByFlightNumber(String flightNumber);
 }
 
 

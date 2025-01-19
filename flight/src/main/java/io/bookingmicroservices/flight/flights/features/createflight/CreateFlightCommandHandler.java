@@ -20,7 +20,7 @@ public class CreateFlightCommandHandler implements ICommandHandler<CreateFlightC
   @Override
   public FlightDto handle(CreateFlightCommand command) {
 
-    boolean exists = flightRepository.existsFlightByFlightNumber(command.flightNumber());
+    boolean exists = flightRepository.existsByFlightNumber(command.flightNumber());
     if (exists) {
       throw new FlightAlreadyExistException();
     }

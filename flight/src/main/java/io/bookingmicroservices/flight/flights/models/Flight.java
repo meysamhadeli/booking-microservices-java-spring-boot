@@ -4,8 +4,6 @@ import buildingblocks.core.model.AggregateRoot;
 import io.bookingmicroservices.flight.aircrafts.valueobjects.AircraftId;
 import io.bookingmicroservices.flight.airports.valueobjects.AirportId;
 import io.bookingmicroservices.flight.flights.enums.FlightStatus;
-import io.bookingmicroservices.flight.flights.events.FlightDeletedDomainEvent;
-import io.bookingmicroservices.flight.flights.events.FlightUpdatedDomainEvent;
 import io.bookingmicroservices.flight.flights.features.createflight.FlightCreatedDomainEvent;
 import io.bookingmicroservices.flight.flights.valueobjects.*;
 import lombok.*;
@@ -26,7 +24,7 @@ public class Flight extends AggregateRoot<FlightId> {
     ArriveDate arriveDate;
     DepartureDate departureDate;
     FlightDate flightDate;
-    boolean deleted;
+    boolean isDeleted;
 
     public Flight(FlightId flightId, FlightNumber flightNumber, AircraftId aircraftId, AirportId departureAirportId, AirportId arriveAirportId, DurationMinutes durationMinutes, FlightStatus status, Price price, ArriveDate arriveDate, DepartureDate departureDate, FlightDate flightDate, boolean isDeleted) {
         this.id = flightId;
@@ -40,7 +38,7 @@ public class Flight extends AggregateRoot<FlightId> {
         this.arriveDate = arriveDate;
         this.departureDate = departureDate;
         this.flightDate = flightDate;
-        this.deleted = isDeleted;
+        this.isDeleted = isDeleted;
     }
 
     public static Flight create(
@@ -107,31 +105,31 @@ public class Flight extends AggregateRoot<FlightId> {
     );
 
     // Add the domain event for the update
-    updatedFlight.addDomainEvent(new FlightUpdatedDomainEvent(
-      updatedFlight.getId().value(),
-      updatedFlight.flightNumber.value(),
-      updatedFlight.aircraftId.value(),
-      updatedFlight.departureAirportId.value(),
-      updatedFlight.departureDate.value(),
-      updatedFlight.arriveDate.value(),
-      updatedFlight.arriveAirportId.value(),
-      updatedFlight.durationMinutes.value(),
-      updatedFlight.flightDate.value(),
-      updatedFlight.status,
-      updatedFlight.price.value(),
-      isDeleted
-    ));
+//    updatedFlight.addDomainEvent(new FlightUpdatedDomainEvent(
+//      updatedFlight.getId().value(),
+//      updatedFlight.flightNumber.value(),
+//      updatedFlight.aircraftId.value(),
+//      updatedFlight.departureAirportId.value(),
+//      updatedFlight.departureDate.value(),
+//      updatedFlight.arriveDate.value(),
+//      updatedFlight.arriveAirportId.value(),
+//      updatedFlight.durationMinutes.value(),
+//      updatedFlight.flightDate.value(),
+//      updatedFlight.status,
+//      updatedFlight.price.value(),
+//      isDeleted
+//    ));
 
     return updatedFlight;
   }
 
     public void delete() {
 
-       this.deleted = true;
+       this.isDeleted = true;
 
-        addDomainEvent(new FlightDeletedDomainEvent(
-                this.getId().value(), this.flightNumber.value(), this.aircraftId.value(), this.departureAirportId.value(), this.departureDate.value(),
-                this.arriveDate.value(), this.arriveAirportId.value(), this.durationMinutes.value(), this.flightDate.value(), this.status, this.price.value(), true
-        ));
+//        addDomainEvent(new FlightDeletedDomainEvent(
+//                this.getId().value(), this.flightNumber.value(), this.aircraftId.value(), this.departureAirportId.value(), this.departureDate.value(),
+//                this.arriveDate.value(), this.arriveAirportId.value(), this.durationMinutes.value(), this.flightDate.value(), this.status, this.price.value(), true
+//        ));
     }
 }

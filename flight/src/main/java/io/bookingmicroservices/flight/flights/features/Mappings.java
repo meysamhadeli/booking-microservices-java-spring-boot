@@ -26,8 +26,7 @@ public final class Mappings {
       flight.getPrice().value(),
       flight.getArriveDate().value(),
       flight.getDepartureDate().value(),
-      flight.getFlightDate().value(),
-      flight.isDeleted()
+      flight.getFlightDate().value()
     );
   }
 
@@ -96,6 +95,23 @@ public final class Mappings {
       createFlightMongoCommand.departureDate(),
       createFlightMongoCommand.flightDate(),
       createFlightMongoCommand.isDeleted()
+    );
+  }
+
+  public static FlightDocument toFlightDocument(FlightEntity flightEntity) {
+    return new FlightDocument(
+      flightEntity.getId(),
+      flightEntity.getFlightNumber(),
+      flightEntity.getAircraftId(),
+      flightEntity.getDepartureAirportId(),
+      flightEntity.getArriveAirportId(),
+      flightEntity.getDurationMinutes(),
+      flightEntity.getStatus(),
+      flightEntity.getPrice(),
+      flightEntity.getArriveDate(),
+      flightEntity.getDepartureDate(),
+      flightEntity.getFlightDate(),
+      flightEntity.isDeleted()
     );
   }
 

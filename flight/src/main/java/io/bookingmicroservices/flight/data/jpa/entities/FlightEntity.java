@@ -19,40 +19,55 @@ import java.util.UUID;
 @Getter
 public class FlightEntity extends BaseEntity<UUID> {
 
-    private String flightNumber;
+  private String flightNumber;
 
-    private UUID aircraftId;
+  private LocalDateTime departureDate;
 
-    private UUID departureAirportId;
+  private LocalDateTime arriveDate;
 
-    private LocalDateTime departureDate;
+  private BigDecimal durationMinutes;
 
-    private LocalDateTime arriveDate;
+  private LocalDateTime flightDate;
 
-    private UUID arriveAirportId;
+  @Enumerated(EnumType.STRING)
+  private FlightStatus status;
 
-    private BigDecimal durationMinutes;
+  private BigDecimal price;
 
-    private LocalDateTime flightDate;
+  @Column(name = "departure_airport_id")
+  private UUID departureAirportId;
 
-    @Enumerated(EnumType.STRING)
-    private FlightStatus status;
+  @Column(name = "arrive_airport_id")
+  private UUID arriveAirportId;
 
-    private BigDecimal price;
+  @Column(name = "aircraft_id")
+  private UUID aircraftId;
 
-    public FlightEntity(UUID id, String flightNumber, UUID aircraftId, UUID departureAirportId, UUID arriveAirportId, BigDecimal durationMinutes, FlightStatus status, BigDecimal price, LocalDateTime arriveDate, LocalDateTime departureDate, LocalDateTime flightDate, boolean isDeleted) {
-        this.id = id;;
-        this.flightNumber = flightNumber;
-        this.aircraftId = aircraftId;
-        this.departureAirportId = departureAirportId;
-        this.arriveAirportId = arriveAirportId;
-        this.durationMinutes = durationMinutes;
-        this.status = status;
-        this.price = price;
-        this.arriveDate = arriveDate;
-        this.departureDate = departureDate;
-        this.flightDate = flightDate;
-        this.isDeleted = isDeleted;
-    }
+  // JPA will handle the relationship based on these IDs
+  @ManyToOne
+  @JoinColumn(name = "departure_airport_id", insertable = false, updatable = false, nullable = false)
+  private AirportEntity departureAirport;
+
+  @ManyToOne
+  @JoinColumn(name = "arrive_airport_id", insertable = false, updatable = false, nullable = false)
+  private AirportEntity arriveAirport;
+
+  @ManyToOne
+  @JoinColumn(name = "aircraft_id", insertable = false, updatable = false, nullable = false)
+  private AircraftEntity aircraft;
+
+  // Constructor that uses only the ID types
+  public FlightEntity(UUID id, String flightNumber, UUID aircraftId, UUID departureAirportId, UUID arriveAirportId, BigDecimal durationMinutes, FlightStatus status, BigDecimal price, LocalDateTime arriveDate, LocalDateTime departureDate, LocalDateTime flightDate) {
+    this.id = id;
+    this.flightNumber = flightNumber;
+    this.aircraftId = aircraftId;
+    this.departureAirportId = departureAirportId;
+    this.arriveAirportId = arriveAirportId;
+    this.durationMinutes = durationMinutes;
+    this.status = status;
+    this.price = price;
+    this.arriveDate = arriveDate;
+    this.departureDate = departureDate;
+    this.flightDate = flightDate;
+  }
 }
-
