@@ -7,12 +7,16 @@ import buildingblocks.logger.LoggerConfiguration;
 import buildingblocks.mediator.abstractions.IMediator;
 import buildingblocks.mediator.abstractions.commands.ICommand;
 import buildingblocks.rabbitmq.RabbitmqConfiguration;
-import buildingblocks.rabbitmq.RabbitmqPublisher;
 import buildingblocks.utils.jsonconverter.JsonConverterUtils;
+import com.github.f4b6a3.uuid.UuidCreator;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageDeliveryMode;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -20,9 +24,10 @@ import java.util.List;
 import java.util.UUID;
 
 @Configuration
-@Import({PersistMessageProcessorConfiguration.class, RabbitmqConfiguration.class, JpaConfiguration.class, LoggerConfiguration.class})
+@Import({PersistMessageProcessorConfiguration.class, RabbitmqConfiguration.class, RabbitProperties.class, JpaConfiguration.class, LoggerConfiguration.class})
 public class PersistMessageProcessorImpl implements PersistMessageProcessor {
-    private final RabbitmqPublisher rabbitmqPublisher;
+    private final RabbitTemplate rabbitTemplate;
+    private final RabbitProperties rabbitProperties;
     private final EntityManager entityManager;
     private final JPAQueryFactory queryFactory;
     private final Logger logger;
@@ -33,11 +38,13 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
 
     public PersistMessageProcessorImpl(
             EntityManager entityManager,
-            RabbitmqPublisher rabbitmqPublisher,
+            RabbitTemplate rabbitmqTemplate,
+            RabbitProperties rabbitProperties,
             Logger logger,
             IMediator mediator) {
         this.queryFactory = new JPAQueryFactory(entityManager);
-        this.rabbitmqPublisher = rabbitmqPublisher;
+        this.rabbitTemplate = rabbitmqTemplate;
+        this.rabbitProperties = rabbitProperties;
         this.entityManager = entityManager;
         this.logger = logger;
         this.mediator = mediator;
@@ -146,7 +153,20 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
             Object data = JsonConverterUtils.deserialize(message.getData(), dataType);
 
             if (data instanceof IntegrationEvent integrationEvent) {
-                rabbitmqPublisher.publish(integrationEvent);
+
+                this.rabbitTemplate.convertSendAndReceive(
+                        this.rabbitProperties.getTemplate().getExchange(),
+                        this.rabbitProperties.getTemplate().getExchange() + "_routing_key",
+                        JsonConverterUtils.serializeObject(integrationEvent), msg -> {
+                            MessageProperties props = msg.getMessageProperties();
+                            props.setMessageId(integrationEvent.getEventId().toString());
+                            props.setType(integrationEvent.getEventType());
+                            props.setCorrelationId(UuidCreator.getTimeOrderedEpoch().toString());
+                            props.setHeader("occurredOn", integrationEvent.getOccurredOn());
+                            props.setContentType(MessageProperties.CONTENT_TYPE_JSON);
+                            props.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+                            return msg;
+                        });
 
                 logger.info("Message with id: {} and delivery type: {} processed from the persistence message store.",
                         message.getId(), message.getDeliveryType().toString());

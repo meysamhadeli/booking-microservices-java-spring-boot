@@ -2,11 +2,11 @@ package buildingblocks.outboxprocessor;
 
 import buildingblocks.mediator.MediatorConfiguration;
 import buildingblocks.mediator.abstractions.IMediator;
-import buildingblocks.rabbitmq.RabbitmqPublisher;
 import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -21,11 +21,11 @@ public class PersistMessageProcessorConfiguration {
     @ConditionalOnMissingClass
     public PersistMessageProcessor persistMessageProcessor(
             EntityManager entityManager,
-            RabbitmqPublisher rabbitmqPublisher,
+            RabbitTemplate rabbitTemplate,
+            RabbitProperties rabbitProperties,
             Logger logger,
-            IMediator mediator,
-            ApplicationContext applicationContext) {
-        return new PersistMessageProcessorImpl(entityManager, rabbitmqPublisher, logger, mediator);
+            IMediator mediator) {
+        return new PersistMessageProcessorImpl(entityManager, rabbitTemplate, rabbitProperties, logger, mediator);
     }
 
     @Bean

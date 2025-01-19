@@ -1,22 +1,24 @@
 package buildingblocks.rabbitmq;
 
+import buildingblocks.outboxprocessor.MessageDeliveryType;
+import buildingblocks.outboxprocessor.PersistMessageEntity;
 import buildingblocks.outboxprocessor.PersistMessageProcessor;
+import buildingblocks.utils.reflection.ReflectionUtils;
+import org.slf4j.Logger;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
-import org.springframework.amqp.rabbit.test.RabbitListenerTest;
-import org.springframework.amqp.rabbit.test.RabbitListenerTestHarness;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.*;
-import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.UUID;
 
 @Configuration
 public class RabbitmqConfiguration {
@@ -25,9 +27,16 @@ public class RabbitmqConfiguration {
     private String exchangeType;
 
     private final RabbitProperties rabbitProperties;
+    private final TransactionTemplate transactionTemplate;
+    private final Logger logger;
 
-    public RabbitmqConfiguration(RabbitProperties rabbitProperties) {
+    public RabbitmqConfiguration(
+            RabbitProperties rabbitProperties,
+            PlatformTransactionManager platformTransactionManager,
+            Logger logger) {
         this.rabbitProperties = rabbitProperties;
+        this.transactionTemplate = new TransactionTemplate(platformTransactionManager);
+        this.logger = logger;
     }
 
 
@@ -81,17 +90,40 @@ public class RabbitmqConfiguration {
     }
 
     @Bean
-    public RabbitmqPublisher rabbitmqPublisher(AsyncRabbitTemplate asyncRabbitTemplate, RabbitTemplate rabbitTemplate) {
-        return new RabbitmqPublisherImpl(rabbitProperties, asyncRabbitTemplate, rabbitTemplate);
-    }
+    public MessageListenerContainer addListeners(PersistMessageProcessor persistMessageProcessor) {
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory());
+        container.setQueueNames(getQueueName());
 
-    @Bean
-    public RabbitmqReceiver rabbitmqReceiver(PersistMessageProcessor persistMessageProcessor, PlatformTransactionManager platformTransactionManager) {
-        return new RabbitmqReceiverImpl(this, persistMessageProcessor, platformTransactionManager);
-    }
+        // Find all MessageListener implementations
+        var handler = ReflectionUtils.getInstanceOfSubclass(MessageListener.class);
+        if (handler != null) {
+            // Set message listener that routes to appropriate handler
+            container.setMessageListener(message -> {
+                transactionTemplate.execute(status -> {
+                    try {
+                        // Add the received message to the inbox
+                        UUID id = persistMessageProcessor.addReceivedMessage(message);
+                        PersistMessageEntity persistMessage = persistMessageProcessor.existInboxMessage(id);
 
-    @Bean
-    public MessageListenerContainer addListeners(RabbitmqReceiver rabbitmqReceiver) {
-        return rabbitmqReceiver.addListeners();
+                        if (persistMessage == null) {
+                            handler.onMessage(message);
+                            persistMessageProcessor.process(id, MessageDeliveryType.Inbox);
+                        }
+                    } catch (Exception ex) {
+                        status.setRollbackOnly();
+                        throw ex;
+                    }
+                    return null;
+                });
+            });
+        } else {
+            // Default message listener if no custom implementation is found
+            container.setMessageListener(message -> {
+                logger.info("Received message with no configured listener: {}", message);
+            });
+        }
+
+        return container;
     }
 }
