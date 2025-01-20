@@ -3,6 +3,7 @@ package io.bookingmicroservices.flight.seats.features.createseat;
 import buildingblocks.mediator.abstractions.IMediator;
 import io.bookingmicroservices.flight.seats.dtos.SeatDto;
 import io.bookingmicroservices.flight.seats.features.Mappings;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "api/v1/seat")
+@Tag(name = "seat")
 public class CreatSeatController {
 
   private final IMediator mediator;

@@ -28,6 +28,6 @@ public class CreateFlightCommandHandler implements ICommandHandler<CreateFlightC
     Flight flight = Mappings.toFlightAggregate(command);
 
     Flight result = flightRepository.create(flight);
-      return Mappings.toFlightDto(result);
+    return Mappings.toFlightDto(result);
   }
 }

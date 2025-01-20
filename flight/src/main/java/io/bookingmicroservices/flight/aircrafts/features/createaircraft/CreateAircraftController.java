@@ -3,6 +3,7 @@ package io.bookingmicroservices.flight.aircrafts.features.createaircraft;
 import buildingblocks.mediator.abstractions.IMediator;
 import io.bookingmicroservices.flight.aircrafts.dtos.AircraftDto;
 import io.bookingmicroservices.flight.aircrafts.features.Mappings;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "api/v1/aircraft")
+@Tag(name = "aircraft")
 public class CreateAircraftController {
 
   private final IMediator mediator;
