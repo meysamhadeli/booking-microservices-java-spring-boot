@@ -43,7 +43,6 @@ public class TestFixture {
         this.rabbitAdmin = new RabbitAdmin(applicationContext.getBean(ConnectionFactory.class));
     }
 
-
     public <TResponse> TResponse send(IRequest<TResponse> request) {
         return switch (request) {
             case ICommand<TResponse> command -> mediator.send(command);
