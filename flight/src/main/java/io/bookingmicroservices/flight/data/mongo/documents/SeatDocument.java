@@ -1,4 +1,4 @@
-package io.bookingmicroservices.flight.data.mongo.entities;
+package io.bookingmicroservices.flight.data.mongo.documents;
 
 import io.bookingmicroservices.flight.seats.enums.SeatClass;
 import io.bookingmicroservices.flight.seats.enums.SeatType;

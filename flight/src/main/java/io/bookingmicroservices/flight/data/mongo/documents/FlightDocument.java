@@ -1,4 +1,4 @@
-package io.bookingmicroservices.flight.data.mongo.entities;
+package io.bookingmicroservices.flight.data.mongo.documents;
 
 import io.bookingmicroservices.flight.flights.enums.FlightStatus;
 import lombok.AllArgsConstructor;

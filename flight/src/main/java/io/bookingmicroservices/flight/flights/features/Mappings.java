@@ -4,7 +4,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import io.bookingmicroservices.flight.aircrafts.valueobjects.AircraftId;
 import io.bookingmicroservices.flight.airports.valueobjects.AirportId;
 import io.bookingmicroservices.flight.data.jpa.entities.FlightEntity;
-import io.bookingmicroservices.flight.data.mongo.entities.FlightDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.FlightDocument;
 import io.bookingmicroservices.flight.flights.dtos.FlightDto;
 import io.bookingmicroservices.flight.flights.features.createflight.CreateFlightCommand;
 import io.bookingmicroservices.flight.flights.features.createflight.CreateFlightMongoCommand;
@@ -15,6 +15,8 @@ import io.bookingmicroservices.flight.flights.features.updateflight.UpdateFlight
 import io.bookingmicroservices.flight.flights.features.updateflight.UpdateFlightRequestDto;
 import io.bookingmicroservices.flight.flights.models.Flight;
 import io.bookingmicroservices.flight.flights.valueobjects.*;
+
+import java.util.UUID;
 
 public final class Mappings {
 
@@ -67,9 +69,9 @@ public final class Mappings {
     );
   }
 
-  public static UpdateFlightCommand toUpdateFlightCommand(UpdateFlightRequestDto updateFlightRequestDto) {
+  public static UpdateFlightCommand toUpdateFlightCommand(UUID id, UpdateFlightRequestDto updateFlightRequestDto) {
     return new UpdateFlightCommand(
-      UuidCreator.getTimeOrderedEpoch(),
+      id,
       updateFlightRequestDto.flightNumber(),
       updateFlightRequestDto.aircraftId(),
       updateFlightRequestDto.departureAirportId(),

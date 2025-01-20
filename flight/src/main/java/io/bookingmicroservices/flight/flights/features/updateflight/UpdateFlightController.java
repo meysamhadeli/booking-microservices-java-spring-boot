@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 
 @RestController
 @RequestMapping(path = "api/v1/flight")
@@ -20,10 +22,10 @@ public class UpdateFlightController {
     this.mediator = mediator;
   }
 
-  @PutMapping()
+  @PutMapping("/{id}")
   @PreAuthorize("hasAuthority('ADMIN')")
-  public ResponseEntity<FlightDto> updateFlight(@RequestBody UpdateFlightRequestDto updateFlightRequestDto) {
-    UpdateFlightCommand command = Mappings.toUpdateFlightCommand(updateFlightRequestDto);
+  public ResponseEntity<FlightDto> updateFlight(@PathVariable UUID id, @RequestBody UpdateFlightRequestDto updateFlightRequestDto) {
+    UpdateFlightCommand command = Mappings.toUpdateFlightCommand(id, updateFlightRequestDto);
     this.mediator.send(command);
     return ResponseEntity.noContent().build();
   }

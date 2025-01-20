@@ -2,7 +2,7 @@ package io.bookingmicroservices.flight.seats.features.createseat;
 
 import buildingblocks.mediator.abstractions.commands.ICommandHandler;
 import buildingblocks.mediator.abstractions.requests.Unit;
-import io.bookingmicroservices.flight.data.mongo.entities.SeatDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.SeatDocument;
 import io.bookingmicroservices.flight.data.mongo.repositories.SeatReadRepository;
 import io.bookingmicroservices.flight.seats.exceptions.SeatAlreadyExistException;
 import io.bookingmicroservices.flight.seats.features.Mappings;

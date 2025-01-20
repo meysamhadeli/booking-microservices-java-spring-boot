@@ -2,7 +2,7 @@ package io.bookingmicroservices.flight.flights.features.createflight;
 
 import buildingblocks.mediator.abstractions.commands.ICommandHandler;
 import buildingblocks.mediator.abstractions.requests.Unit;
-import io.bookingmicroservices.flight.data.mongo.entities.FlightDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.FlightDocument;
 import io.bookingmicroservices.flight.data.mongo.repositories.FlightReadRepository;
 import io.bookingmicroservices.flight.flights.exceptions.FlightAlreadyExistException;
 import io.bookingmicroservices.flight.flights.features.Mappings;

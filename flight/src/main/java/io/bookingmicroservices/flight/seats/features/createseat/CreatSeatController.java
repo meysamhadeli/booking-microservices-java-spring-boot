@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping(path = "api/v1/seat")
-@Tag(name = "seat")
+@RequestMapping(path = "api/v1/flight/seat")
+@Tag(name = "flight")
 public class CreatSeatController {
 
   private final IMediator mediator;

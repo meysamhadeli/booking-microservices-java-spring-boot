@@ -1,9 +1,9 @@
 package io.bookingmicroservices.flight.data.jpa.seeds;
 
-import io.bookingmicroservices.flight.data.mongo.entities.AircraftDocument;
-import io.bookingmicroservices.flight.data.mongo.entities.AirportDocument;
-import io.bookingmicroservices.flight.data.mongo.entities.FlightDocument;
-import io.bookingmicroservices.flight.data.mongo.entities.SeatDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.AircraftDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.AirportDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.FlightDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.SeatDocument;
 import static io.bookingmicroservices.flight.seats.features.Mappings.toSeatDocument;
 import static io.bookingmicroservices.flight.flights.features.Mappings.toFlightDocument;
 import static io.bookingmicroservices.flight.aircrafts.features.Mappings.toAircraftDocument;

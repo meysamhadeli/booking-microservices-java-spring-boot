@@ -1,7 +1,7 @@
 package io.bookingmicroservices.flight.flights.features.getflightbyid;
 
 import buildingblocks.mediator.abstractions.queries.IQueryHandler;
-import io.bookingmicroservices.flight.data.mongo.entities.FlightDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.FlightDocument;
 import io.bookingmicroservices.flight.data.mongo.repositories.FlightReadRepository;
 import io.bookingmicroservices.flight.flights.dtos.FlightDto;
 import io.bookingmicroservices.flight.flights.exceptions.FlightNotFoundException;
