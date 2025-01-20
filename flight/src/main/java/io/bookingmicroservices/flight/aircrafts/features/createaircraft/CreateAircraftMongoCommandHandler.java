@@ -4,7 +4,7 @@ import buildingblocks.mediator.abstractions.commands.ICommandHandler;
 import buildingblocks.mediator.abstractions.requests.Unit;
 import io.bookingmicroservices.flight.aircrafts.exceptions.AircraftAlreadyExistException;
 import io.bookingmicroservices.flight.aircrafts.features.Mappings;
-import io.bookingmicroservices.flight.data.mongo.entities.AircraftDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.AircraftDocument;
 import io.bookingmicroservices.flight.data.mongo.repositories.AircraftReadRepository;
 import org.springframework.stereotype.Service;
 

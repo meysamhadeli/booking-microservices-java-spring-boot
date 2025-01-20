@@ -1,16 +1,15 @@
 package io.bookingmicroservices.flight.seats.features;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import io.bookingmicroservices.flight.aircrafts.valueobjects.AircraftId;
-import io.bookingmicroservices.flight.aircrafts.valueobjects.ManufacturingYear;
-import io.bookingmicroservices.flight.aircrafts.valueobjects.Model;
-import io.bookingmicroservices.flight.aircrafts.valueobjects.Name;
 import io.bookingmicroservices.flight.data.jpa.entities.SeatEntity;
-import io.bookingmicroservices.flight.data.mongo.entities.SeatDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.SeatDocument;
 import io.bookingmicroservices.flight.seats.dtos.SeatDto;
 import io.bookingmicroservices.flight.seats.features.createseat.CreateSeatCommand;
 import io.bookingmicroservices.flight.seats.features.createseat.CreateSeatMongoCommand;
 import io.bookingmicroservices.flight.seats.features.createseat.CreateSeatRequestDto;
+import io.bookingmicroservices.flight.seats.features.reserveseat.ReserveSeatCommand;
+import io.bookingmicroservices.flight.seats.features.reserveseat.ReserveSeatMongoCommand;
+import io.bookingmicroservices.flight.seats.features.reserveseat.ReserveSeatRequestDto;
 import io.bookingmicroservices.flight.seats.models.Seat;
 import io.bookingmicroservices.flight.seats.valueobjects.FlightId;
 import io.bookingmicroservices.flight.seats.valueobjects.SeatId;
@@ -41,7 +40,7 @@ public final class Mappings {
 
   public static Seat toSeatAggregate(CreateSeatCommand createSeatCommand) {
     return Seat.create(
-     new SeatId(createSeatCommand.id()),
+      new SeatId(createSeatCommand.id()),
       new SeatNumber(createSeatCommand.seatNumber()),
       createSeatCommand.seatType(),
       createSeatCommand.seatClass(),
@@ -59,6 +58,16 @@ public final class Mappings {
       seat.getFlightId().value());
   }
 
+  public static SeatDto toSeatDto(SeatDocument seatDocument) {
+    return new SeatDto(
+      seatDocument.getSeatId(),
+      seatDocument.getSeatNumber(),
+      seatDocument.getType(),
+      seatDocument.getSeatClass(),
+      seatDocument.getFlightId()
+    );
+  }
+
   public static CreateSeatCommand toCreateSeatCommand(CreateSeatRequestDto createSeatRequestDto) {
     return new CreateSeatCommand(
       UuidCreator.getTimeOrderedEpoch(),
@@ -66,6 +75,14 @@ public final class Mappings {
       createSeatRequestDto.seatType(),
       createSeatRequestDto.seatClass(),
       createSeatRequestDto.flightId()
+    );
+  }
+
+
+  public static ReserveSeatCommand toReserveSeatCommand(ReserveSeatRequestDto reserveSeatRequestDto) {
+    return new ReserveSeatCommand(
+      reserveSeatRequestDto.seatNumber(),
+      reserveSeatRequestDto.flightId()
     );
   }
 
@@ -79,6 +96,18 @@ public final class Mappings {
       createSeatMongoCommand.isDeleted()
     );
   }
+
+  public static SeatDocument toSeatDocument(ReserveSeatMongoCommand reserveSeatMongoCommand) {
+    return new SeatDocument(
+      reserveSeatMongoCommand.id(),
+      reserveSeatMongoCommand.seatNumber(),
+      reserveSeatMongoCommand.seatType(),
+      reserveSeatMongoCommand.seatClass(),
+      reserveSeatMongoCommand.flightId(),
+      reserveSeatMongoCommand.isDeleted()
+    );
+  }
+
 
   public static SeatDocument toSeatDocument(SeatEntity seatEntity) {
     return new SeatDocument(

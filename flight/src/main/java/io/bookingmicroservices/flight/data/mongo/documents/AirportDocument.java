@@ -1,4 +1,4 @@
-package io.bookingmicroservices.flight.data.mongo.entities;
+package io.bookingmicroservices.flight.data.mongo.documents;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

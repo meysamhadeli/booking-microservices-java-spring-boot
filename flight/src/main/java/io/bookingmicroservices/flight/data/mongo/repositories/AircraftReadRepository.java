@@ -1,6 +1,6 @@
 package io.bookingmicroservices.flight.data.mongo.repositories;
 
-import io.bookingmicroservices.flight.data.mongo.entities.AircraftDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.AircraftDocument;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.UUID;

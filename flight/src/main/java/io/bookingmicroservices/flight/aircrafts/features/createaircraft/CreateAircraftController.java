@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "api/v1/aircraft")
-@Tag(name = "aircraft")
+@RequestMapping(path = "api/v1/flight/aircraft")
+@Tag(name = "flight")
 public class CreateAircraftController {
 
   private final IMediator mediator;

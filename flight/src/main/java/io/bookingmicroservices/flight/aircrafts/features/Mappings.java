@@ -11,7 +11,7 @@ import io.bookingmicroservices.flight.aircrafts.valueobjects.ManufacturingYear;
 import io.bookingmicroservices.flight.aircrafts.valueobjects.Model;
 import io.bookingmicroservices.flight.aircrafts.valueobjects.Name;
 import io.bookingmicroservices.flight.data.jpa.entities.AircraftEntity;
-import io.bookingmicroservices.flight.data.mongo.entities.AircraftDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.AircraftDocument;
 
 public final class Mappings {
 

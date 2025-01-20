@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: passenger
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: true
+    clean-disabled: false
+
+logging:
+  name: passenger-logger
+  level:
+    root: INFO
+
+server:
+  port: 8083

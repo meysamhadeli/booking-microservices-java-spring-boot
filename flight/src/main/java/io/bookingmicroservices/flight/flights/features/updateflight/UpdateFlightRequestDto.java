@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record UpdateFlightRequestDto(
-  UUID id,
   String flightNumber,
   UUID aircraftId,
   UUID departureAirportId,

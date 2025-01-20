@@ -11,7 +11,7 @@ import io.bookingmicroservices.flight.airports.valueobjects.AirportId;
 import io.bookingmicroservices.flight.airports.valueobjects.Code;
 import io.bookingmicroservices.flight.airports.valueobjects.Name;
 import io.bookingmicroservices.flight.data.jpa.entities.AirportEntity;
-import io.bookingmicroservices.flight.data.mongo.entities.AirportDocument;
+import io.bookingmicroservices.flight.data.mongo.documents.AirportDocument;
 
 public final class Mappings {
 
