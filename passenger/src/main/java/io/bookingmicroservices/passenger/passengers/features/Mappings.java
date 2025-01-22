@@ -4,6 +4,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import io.bookingmicroservices.passenger.data.jpa.entities.PassengerEntity;
 import io.bookingmicroservices.passenger.data.mongo.documents.PassengerDocument;
 import io.bookingmicroservices.passenger.passengers.dtos.PassengerDto;
+import io.bookingmicroservices.passenger.passengers.enums.PassengerType;
 import io.bookingmicroservices.passenger.passengers.features.createpassenger.CreatePassengerCommand;
 import io.bookingmicroservices.passenger.passengers.features.createpassenger.CreatePassengerMongoCommand;
 import io.bookingmicroservices.passenger.passengers.features.createpassenger.CreatePassengerRequestDto;
@@ -88,5 +89,24 @@ public final class Mappings {
                 passengerDocument.getPassengerType(),
                 passengerDocument.getAge()
         );
+    }
+
+    public static passenger.Passenger.PassengerResponseDto toPassengerResponseDtoGrpc(PassengerDto passengerDto) {
+
+        return passenger.Passenger.PassengerResponseDto.newBuilder()
+                .setId(passengerDto.id().toString())
+                .setName(passengerDto.name())
+                .setPassportNumber(passengerDto.passportNumber())
+                .setPassengerType(toPassengerTypeGrpc(passengerDto.passengerType()))
+                .setAge(passengerDto.age())
+                .build();
+    }
+
+    public static passenger.Passenger.PassengerType toPassengerTypeGrpc(PassengerType passengerType) {
+        return switch (passengerType) {
+            case Male -> passenger.Passenger.PassengerType.PASSENGER_TYPE_MALE;
+            case Female -> passenger.Passenger.PassengerType.PASSENGER_TYPE_FEMALE;
+            case Baby -> passenger.Passenger.PassengerType.PASSENGER_TYPE_BABY;
+        };
     }
 }

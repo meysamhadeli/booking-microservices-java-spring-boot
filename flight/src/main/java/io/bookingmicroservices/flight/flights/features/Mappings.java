@@ -1,11 +1,13 @@
 package io.bookingmicroservices.flight.flights.features;
 
+import buildingblocks.utils.protobuf.ProtobufUtils;
 import com.github.f4b6a3.uuid.UuidCreator;
 import io.bookingmicroservices.flight.aircrafts.valueobjects.AircraftId;
 import io.bookingmicroservices.flight.airports.valueobjects.AirportId;
 import io.bookingmicroservices.flight.data.jpa.entities.FlightEntity;
 import io.bookingmicroservices.flight.data.mongo.documents.FlightDocument;
 import io.bookingmicroservices.flight.flights.dtos.FlightDto;
+import io.bookingmicroservices.flight.flights.enums.FlightStatus;
 import io.bookingmicroservices.flight.flights.features.createflight.CreateFlightCommand;
 import io.bookingmicroservices.flight.flights.features.createflight.CreateFlightMongoCommand;
 import io.bookingmicroservices.flight.flights.features.createflight.CreateFlightRequestDto;
@@ -203,5 +205,31 @@ public final class Mappings {
       flightDocument.getFlightDate(),
       flightDocument.getStatus(),
       flightDocument.getPrice());
+  }
+
+  public static flight.Flight.FlightResponseDto toFlightResponseDtoGrpc(FlightDto flightDto) {
+
+        return flight.Flight.FlightResponseDto.newBuilder()
+      .setId(flightDto.id().toString())
+          .setFlightNumber(flightDto.flightNumber())
+          .setAircraftId(flightDto.aircraftId().toString())
+          .setDepartureAirportId(flightDto.departureAirportId().toString())
+          .setArriveAirportId(flightDto.arriveAirportId().toString())
+          .setDepartureDate(ProtobufUtils.toProtobufTimestamp(flightDto.departureDate()))
+          .setArriveDate(ProtobufUtils.toProtobufTimestamp(flightDto.arriveDate()))
+          .setDurationMinutes(flightDto.durationMinutes().doubleValue())
+          .setFlightDate(ProtobufUtils.toProtobufTimestamp(flightDto.flightDate()))
+          .setStatus(toFlightStatusGrpc(flightDto.status()))
+          .setPrice(flightDto.price().doubleValue())
+      .build();
+  }
+
+  public static flight.Flight.FlightStatus toFlightStatusGrpc(FlightStatus flightStatus) {
+    return switch (flightStatus) {
+      case Flying -> flight.Flight.FlightStatus.FLIGHT_STATUS_FLYING;
+      case Delay -> flight.Flight.FlightStatus.FLIGHT_STATUS_DELAY;
+      case Completed -> flight.Flight.FlightStatus.FLIGHT_STATUS_COMPLETED;
+      case Canceled -> flight.Flight.FlightStatus.FLIGHT_STATUS_CANCELED;
+    };
   }
 }

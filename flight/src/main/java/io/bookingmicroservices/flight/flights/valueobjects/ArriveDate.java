@@ -6,6 +6,6 @@ import java.time.LocalDateTime;
 
 public record ArriveDate(LocalDateTime value) {
     public ArriveDate {
-      ValidationUtils.notBeNullOrEmpty(value);
+      ValidationUtils.validLocalDateTime(value);
     }
 }

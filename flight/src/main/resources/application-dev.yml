@@ -17,3 +17,7 @@ logging:
 
 server:
   port: 8082
+
+grpc:
+  server:
+    port: 9092

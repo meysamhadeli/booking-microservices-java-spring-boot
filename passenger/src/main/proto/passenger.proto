@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package passenger;
+
+service PassengerService {
+  rpc GetById (PassengerRequestDto) returns (PassengerResponseDto);
+}
+
+message PassengerRequestDto {
+  string Id = 1;
+}
+
+message PassengerResponseDto {
+  string Id = 1;
+  string Name = 2;
+  string PassportNumber = 3;
+  PassengerType PassengerType = 4;
+  int32 Age = 5;
+}
+
+
+enum PassengerType {
+  PASSENGER_TYPE_MALE = 0;
+  PASSENGER_TYPE_FEMALE = 1;
+  PASSENGER_TYPE_BABY = 2;
+}
+
