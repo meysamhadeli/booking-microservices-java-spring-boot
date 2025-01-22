@@ -5,6 +5,6 @@ import java.time.LocalDateTime;
 
 public record DepartureDate(LocalDateTime value) {
     public DepartureDate {
-      ValidationUtils.notBeNullOrEmpty(value);
+      ValidationUtils.validLocalDateTime(value);
     }
 }

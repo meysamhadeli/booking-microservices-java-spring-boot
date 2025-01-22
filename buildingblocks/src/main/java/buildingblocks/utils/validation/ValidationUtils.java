@@ -1,6 +1,7 @@
 package buildingblocks.utils.validation;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 import org.springframework.lang.Nullable;
@@ -121,6 +122,12 @@ public class ValidationUtils {
         BigDecimal bigDecimalValue = new BigDecimal(number.toString());
         if (bigDecimalValue.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Number cannot be negative.");
+        }
+    }
+
+    public static void validLocalDateTime(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            throw new IllegalArgumentException("Date and time cannot be null.");
         }
     }
 }

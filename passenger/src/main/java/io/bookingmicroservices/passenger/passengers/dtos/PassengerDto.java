@@ -6,7 +6,7 @@ import java.util.UUID;
 public record PassengerDto(
         UUID id,
         String name,
-        String PassportNumber,
+        String passportNumber,
         PassengerType passengerType,
         int age
 ) { }

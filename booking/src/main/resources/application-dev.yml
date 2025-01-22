@@ -17,3 +17,10 @@ logging:
 
 server:
   port: 8084
+
+grpc:
+  client:
+    flight-service:
+      address: "static://localhost:9092"
+    passenger-service:
+      address: "static://localhost:9093"

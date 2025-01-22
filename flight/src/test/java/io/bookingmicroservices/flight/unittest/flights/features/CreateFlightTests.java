@@ -27,13 +27,13 @@ public class CreateFlightTests extends UnitTestBase {
   public void should_throw_exception_when_flight_is_already_exist() {
     // Arrange
     CreateFlightCommand command = CreateFlightCommandFake.generate();
-    when(flightRepository.existsFlightByFlightNumber(command.flightNumber())).thenReturn(true);
+    when(flightRepository.existsByFlightNumber(command.flightNumber())).thenReturn(true);
 
     // Act && Assert
     assertThrows(FlightAlreadyExistException.class, () -> {
       createFlightCommandHandler.handle(command);
     });
-    verify(flightRepository, times(1)).existsFlightByFlightNumber("20H50"); // Verify interaction
+    verify(flightRepository, times(1)).existsByFlightNumber("20H50"); // Verify interaction
     verify(flightRepository, times(0)).create(any(Flight.class)); // Verify that create is not called
   }
 
@@ -41,7 +41,7 @@ public class CreateFlightTests extends UnitTestBase {
   public void should_return_valid_flight_dto_when_we_create_a_flight() {
     // Arrange
     CreateFlightCommand command = CreateFlightCommandFake.generate();
-    when(flightRepository.existsFlightByFlightNumber(command.flightNumber())).thenReturn(false);
+    when(flightRepository.existsByFlightNumber(command.flightNumber())).thenReturn(false);
     when(flightRepository.create(any(Flight.class))).thenReturn(FlightFake.generate());
 
     // Act
@@ -50,7 +50,7 @@ public class CreateFlightTests extends UnitTestBase {
     // Assert
     assertNotNull(result);
     assertEquals(result.flightNumber(), command.flightNumber());
-    verify(flightRepository, times(1)).existsFlightByFlightNumber(command.flightNumber());
+    verify(flightRepository, times(1)).existsByFlightNumber(command.flightNumber());
     verify(flightRepository, times(1)).create(any(Flight.class)); // Verify that create was called
   }
 }
