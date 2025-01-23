@@ -7,9 +7,9 @@ CREATE TABLE passengers
     last_modified_by BIGINT,
     version          BIGINT,
     is_deleted       BOOLEAN NOT NULL,
+    passenger_type   VARCHAR(255),
     name             VARCHAR(255),
     passport_number  VARCHAR(255),
-    passenger_type   VARCHAR(255),
     age              INTEGER NOT NULL,
     CONSTRAINT pk_passengers PRIMARY KEY (id)
 );

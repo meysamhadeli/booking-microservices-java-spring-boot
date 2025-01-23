@@ -57,11 +57,11 @@ public class Seat extends AggregateRoot<SeatId> {
     var seat = new Seat(seatId, seatNumber, seatType, seatClass, flightId);
 
     seat.addDomainEvent(new SeatCreatedDomainEvent(
-      seat.id.value(),
-      seat.seatNumber.value(),
+      seat.id.getSeatId(),
+      seat.seatNumber.getSeatNumber(),
       seat.seatType,
       seat.seatClass,
-      seat.flightId.value(),
+      seat.flightId.getFlightId(),
       false
     ));
 
@@ -72,11 +72,11 @@ public class Seat extends AggregateRoot<SeatId> {
     this.isDeleted = true;
 
     this.addDomainEvent(new SeatReservedDomainEvent(
-      this.getId().value(),
-      this.getSeatNumber().value(),
+      this.getId().getSeatId(),
+      this.getSeatNumber().getSeatNumber(),
       this.getSeatType(),
       this.getSeatClass(),
-      this.getFlightId().value(),
+      this.getFlightId().getFlightId(),
       true
       ));
   }

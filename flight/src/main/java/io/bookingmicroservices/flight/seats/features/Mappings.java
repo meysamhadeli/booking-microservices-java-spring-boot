@@ -14,19 +14,17 @@ import io.bookingmicroservices.flight.seats.features.reserveseat.ReserveSeatComm
 import io.bookingmicroservices.flight.seats.features.reserveseat.ReserveSeatMongoCommand;
 import io.bookingmicroservices.flight.seats.features.reserveseat.ReserveSeatRequestDto;
 import io.bookingmicroservices.flight.seats.models.Seat;
-import io.bookingmicroservices.flight.seats.valueobjects.FlightId;
 import io.bookingmicroservices.flight.seats.valueobjects.SeatId;
-import io.bookingmicroservices.flight.seats.valueobjects.SeatNumber;
 
 public final class Mappings {
 
   public static SeatEntity toSeatEntity(Seat seat) {
     return new SeatEntity(
-      seat.getId().value(),
-      seat.getSeatNumber().value(),
+      seat.getId().getSeatId(),
+      seat.getSeatNumber(),
       seat.getSeatType(),
       seat.getSeatClass(),
-      seat.getFlightId().value(),
+      seat.getFlightId(),
       seat.getCreatedAt(),
       seat.getCreatedBy(),
       seat.getLastModified(),
@@ -39,10 +37,10 @@ public final class Mappings {
   public static Seat toSeatAggregate(SeatEntity seatEntity) {
     return new Seat(
       new SeatId(seatEntity.getId()),
-      new SeatNumber(seatEntity.getSeatNumber()),
+      seatEntity.getSeatNumber(),
       seatEntity.getType(),
       seatEntity.getSeatClass(),
-      new FlightId(seatEntity.getFlightId()),
+      seatEntity.getFlightId(),
       seatEntity.getCreatedAt(),
       seatEntity.getCreatedBy(),
       seatEntity.getLastModified(),
@@ -55,10 +53,10 @@ public final class Mappings {
   public static SeatDto toSeatDto(SeatEntity seatEntity) {
     return new SeatDto(
       seatEntity.getId(),
-      seatEntity.getSeatNumber(),
+      seatEntity.getSeatNumber().getSeatNumber(),
       seatEntity.getType(),
       seatEntity.getSeatClass(),
-      seatEntity.getFlightId());
+      seatEntity.getFlightId().getFlightId());
   }
 
   public static SeatDto toSeatDto(SeatDocument seatDocument) {
@@ -115,10 +113,10 @@ public final class Mappings {
   public static SeatDocument toSeatDocument(SeatEntity seatEntity) {
     return new SeatDocument(
       seatEntity.getId(),
-      seatEntity.getSeatNumber(),
+      seatEntity.getSeatNumber().getSeatNumber(),
       seatEntity.getType(),
       seatEntity.getSeatClass(),
-      seatEntity.getFlightId(),
+      seatEntity.getFlightId().getFlightId(),
       seatEntity.isDeleted()
     );
   }

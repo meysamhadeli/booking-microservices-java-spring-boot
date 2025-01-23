@@ -13,10 +13,10 @@ public final class Mappings {
 
   public static AirportEntity toAirportEntity(Airport airport) {
     return new AirportEntity(
-      airport.getId().value(),
-      airport.getName().value(),
-      airport.getCode().value(),
-      airport.getAddress().value(),
+      airport.getId().getAirportId(),
+      airport.getName(),
+      airport.getCode(),
+      airport.getAddress(),
       airport.getCreatedAt(),
       airport.getCreatedBy(),
       airport.getLastModified(),
@@ -30,9 +30,9 @@ public final class Mappings {
   public static AirportDto toAirportDto(AirportEntity airportEntity) {
     return new AirportDto(
       airportEntity.getId(),
-      airportEntity.getName(),
-      airportEntity.getCode(),
-      airportEntity.getAddress());
+      airportEntity.getName().getName(),
+      airportEntity.getCode().getCode(),
+      airportEntity.getAddress().getAddress());
   }
 
   public static CreateAirportCommand toCreateAirportCommand(CreateAirportRequestDto createAirportRequestDto) {
@@ -57,9 +57,9 @@ public final class Mappings {
   public static AirportDocument toAirportDocument(AirportEntity airportEntity) {
     return new AirportDocument(
       airportEntity.getId(),
-      airportEntity.getName(),
-      airportEntity.getCode(),
-      airportEntity.getAddress(),
+      airportEntity.getName().getName(),
+      airportEntity.getCode().getCode(),
+      airportEntity.getAddress().getAddress(),
       airportEntity.isDeleted()
     );
   }

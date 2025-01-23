@@ -1,10 +1,24 @@
 package io.bookingmicroservices.flight.aircrafts.valueobjects;
 
 import buildingblocks.utils.validation.ValidationUtils;
+import jakarta.persistence.Embeddable;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record Model(String value) {
-  public Model {
+
+@Embeddable
+@EqualsAndHashCode
+@NoArgsConstructor // Required by JPA
+@Getter
+public class Model {
+  private String model;
+
+  public Model(String value) {
     ValidationUtils.notBeNullOrEmpty(value);
+
+    this.model = value;
   }
 }
+
 

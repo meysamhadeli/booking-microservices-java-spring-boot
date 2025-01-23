@@ -48,11 +48,11 @@ public class Passenger extends AggregateRoot<PassengerId> {
         var passenger = new Passenger(passengerId, name, passportNumber, passengerType, age);
 
         passenger.addDomainEvent(new PassengerCreatedDomainEvent(
-                passenger.id.value(),
-                passenger.name.value(),
-                passenger.passportNumber.value(),
+                passenger.id.getPassengerId(),
+                passenger.name.getName(),
+                passenger.passportNumber.getPassportNumber(),
                 passenger.passengerType,
-                passenger.age.value(),
+                passenger.age.getAge(),
                 false
         ));
 

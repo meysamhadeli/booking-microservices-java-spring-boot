@@ -6,10 +6,6 @@ import io.bookingmicroservices.flight.aircrafts.features.createaircraft.CreateAi
 import io.bookingmicroservices.flight.aircrafts.features.createaircraft.CreateAircraftMongoCommand;
 import io.bookingmicroservices.flight.aircrafts.features.createaircraft.CreateAircraftRequestDto;
 import io.bookingmicroservices.flight.aircrafts.models.Aircraft;
-import io.bookingmicroservices.flight.aircrafts.valueobjects.AircraftId;
-import io.bookingmicroservices.flight.aircrafts.valueobjects.ManufacturingYear;
-import io.bookingmicroservices.flight.aircrafts.valueobjects.Model;
-import io.bookingmicroservices.flight.aircrafts.valueobjects.Name;
 import io.bookingmicroservices.flight.data.jpa.entities.AircraftEntity;
 import io.bookingmicroservices.flight.data.mongo.documents.AircraftDocument;
 
@@ -17,10 +13,10 @@ public final class Mappings {
 
   public static AircraftEntity toAircraftEntity(Aircraft aircraft) {
     return new AircraftEntity(
-      aircraft.getId().value(),
-      aircraft.getName().value(),
-      aircraft.getModel().value(),
-      aircraft.getManufacturingYear().value(),
+      aircraft.getId().getAircraftId(),
+      aircraft.getName(),
+      aircraft.getModel(),
+      aircraft.getManufacturingYear(),
       aircraft.getCreatedAt(),
       aircraft.getCreatedBy(),
       aircraft.getLastModified(),
@@ -34,9 +30,9 @@ public final class Mappings {
   public static AircraftDto toAircraftDto(AircraftEntity aircraftEntity) {
     return new AircraftDto(
       aircraftEntity.getId(),
-      aircraftEntity.getName(),
-      aircraftEntity.getModel(),
-      aircraftEntity.getManufacturingYear());
+      aircraftEntity.getName().getName(),
+      aircraftEntity.getModel().getModel(),
+      aircraftEntity.getManufacturingYear().getManufacturingYear());
   }
 
   public static CreateAircraftCommand toCreateAircraftCommand(CreateAircraftRequestDto createAircraftRequestDto) {
@@ -61,9 +57,9 @@ public final class Mappings {
   public static AircraftDocument toAircraftDocument(AircraftEntity aircraftEntity) {
     return new AircraftDocument(
       aircraftEntity.getId(),
-      aircraftEntity.getName(),
-      aircraftEntity.getModel(),
-      aircraftEntity.getManufacturingYear(),
+      aircraftEntity.getName().getName(),
+      aircraftEntity.getModel().getModel(),
+      aircraftEntity.getManufacturingYear().getManufacturingYear(),
       aircraftEntity.isDeleted()
     );
   }

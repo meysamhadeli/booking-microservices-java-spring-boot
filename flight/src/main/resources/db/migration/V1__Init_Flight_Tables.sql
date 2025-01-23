@@ -37,16 +37,16 @@ CREATE TABLE flights
   last_modified_by     BIGINT,
   version              BIGINT,
   is_deleted           BOOLEAN NOT NULL,
+  status               VARCHAR(255),
   flight_number        VARCHAR(255),
   departure_date       TIMESTAMP WITHOUT TIME ZONE,
   arrive_date          TIMESTAMP WITHOUT TIME ZONE,
   duration_minutes     DECIMAL,
   flight_date          TIMESTAMP WITHOUT TIME ZONE,
-  status               VARCHAR(255),
   price                DECIMAL,
+  aircraft_id          UUID,
   departure_airport_id UUID,
   arrive_airport_id    UUID,
-  aircraft_id          UUID,
   CONSTRAINT pk_flights PRIMARY KEY (id)
 );
 
@@ -72,21 +72,9 @@ CREATE TABLE seats
   last_modified_by BIGINT,
   version          BIGINT,
   is_deleted       BOOLEAN NOT NULL,
-  seat_number      VARCHAR(255),
   type             VARCHAR(255),
   seat_class       VARCHAR(255),
+  seat_number      VARCHAR(255),
   flight_id        UUID,
   CONSTRAINT pk_seats PRIMARY KEY (id)
 );
-
-ALTER TABLE flights
-  ADD CONSTRAINT FK_FLIGHTS_ON_AIRCRAFT FOREIGN KEY (aircraft_id) REFERENCES aircrafts (id);
-
-ALTER TABLE flights
-  ADD CONSTRAINT FK_FLIGHTS_ON_ARRIVE_AIRPORT FOREIGN KEY (arrive_airport_id) REFERENCES airports (id);
-
-ALTER TABLE flights
-  ADD CONSTRAINT FK_FLIGHTS_ON_DEPARTURE_AIRPORT FOREIGN KEY (departure_airport_id) REFERENCES airports (id);
-
-ALTER TABLE seats
-  ADD CONSTRAINT FK_SEATS_ON_FLIGHT FOREIGN KEY (flight_id) REFERENCES flights (id);

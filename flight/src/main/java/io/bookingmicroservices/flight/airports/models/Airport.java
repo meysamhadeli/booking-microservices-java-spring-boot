@@ -44,10 +44,10 @@ public class Airport extends AggregateRoot<AirportId> {
     var airport = new Airport(id, name, code, address);
 
     airport.addDomainEvent(new AirportCreatedDomainEvent(
-      airport.id.value(),
-      airport.name.value(),
-      airport.code.value(),
-      airport.address.value(),
+      airport.id.getAirportId(),
+      airport.name.getName(),
+      airport.code.getCode(),
+      airport.address.getAddress(),
       false
     ));
 

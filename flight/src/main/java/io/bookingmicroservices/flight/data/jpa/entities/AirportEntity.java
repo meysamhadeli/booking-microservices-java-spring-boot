@@ -1,6 +1,10 @@
 package io.bookingmicroservices.flight.data.jpa.entities;
 
 import buildingblocks.core.model.BaseEntity;
+import io.bookingmicroservices.flight.airports.valueobjects.Address;
+import io.bookingmicroservices.flight.airports.valueobjects.Code;
+import io.bookingmicroservices.flight.airports.valueobjects.Name;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Table;
@@ -19,11 +23,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 public class AirportEntity extends BaseEntity<UUID> {
-  private String name;
-  private String code;
-  private String address;
+  @Embedded
+  private Name name;
+  @Embedded
+  private Code code;
+  @Embedded
+  private Address address;
 
-  public AirportEntity(UUID id, String name, String code, String address, LocalDateTime createdAt, Long createdBy, LocalDateTime lastModified, Long lastModifiedBy, Long version, boolean isDeleted) {
+  public AirportEntity(UUID id, Name name, Code code, Address address, LocalDateTime createdAt, Long createdBy, LocalDateTime lastModified, Long lastModifiedBy, Long version, boolean isDeleted) {
     this.id = id;
     this.name = name;
     this.code = code;
@@ -36,7 +43,7 @@ public class AirportEntity extends BaseEntity<UUID> {
     this.isDeleted = isDeleted;
   }
 
-  public AirportEntity(UUID id, String name, String code, String address) {
+  public AirportEntity(UUID id, Name name, Code code, Address address) {
     this.id = id;
     this.name = name;
     this.code = code;

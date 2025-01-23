@@ -45,10 +45,10 @@ public class Aircraft extends AggregateRoot<AircraftId> {
     var aircraft = new Aircraft(id, name, model, manufacturingYear);
 
     aircraft.addDomainEvent(new AircraftCreatedDomainEvent(
-      aircraft.id.value(),
-      aircraft.name.value(),
-      aircraft.model.value(),
-      aircraft.manufacturingYear.value(),
+      aircraft.id.getAircraftId(),
+      aircraft.name.getName(),
+      aircraft.model.getModel(),
+      aircraft.manufacturingYear.getManufacturingYear(),
       false
     ));
 
