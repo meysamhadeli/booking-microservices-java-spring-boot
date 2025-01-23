@@ -15,7 +15,7 @@ public interface AircraftRepository extends JpaRepository<AircraftEntity, UUID>,
 }
 
 interface AircraftRepositoryCustom {
-  Aircraft create(Aircraft airport);
+  AircraftEntity create(AircraftEntity airport);
 }
 
 class AircraftRepositoryCustomImpl implements AircraftRepositoryCustom {
@@ -27,13 +27,12 @@ class AircraftRepositoryCustomImpl implements AircraftRepositoryCustom {
   }
 
   @Override
-  public Aircraft create(Aircraft aircraft) {
-    AircraftEntity entity = Mappings.toAircraftEntity(aircraft);
+  public AircraftEntity create(AircraftEntity aircraft) {
 
-    entityManager.persist(entity);
+    entityManager.persist(aircraft);
     entityManager.flush();
 
-    return Mappings.toAircraftAggregate(entity);
+    return aircraft;
   }
 }
 

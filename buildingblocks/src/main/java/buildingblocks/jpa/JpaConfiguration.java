@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateSettings;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -75,11 +76,5 @@ public class JpaConfiguration {
     @Bean
     public AuditorAware<Long> auditorAware() {
         return new JpaAuditorAwareImpl();
-    }
-
-    @Bean
-    public HibernateGlobalFilter hibernateFilterConfigurer(EntityManagerFactory entityManagerFactory) {
-        SessionFactory sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
-        return new HibernateGlobalFilter(sessionFactory);
     }
 }

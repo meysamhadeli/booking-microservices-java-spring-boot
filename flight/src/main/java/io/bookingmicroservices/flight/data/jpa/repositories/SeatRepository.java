@@ -12,12 +12,12 @@ import java.util.UUID;
 @Repository
 public interface SeatRepository extends JpaRepository<SeatEntity, UUID>, SeatRepositoryCustom {
   boolean existsById(UUID id);
-  Seat findSeatByFlightIdAndSeatNumberAndIsDeletedFalse(UUID flightId, String seatNumber);
+  SeatEntity findSeatByFlightIdAndSeatNumberAndIsDeletedFalse(UUID flightId, String seatNumber);
 }
 
 interface SeatRepositoryCustom {
-  Seat create(Seat seat);
-  Seat update(Seat seat);
+  SeatEntity create(SeatEntity seat);
+  SeatEntity update(SeatEntity seat);
 }
 
 class SeatRepositoryCustomImpl implements SeatRepositoryCustom {
@@ -29,24 +29,22 @@ class SeatRepositoryCustomImpl implements SeatRepositoryCustom {
   }
 
   @Override
-  public Seat create(Seat seat) {
-    SeatEntity entity = Mappings.toSeatEntity(seat);
+  public SeatEntity create(SeatEntity seat) {
 
-    entityManager.persist(entity);
+    entityManager.persist(seat);
     entityManager.flush();
 
-    return Mappings.toSeatAggregate(entity);
+    return seat;
   }
 
 
   @Override
-  public Seat update(Seat seat) {
-    SeatEntity entity = Mappings.toSeatEntity(seat);
+  public SeatEntity update(SeatEntity seat) {
 
-    entityManager.merge(entity);
+    entityManager.merge(seat);
     entityManager.flush();
 
-    return Mappings.toSeatAggregate(entity);
+    return seat;
   }
 }
 

@@ -17,6 +17,8 @@ public class BookingId {
 
     public BookingId(UUID value) {
         ValidationUtils.notBeNullOrEmpty(value);
+
+        this.bookingId = value;
     }
 }
 

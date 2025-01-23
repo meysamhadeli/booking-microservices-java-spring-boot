@@ -1,18 +1,20 @@
 package buildingblocks.jpa;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.hibernate.Filter;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class HibernateGlobalFilter {
-    private final SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    public HibernateGlobalFilter(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
+    @PostConstruct
     public void enableSoftDeleteFilter() {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("softDeleteFilter");
         filter.setParameter("isDeleted", false);
     }

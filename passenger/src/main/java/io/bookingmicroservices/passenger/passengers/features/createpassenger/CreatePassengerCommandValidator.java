@@ -18,7 +18,7 @@ public class CreatePassengerCommandValidator implements Validator {
     public void validate(Object target, Errors errors) {
         CreatePassengerCommand command = (CreatePassengerCommand) target;
 
-        if (command.id() == null) {
+        if (command == null) {
             errors.rejectValue("id", "id.required", "Passenger ID is required");
         }
 
@@ -26,7 +26,7 @@ public class CreatePassengerCommandValidator implements Validator {
             errors.rejectValue("name", "name.required", "Name is required");
         }
 
-        if (command.age() > 0) {
+        if (command.age() <= 0) {
             errors.rejectValue("age", "age.invalid", "Age must be greater than 0");
         }
 

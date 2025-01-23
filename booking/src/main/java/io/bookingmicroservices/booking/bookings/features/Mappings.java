@@ -17,22 +17,19 @@ public final class Mappings {
         return new BookingEntity(
                 booking.getId().getBookingId(),
                 booking.getPassengerInfo(),
-                booking.getTrip()
+                booking.getTrip(),
+                booking.getCreatedAt(),
+                booking.getCreatedBy(),
+                booking.getLastModified(),
+                booking.getLastModifiedBy(),
+                booking.getVersion(),
+                booking.isDeleted()
         );
     }
 
-    public static Booking toBookingAggregate(BookingEntity bookingEntity) {
-        return new Booking(
-                new BookingId(bookingEntity.getId()),
-                bookingEntity.getPassengerInfo(),
-                bookingEntity.getTrip(),
-                bookingEntity.isDeleted()
-        );
-    }
-
-    public static BookingDto toBookingDto(Booking booking) {
+    public static BookingDto toBookingDto(BookingEntity booking) {
         return new BookingDto(
-                booking.getId().getBookingId(),
+                booking.getId(),
                 booking.getPassengerInfo().getName(),
                 booking.getTrip().getFlightNumber(),
                 booking.getTrip().getAircraftId(),

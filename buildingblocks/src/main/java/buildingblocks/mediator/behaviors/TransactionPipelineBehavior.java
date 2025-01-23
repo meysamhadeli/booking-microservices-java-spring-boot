@@ -47,6 +47,7 @@ public class TransactionPipelineBehavior<TRequest extends IRequest<TResponse>, T
                 return response;
             } catch (Exception ex) {
                 status.setRollbackOnly();
+                this.eventDispatcher.clearDomainEvents();
                 logger.error("Transaction is rolled back.", ex);
                 throw ex;
             }

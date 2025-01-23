@@ -34,7 +34,13 @@ public final class Mappings {
       flight.getPrice().value(),
       flight.getArriveDate().value(),
       flight.getDepartureDate().value(),
-      flight.getFlightDate().value()
+      flight.getFlightDate().value(),
+      flight.getCreatedAt(),
+      flight.getCreatedBy(),
+      flight.getLastModified(),
+      flight.getLastModifiedBy(),
+      flight.getVersion(),
+      flight.isDeleted()
     );
   }
 
@@ -51,6 +57,11 @@ public final class Mappings {
       new ArriveDate(flightEntity.getArriveDate()),
       new DepartureDate(flightEntity.getDepartureDate()),
       new FlightDate(flightEntity.getFlightDate()),
+      flightEntity.getCreatedAt(),
+      flightEntity.getCreatedBy(),
+      flightEntity.getLastModified(),
+      flightEntity.getLastModifiedBy(),
+      flightEntity.getVersion(),
       flightEntity.isDeleted()
     );
   }
@@ -85,24 +96,6 @@ public final class Mappings {
       updateFlightRequestDto.status(),
       updateFlightRequestDto.price(),
       updateFlightRequestDto.isDeleted()
-    );
-  }
-
-
-  public static Flight toFlightAggregate(CreateFlightCommand createFlightCommand) {
-   return Flight.create(
-      new FlightId(createFlightCommand.id()),
-      new FlightNumber(createFlightCommand.flightNumber()),
-      new AircraftId(createFlightCommand.aircraftId()),
-      new AirportId(createFlightCommand.departureAirportId()),
-      new DepartureDate(createFlightCommand.departureDate()),
-      new ArriveDate(createFlightCommand.arriveDate()),
-      new AirportId(createFlightCommand.arriveAirportId()),
-      new DurationMinutes(createFlightCommand.durationMinutes()),
-      new FlightDate(createFlightCommand.flightDate()),
-     createFlightCommand.status(),
-      new Price(createFlightCommand.price()),
-      false
     );
   }
 
@@ -176,19 +169,19 @@ public final class Mappings {
     );
   }
 
-  public static FlightDto toFlightDto(Flight flight) {
+  public static FlightDto toFlightDto(FlightEntity flightEntity) {
     return new FlightDto(
-      flight.getId().value(),
-      flight.getFlightNumber().value(),
-      flight.getAircraftId().value(),
-      flight.getDepartureAirportId().value(),
-      flight.getDepartureDate().value(),
-      flight.getArriveDate().value(),
-      flight.getArriveAirportId().value(),
-      flight.getDurationMinutes().value(),
-      flight.getFlightDate().value(),
-      flight.getStatus(),
-      flight.getPrice().value());
+      flightEntity.getId(),
+      flightEntity.getFlightNumber(),
+      flightEntity.getAircraftId(),
+      flightEntity.getDepartureAirportId(),
+      flightEntity.getDepartureDate(),
+      flightEntity.getArriveDate(),
+      flightEntity.getArriveAirportId(),
+      flightEntity.getDurationMinutes(),
+      flightEntity.getFlightDate(),
+      flightEntity.getStatus(),
+      flightEntity.getPrice());
   }
 
 

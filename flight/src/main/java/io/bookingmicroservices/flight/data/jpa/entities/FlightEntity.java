@@ -56,8 +56,29 @@ public class FlightEntity extends BaseEntity<UUID> {
   @JoinColumn(name = "aircraft_id", insertable = false, updatable = false, nullable = false)
   private AircraftEntity aircraft;
 
+  public FlightEntity(UUID id, String flightNumber, UUID aircraftId, UUID departureAirportId, UUID arriveAirportId, BigDecimal durationMinutes, FlightStatus status, BigDecimal price, LocalDateTime arriveDate, LocalDateTime departureDate, LocalDateTime flightDate,
+                      LocalDateTime createdAt, Long createdBy, LocalDateTime lastModified, Long lastModifiedBy, Long version, boolean isDeleted) {
+    this.id = id;
+    this.flightNumber = flightNumber;
+    this.aircraftId = aircraftId;
+    this.departureAirportId = departureAirportId;
+    this.arriveAirportId = arriveAirportId;
+    this.durationMinutes = durationMinutes;
+    this.status = status;
+    this.price = price;
+    this.arriveDate = arriveDate;
+    this.departureDate = departureDate;
+    this.flightDate = flightDate;
+    this.createdAt = createdAt;
+    this.createdBy = createdBy;
+    this.lastModified = lastModified;
+    this.lastModifiedBy = lastModifiedBy;
+    this.version = version;
+    this.isDeleted = isDeleted;
+  }
+
   // Constructor that uses only the ID types
-  public FlightEntity(UUID id, String flightNumber, UUID aircraftId, UUID departureAirportId, UUID arriveAirportId, BigDecimal durationMinutes, FlightStatus status, BigDecimal price, LocalDateTime arriveDate, LocalDateTime departureDate, LocalDateTime flightDate) {
+  public FlightEntity(UUID id, String flightNumber, UUID aircraftId, UUID departureAirportId, UUID arriveAirportId, BigDecimal durationMinutes, FlightStatus status, BigDecimal price, LocalDateTime arriveDate, LocalDateTime departureDate, LocalDateTime flightDate){
     this.id = id;
     this.flightNumber = flightNumber;
     this.aircraftId = aircraftId;
@@ -70,4 +91,5 @@ public class FlightEntity extends BaseEntity<UUID> {
     this.departureDate = departureDate;
     this.flightDate = flightDate;
   }
+
 }

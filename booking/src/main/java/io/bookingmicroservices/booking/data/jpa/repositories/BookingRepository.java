@@ -15,7 +15,7 @@ public interface BookingRepository extends JpaRepository<BookingEntity, UUID>, B
 }
 
 interface BookingRepositoryCustom {
-    Booking create(Booking booking);
+    BookingEntity create(BookingEntity booking);
 }
 
 class BookingRepositoryCustomImpl implements BookingRepositoryCustom {
@@ -27,13 +27,12 @@ class BookingRepositoryCustomImpl implements BookingRepositoryCustom {
     }
 
     @Override
-    public Booking create(Booking booking) {
-        BookingEntity entity = Mappings.toBookingEntity(booking);
+    public BookingEntity create(BookingEntity booking) {
 
-        entityManager.persist(entity);
+        entityManager.persist(booking);
         entityManager.flush();
 
-        return Mappings.toBookingAggregate(entity);
+        return booking;
     }
 }
 

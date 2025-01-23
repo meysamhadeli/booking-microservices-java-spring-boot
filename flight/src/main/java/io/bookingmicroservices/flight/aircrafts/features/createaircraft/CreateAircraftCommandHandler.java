@@ -5,6 +5,11 @@ import io.bookingmicroservices.flight.aircrafts.dtos.AircraftDto;
 import io.bookingmicroservices.flight.aircrafts.exceptions.AircraftAlreadyExistException;
 import io.bookingmicroservices.flight.aircrafts.features.Mappings;
 import io.bookingmicroservices.flight.aircrafts.models.Aircraft;
+import io.bookingmicroservices.flight.aircrafts.valueobjects.AircraftId;
+import io.bookingmicroservices.flight.aircrafts.valueobjects.ManufacturingYear;
+import io.bookingmicroservices.flight.aircrafts.valueobjects.Model;
+import io.bookingmicroservices.flight.aircrafts.valueobjects.Name;
+import io.bookingmicroservices.flight.data.jpa.entities.AircraftEntity;
 import io.bookingmicroservices.flight.data.jpa.repositories.AircraftRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,14 +25,21 @@ public class CreateAircraftCommandHandler implements ICommandHandler<CreateAircr
   @Override
   public AircraftDto handle(CreateAircraftCommand command) {
 
-    boolean exists = aircraftRepository.existsByModel(command.model());
-    if (exists) {
+    boolean existAircraft = aircraftRepository.existsByModel(command.model());
+    if (existAircraft) {
       throw new AircraftAlreadyExistException();
     }
 
-    Aircraft aircraft = Mappings.toAircraftAggregate(command);
+    Aircraft aircraft = Aircraft.create(
+      new AircraftId(command.id()),
+      new Name(command.name()),
+      new Model(command.model()),
+      new ManufacturingYear(command.manufacturingYear())
+    );
 
-    Aircraft result = aircraftRepository.create(aircraft);
-    return Mappings.toAircraftDto(result);
+    AircraftEntity aircraftEntity = Mappings.toAircraftEntity(aircraft);
+
+    AircraftEntity aircraftCreated = aircraftRepository.create(aircraftEntity);
+    return Mappings.toAircraftDto(aircraftCreated);
   }
 }

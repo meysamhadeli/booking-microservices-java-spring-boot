@@ -1,12 +1,9 @@
 package io.bookingmicroservices.flight.seats.features;
 
-import buildingblocks.utils.protobuf.ProtobufUtils;
 import com.github.f4b6a3.uuid.UuidCreator;
 import flight.Flight;
 import io.bookingmicroservices.flight.data.jpa.entities.SeatEntity;
 import io.bookingmicroservices.flight.data.mongo.documents.SeatDocument;
-import io.bookingmicroservices.flight.flights.dtos.FlightDto;
-import io.bookingmicroservices.flight.flights.enums.FlightStatus;
 import io.bookingmicroservices.flight.seats.dtos.SeatDto;
 import io.bookingmicroservices.flight.seats.enums.SeatClass;
 import io.bookingmicroservices.flight.seats.enums.SeatType;
@@ -29,7 +26,13 @@ public final class Mappings {
       seat.getSeatNumber().value(),
       seat.getSeatType(),
       seat.getSeatClass(),
-      seat.getFlightId().value()
+      seat.getFlightId().value(),
+      seat.getCreatedAt(),
+      seat.getCreatedBy(),
+      seat.getLastModified(),
+      seat.getLastModifiedBy(),
+      seat.getVersion(),
+      seat.isDeleted()
     );
   }
 
@@ -40,28 +43,22 @@ public final class Mappings {
       seatEntity.getType(),
       seatEntity.getSeatClass(),
       new FlightId(seatEntity.getFlightId()),
+      seatEntity.getCreatedAt(),
+      seatEntity.getCreatedBy(),
+      seatEntity.getLastModified(),
+      seatEntity.getLastModifiedBy(),
+      seatEntity.getVersion(),
       seatEntity.isDeleted()
     );
   }
 
-  public static Seat toSeatAggregate(CreateSeatCommand createSeatCommand) {
-    return Seat.create(
-      new SeatId(createSeatCommand.id()),
-      new SeatNumber(createSeatCommand.seatNumber()),
-      createSeatCommand.seatType(),
-      createSeatCommand.seatClass(),
-      new FlightId(createSeatCommand.flightId()),
-      false
-    );
-  }
-
-  public static SeatDto toSeatDto(Seat seat) {
+  public static SeatDto toSeatDto(SeatEntity seatEntity) {
     return new SeatDto(
-      seat.getId().value(),
-      seat.getSeatNumber().value(),
-      seat.getSeatType(),
-      seat.getSeatClass(),
-      seat.getFlightId().value());
+      seatEntity.getId(),
+      seatEntity.getSeatNumber(),
+      seatEntity.getType(),
+      seatEntity.getSeatClass(),
+      seatEntity.getFlightId());
   }
 
   public static SeatDto toSeatDto(SeatDocument seatDocument) {

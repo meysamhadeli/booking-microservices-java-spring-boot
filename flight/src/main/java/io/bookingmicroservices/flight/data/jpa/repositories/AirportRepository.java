@@ -16,7 +16,7 @@ public interface AirportRepository extends JpaRepository<AirportEntity, UUID>, A
 
 
 interface AirportRepositoryCustom {
-  Airport create(Airport airport);
+  AirportEntity create(AirportEntity airport);
 }
 
 class AirportRepositoryCustomImpl implements AirportRepositoryCustom {
@@ -28,12 +28,11 @@ class AirportRepositoryCustomImpl implements AirportRepositoryCustom {
   }
 
   @Override
-  public Airport create(Airport airport) {
-    AirportEntity entity = Mappings.toAirportEntity(airport);
+  public AirportEntity create(AirportEntity airport) {
 
-    entityManager.persist(entity);
+    entityManager.persist(airport);
     entityManager.flush();
 
-    return Mappings.toAirportAggregate(entity);
+    return airport;
   }
 }
