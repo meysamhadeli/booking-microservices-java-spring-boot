@@ -2,6 +2,9 @@ package io.bookingmicroservices.passenger.data.jpa.entities;
 
 import buildingblocks.core.model.BaseEntity;
 import io.bookingmicroservices.passenger.passengers.enums.PassengerType;
+import io.bookingmicroservices.passenger.passengers.valueobjects.Age;
+import io.bookingmicroservices.passenger.passengers.valueobjects.Name;
+import io.bookingmicroservices.passenger.passengers.valueobjects.PassportNumber;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,13 +23,16 @@ import java.util.UUID;
 @Getter
 public class PassengerEntity extends BaseEntity<UUID> {
 
-    private String name;
-    private String passportNumber;
+    @Embedded
+    private Name name;
+    @Embedded
+    private PassportNumber passportNumber;
     @Enumerated(EnumType.STRING)
     private PassengerType passengerType;
-    private int age;
+    @Embedded
+    private Age age;
 
-    public PassengerEntity(UUID id, String name, String passportNumber, PassengerType passengerType, int age) {
+    public PassengerEntity(UUID id, Name name, PassportNumber passportNumber, PassengerType passengerType, Age age) {
         this.id = id;
         this.name = name;
         this.passportNumber = passportNumber;
@@ -34,7 +40,7 @@ public class PassengerEntity extends BaseEntity<UUID> {
         this.age = age;
     }
 
-    public PassengerEntity(UUID id, String name, String passportNumber, PassengerType passengerType, int age, LocalDateTime createdAt, Long createdBy, LocalDateTime lastModified, Long lastModifiedBy, Long version, boolean isDeleted) {
+    public PassengerEntity(UUID id, Name name, PassportNumber passportNumber, PassengerType passengerType, Age age, LocalDateTime createdAt, Long createdBy, LocalDateTime lastModified, Long lastModifiedBy, Long version, boolean isDeleted) {
         this.id = id;
         this.name = name;
         this.passportNumber = passportNumber;

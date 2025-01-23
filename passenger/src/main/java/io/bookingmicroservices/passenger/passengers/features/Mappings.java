@@ -9,20 +9,16 @@ import io.bookingmicroservices.passenger.passengers.features.createpassenger.Cre
 import io.bookingmicroservices.passenger.passengers.features.createpassenger.CreatePassengerMongoCommand;
 import io.bookingmicroservices.passenger.passengers.features.createpassenger.CreatePassengerRequestDto;
 import io.bookingmicroservices.passenger.passengers.models.Passenger;
-import io.bookingmicroservices.passenger.passengers.valueobjects.Age;
-import io.bookingmicroservices.passenger.passengers.valueobjects.Name;
-import io.bookingmicroservices.passenger.passengers.valueobjects.PassengerId;
-import io.bookingmicroservices.passenger.passengers.valueobjects.PassportNumber;
 
 public final class Mappings {
 
     public static PassengerEntity toPassengerEntity(Passenger passenger) {
         return new PassengerEntity(
-                passenger.getId().value(),
-                passenger.getName().value(),
-                passenger.getPassportNumber().value(),
+                passenger.getId().getPassengerId(),
+                passenger.getName(),
+                passenger.getPassportNumber(),
                 passenger.getPassengerType(),
-                passenger.getAge().value(),
+                passenger.getAge(),
                 passenger.getCreatedAt(),
                 passenger.getCreatedBy(),
                 passenger.getLastModified(),
@@ -35,10 +31,10 @@ public final class Mappings {
     public static PassengerDto toPassengerDto(PassengerEntity passengerEntity) {
         return new PassengerDto(
                 passengerEntity.getId(),
-                passengerEntity.getName(),
-                passengerEntity.getPassportNumber(),
+                passengerEntity.getName().getName(),
+                passengerEntity.getPassportNumber().getPassportNumber(),
                 passengerEntity.getPassengerType(),
-                passengerEntity.getAge());
+                passengerEntity.getAge().getAge());
     }
 
 

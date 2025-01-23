@@ -1,62 +1,60 @@
 package io.bookingmicroservices.flight.data.jpa.entities;
 
 import buildingblocks.core.model.BaseEntity;
+import io.bookingmicroservices.flight.aircrafts.valueobjects.AircraftId;
+import io.bookingmicroservices.flight.airports.valueobjects.AirportId;
 import io.bookingmicroservices.flight.flights.enums.FlightStatus;
+import io.bookingmicroservices.flight.flights.valueobjects.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "flights")
 @EntityListeners(AuditingEntityListener.class)
-@NoArgsConstructor // Required by JPA
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 public class FlightEntity extends BaseEntity<UUID> {
 
-  private String flightNumber;
+  @Embedded
+  private FlightNumber flightNumber;
 
-  private LocalDateTime departureDate;
+  @Embedded
+  private DepartureDate departureDate;
 
-  private LocalDateTime arriveDate;
+  @Embedded
+  private ArriveDate arriveDate;
 
-  private BigDecimal durationMinutes;
+  @Embedded
+  private DurationMinutes durationMinutes;
 
-  private LocalDateTime flightDate;
+  @Embedded
+  private FlightDate flightDate;
 
   @Enumerated(EnumType.STRING)
   private FlightStatus status;
 
-  private BigDecimal price;
+  @Embedded
+  private Price price;
 
-  @Column(name = "departure_airport_id")
-  private UUID departureAirportId;
+  @Embedded
+  @AttributeOverride(name = "aircraftId", column = @Column(name = "aircraft_id"))
+  private AircraftId aircraftId;
 
-  @Column(name = "arrive_airport_id")
-  private UUID arriveAirportId;
+  @Embedded
+  @AttributeOverride(name = "airportId", column = @Column(name = "departure_airport_id"))
+  private AirportId departureAirportId;
 
-  @Column(name = "aircraft_id")
-  private UUID aircraftId;
+  @Embedded
+  @AttributeOverride(name = "airportId", column = @Column(name = "arrive_airport_id"))
+  private AirportId arriveAirportId;
 
-  // JPA will handle the relationship based on these IDs
-  @ManyToOne
-  @JoinColumn(name = "departure_airport_id", insertable = false, updatable = false, nullable = false)
-  private AirportEntity departureAirport;
-
-  @ManyToOne
-  @JoinColumn(name = "arrive_airport_id", insertable = false, updatable = false, nullable = false)
-  private AirportEntity arriveAirport;
-
-  @ManyToOne
-  @JoinColumn(name = "aircraft_id", insertable = false, updatable = false, nullable = false)
-  private AircraftEntity aircraft;
-
-  public FlightEntity(UUID id, String flightNumber, UUID aircraftId, UUID departureAirportId, UUID arriveAirportId, BigDecimal durationMinutes, FlightStatus status, BigDecimal price, LocalDateTime arriveDate, LocalDateTime departureDate, LocalDateTime flightDate,
+  public FlightEntity(UUID id, FlightNumber flightNumber, AircraftId aircraftId, AirportId departureAirportId, AirportId arriveAirportId, DurationMinutes durationMinutes, FlightStatus status, Price price, ArriveDate arriveDate, DepartureDate departureDate, FlightDate flightDate,
                       LocalDateTime createdAt, Long createdBy, LocalDateTime lastModified, Long lastModifiedBy, Long version, boolean isDeleted) {
     this.id = id;
     this.flightNumber = flightNumber;
@@ -77,8 +75,7 @@ public class FlightEntity extends BaseEntity<UUID> {
     this.isDeleted = isDeleted;
   }
 
-  // Constructor that uses only the ID types
-  public FlightEntity(UUID id, String flightNumber, UUID aircraftId, UUID departureAirportId, UUID arriveAirportId, BigDecimal durationMinutes, FlightStatus status, BigDecimal price, LocalDateTime arriveDate, LocalDateTime departureDate, LocalDateTime flightDate){
+  public FlightEntity(UUID id, FlightNumber flightNumber, AircraftId aircraftId, AirportId departureAirportId, AirportId arriveAirportId, DurationMinutes durationMinutes, FlightStatus status, Price price, ArriveDate arriveDate, DepartureDate departureDate, FlightDate flightDate) {
     this.id = id;
     this.flightNumber = flightNumber;
     this.aircraftId = aircraftId;
@@ -91,5 +88,4 @@ public class FlightEntity extends BaseEntity<UUID> {
     this.departureDate = departureDate;
     this.flightDate = flightDate;
   }
-
 }
