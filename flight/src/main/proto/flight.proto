@@ -26,7 +26,6 @@ message FlightResponseDto {
   google.protobuf.Timestamp FlightDate = 9;
   FlightStatus Status = 10;
   double Price = 11;
-  string FlightId = 12;
 }
 
 message GetAvailableSeatsResponseDto{

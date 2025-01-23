@@ -1,6 +1,7 @@
 package io.bookingmicroservices.flight.flights.features.deleteflight;
 
 import buildingblocks.mediator.abstractions.commands.ICommandHandler;
+import io.bookingmicroservices.flight.data.jpa.entities.FlightEntity;
 import io.bookingmicroservices.flight.data.jpa.repositories.FlightRepository;
 import io.bookingmicroservices.flight.flights.dtos.FlightDto;
 import io.bookingmicroservices.flight.flights.exceptions.FlightNotFoundException;
@@ -19,15 +20,18 @@ public class DeleteFlightCommandHandler implements ICommandHandler<DeleteFlightC
   @Override
   public FlightDto handle(DeleteFlightCommand command) {
 
-    Flight flight = flightRepository.findFlightByIdAndIsDeletedFalse(command.id());
-    if (flight == null) {
+    FlightEntity existingFlight = flightRepository.findFlightByIdAndIsDeletedFalse(command.id());
+    if (existingFlight == null) {
       throw new FlightNotFoundException();
     }
 
-    flight.update(flight.getId(), flight.getFlightNumber(), flight.getAircraftId(), flight.getDepartureAirportId(), flight.getDepartureDate(), flight.getArriveDate(),
-      flight.getArriveAirportId(), flight.getDurationMinutes(), flight.getFlightDate(), flight.getStatus(), flight.getPrice(), true);
+    Flight flight = Mappings.toFlightAggregate(existingFlight);
 
-    Flight updatedFlight = flightRepository.delete(flight);
+    flight.delete();
+
+    FlightEntity flightEntity = Mappings.toFlightEntity(flight);
+
+    FlightEntity updatedFlight = flightRepository.remove(flightEntity);
     return Mappings.toFlightDto(updatedFlight);
   }
 }

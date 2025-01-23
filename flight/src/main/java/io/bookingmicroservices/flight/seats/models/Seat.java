@@ -8,7 +8,15 @@ import io.bookingmicroservices.flight.seats.features.reserveseat.SeatReservedDom
 import io.bookingmicroservices.flight.seats.valueobjects.FlightId;
 import io.bookingmicroservices.flight.seats.valueobjects.SeatId;
 import io.bookingmicroservices.flight.seats.valueobjects.SeatNumber;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,26 +28,33 @@ public class Seat extends AggregateRoot<SeatId> {
   SeatType seatType;
   SeatClass seatClass;
   FlightId flightId;
-  boolean isDeleted;
 
-  public Seat(SeatId seatId, SeatNumber seatNumber, SeatType seatType, SeatClass seatClass, FlightId flightId, boolean isDeleted) {
+
+  public Seat(SeatId seatId, SeatNumber seatNumber, SeatType seatType, SeatClass seatClass, FlightId flightId, LocalDateTime createdAt, Long createdBy, LocalDateTime lastModified, Long lastModifiedBy, Long version, boolean isDeleted) {
     this.id = seatId;
     this.seatNumber = seatNumber;
     this.seatType = seatType;
     this.seatClass = seatClass;
     this.flightId = flightId;
+    this.createdAt = createdAt;
+    this.createdBy = createdBy;
+    this.lastModified = lastModified;
+    this.lastModifiedBy = lastModifiedBy;
+    this.version = version;
     this.isDeleted = isDeleted;
   }
 
-  public static Seat create(
-    SeatId seatId,
-    SeatNumber seatNumber,
-    SeatType seatType,
-    SeatClass seatClass,
-    FlightId flightId,
-    boolean isDeleted
-  ) {
-    var seat = new Seat(seatId, seatNumber, seatType, seatClass, flightId, isDeleted);
+
+  public Seat(SeatId seatId, SeatNumber seatNumber, SeatType seatType, SeatClass seatClass, FlightId flightId) {
+    this.id = seatId;
+    this.seatNumber = seatNumber;
+    this.seatType = seatType;
+    this.seatClass = seatClass;
+    this.flightId = flightId;
+  }
+
+  public static Seat create(SeatId seatId, SeatNumber seatNumber, SeatType seatType, SeatClass seatClass, FlightId flightId) {
+    var seat = new Seat(seatId, seatNumber, seatType, seatClass, flightId);
 
     seat.addDomainEvent(new SeatCreatedDomainEvent(
       seat.id.value(),
@@ -47,7 +62,7 @@ public class Seat extends AggregateRoot<SeatId> {
       seat.seatType,
       seat.seatClass,
       seat.flightId.value(),
-      isDeleted
+      false
     ));
 
     return seat;
@@ -62,7 +77,7 @@ public class Seat extends AggregateRoot<SeatId> {
       this.getSeatType(),
       this.getSeatClass(),
       this.getFlightId().value(),
-      this.isDeleted
+      true
       ));
   }
 }

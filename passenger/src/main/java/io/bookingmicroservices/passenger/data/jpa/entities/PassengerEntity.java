@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -30,5 +32,19 @@ public class PassengerEntity extends BaseEntity<UUID> {
         this.passportNumber = passportNumber;
         this.passengerType = passengerType;
         this.age = age;
+    }
+
+    public PassengerEntity(UUID id, String name, String passportNumber, PassengerType passengerType, int age, LocalDateTime createdAt, Long createdBy, LocalDateTime lastModified, Long lastModifiedBy, Long version, boolean isDeleted) {
+        this.id = id;
+        this.name = name;
+        this.passportNumber = passportNumber;
+        this.passengerType = passengerType;
+        this.age = age;
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.lastModified = lastModified;
+        this.lastModifiedBy = lastModifiedBy;
+        this.version = version;
+        this.isDeleted = isDeleted;
     }
 }

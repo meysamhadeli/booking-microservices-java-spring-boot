@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -28,6 +30,21 @@ public class SeatEntity extends BaseEntity<UUID> {
   @ManyToOne
   @JoinColumn(name = "flight_id", insertable = false, updatable = false, nullable = false)
   private FlightEntity flight;
+
+  public SeatEntity(UUID id, String seatNumber, SeatType type, SeatClass seatClass, UUID flightId,
+                    LocalDateTime createdAt, Long createdBy, LocalDateTime lastModified, Long lastModifiedBy, Long version, boolean isDeleted) {
+    this.id = id;
+    this.seatNumber = seatNumber;
+    this.type = type;
+    this.seatClass = seatClass;
+    this.flightId = flightId;
+    this.createdAt = createdAt;
+    this.createdBy = createdBy;
+    this.lastModified = lastModified;
+    this.lastModifiedBy = lastModifiedBy;
+    this.version = version;
+    this.isDeleted = isDeleted;
+  }
 
   public SeatEntity(UUID id, String seatNumber, SeatType type, SeatClass seatClass, UUID flightId) {
     this.id = id;

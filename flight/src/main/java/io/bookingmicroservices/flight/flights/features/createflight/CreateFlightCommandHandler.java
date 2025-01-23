@@ -1,11 +1,15 @@
 package io.bookingmicroservices.flight.flights.features.createflight;
 
 import buildingblocks.mediator.abstractions.commands.ICommandHandler;
+import io.bookingmicroservices.flight.aircrafts.valueobjects.AircraftId;
+import io.bookingmicroservices.flight.airports.valueobjects.AirportId;
+import io.bookingmicroservices.flight.data.jpa.entities.FlightEntity;
 import io.bookingmicroservices.flight.data.jpa.repositories.FlightRepository;
 import io.bookingmicroservices.flight.flights.dtos.FlightDto;
 import io.bookingmicroservices.flight.flights.exceptions.FlightAlreadyExistException;
 import io.bookingmicroservices.flight.flights.features.Mappings;
 import io.bookingmicroservices.flight.flights.models.Flight;
+import io.bookingmicroservices.flight.flights.valueobjects.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,14 +24,28 @@ public class CreateFlightCommandHandler implements ICommandHandler<CreateFlightC
   @Override
   public FlightDto handle(CreateFlightCommand command) {
 
-    boolean exists = flightRepository.existsByFlightNumber(command.flightNumber());
-    if (exists) {
+    boolean existFlight = flightRepository.existsByFlightNumber(command.flightNumber());
+    if (existFlight) {
       throw new FlightAlreadyExistException();
     }
 
-    Flight flight = Mappings.toFlightAggregate(command);
+    Flight flight = Flight.create(
+      new FlightId(command.id()),
+      new FlightNumber(command.flightNumber()),
+      new AircraftId(command.aircraftId()),
+      new AirportId(command.departureAirportId()),
+      new DepartureDate(command.departureDate()),
+      new ArriveDate(command.arriveDate()),
+      new AirportId(command.arriveAirportId()),
+      new DurationMinutes(command.durationMinutes()),
+      new FlightDate(command.flightDate()),
+      command.status(),
+      new Price(command.price())
+    );
 
-    Flight result = flightRepository.create(flight);
-    return Mappings.toFlightDto(result);
+    FlightEntity flightEntity = Mappings.toFlightEntity(flight);
+
+    FlightEntity flightCreated = flightRepository.create(flightEntity);
+    return Mappings.toFlightDto(flightCreated);
   }
 }

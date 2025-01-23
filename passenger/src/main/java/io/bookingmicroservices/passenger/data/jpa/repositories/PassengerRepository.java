@@ -11,11 +11,11 @@ import java.util.UUID;
 
 @Repository
 public interface PassengerRepository extends JpaRepository<PassengerEntity, UUID>, PassengerRepositoryCustom {
-    Passenger findPassengerByPassportNumber(String passportNumber);
+    PassengerEntity findPassengerByPassportNumberAndIsDeletedFalse(String passportNumber);
 }
 
 interface PassengerRepositoryCustom {
-    Passenger create(Passenger passenger);
+    PassengerEntity create(PassengerEntity passenger);
 }
 
 class PassengerRepositoryCustomImpl implements PassengerRepositoryCustom {
@@ -27,13 +27,12 @@ class PassengerRepositoryCustomImpl implements PassengerRepositoryCustom {
     }
 
     @Override
-    public Passenger create(Passenger passenger) {
-        PassengerEntity entity = Mappings.toPassengerEntity(passenger);
+    public PassengerEntity create(PassengerEntity passenger) {
 
-        entityManager.persist(entity);
+        entityManager.persist(passenger);
         entityManager.flush();
 
-        return Mappings.toPassengerAggregate(entity);
+        return passenger;
     }
 }
 

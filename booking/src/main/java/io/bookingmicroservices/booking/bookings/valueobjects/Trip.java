@@ -43,6 +43,15 @@ public class Trip {
         ValidationUtils.notBeNegativeOrNull(price);
         ValidationUtils.notBeNullOrEmpty(description);
         ValidationUtils.notBeNullOrEmpty(seatNumber);
+
+        this.flightNumber = flightNumber;
+        this.aircraftId = aircraftId;
+        this.departureAirportId = departureAirportId;
+        this.arriveAirportId = arriveAirportId;
+        this.flightDate = flightDate;
+        this.price = price;
+        this.description = description;
+        this.seatNumber = seatNumber;
     }
 }
 

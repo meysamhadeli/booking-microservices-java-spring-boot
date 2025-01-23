@@ -1,11 +1,15 @@
 package io.bookingmicroservices.flight.seats.features.createseat;
 
 import buildingblocks.mediator.abstractions.commands.ICommandHandler;
+import io.bookingmicroservices.flight.data.jpa.entities.SeatEntity;
 import io.bookingmicroservices.flight.data.jpa.repositories.SeatRepository;
 import io.bookingmicroservices.flight.seats.dtos.SeatDto;
 import io.bookingmicroservices.flight.seats.exceptions.SeatAlreadyExistException;
 import io.bookingmicroservices.flight.seats.features.Mappings;
 import io.bookingmicroservices.flight.seats.models.Seat;
+import io.bookingmicroservices.flight.seats.valueobjects.FlightId;
+import io.bookingmicroservices.flight.seats.valueobjects.SeatId;
+import io.bookingmicroservices.flight.seats.valueobjects.SeatNumber;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,14 +24,22 @@ public class CrateSeatCommandHandler implements ICommandHandler<CreateSeatComman
   @Override
   public SeatDto handle(CreateSeatCommand command) {
 
-    boolean exists = seatRepository.existsById(command.id());
-    if (exists) {
+    boolean existSeat = seatRepository.existsById(command.id());
+    if (existSeat) {
       throw new SeatAlreadyExistException();
     }
 
-    Seat seat = Mappings.toSeatAggregate(command);
+    Seat seat = Seat.create(
+      new SeatId(command.id()),
+      new SeatNumber(command.seatNumber()),
+      command.seatType(),
+      command.seatClass(),
+      new FlightId(command.flightId())
+    );
 
-    Seat result = seatRepository.create(seat);
-    return Mappings.toSeatDto(result);
+    SeatEntity seatEntity = Mappings.toSeatEntity(seat);
+
+    SeatEntity seatCreated = seatRepository.create(seatEntity);
+    return Mappings.toSeatDto(seatCreated);
   }
 }

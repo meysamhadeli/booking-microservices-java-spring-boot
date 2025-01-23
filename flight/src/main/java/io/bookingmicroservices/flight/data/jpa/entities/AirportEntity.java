@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -20,6 +22,19 @@ public class AirportEntity extends BaseEntity<UUID> {
   private String name;
   private String code;
   private String address;
+
+  public AirportEntity(UUID id, String name, String code, String address, LocalDateTime createdAt, Long createdBy, LocalDateTime lastModified, Long lastModifiedBy, Long version, boolean isDeleted) {
+    this.id = id;
+    this.name = name;
+    this.code = code;
+    this.address = address;
+    this.createdAt = createdAt;
+    this.createdBy = createdBy;
+    this.lastModified = lastModified;
+    this.lastModifiedBy = lastModifiedBy;
+    this.version = version;
+    this.isDeleted = isDeleted;
+  }
 
   public AirportEntity(UUID id, String name, String code, String address) {
     this.id = id;

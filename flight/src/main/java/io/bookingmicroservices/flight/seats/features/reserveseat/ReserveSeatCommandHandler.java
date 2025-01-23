@@ -1,6 +1,7 @@
 package io.bookingmicroservices.flight.seats.features.reserveseat;
 
 import buildingblocks.mediator.abstractions.commands.ICommandHandler;
+import io.bookingmicroservices.flight.data.jpa.entities.SeatEntity;
 import io.bookingmicroservices.flight.data.jpa.repositories.SeatRepository;
 import io.bookingmicroservices.flight.seats.dtos.SeatDto;
 import io.bookingmicroservices.flight.seats.exceptions.SeatNumberAlreadyReservedException;
@@ -19,15 +20,19 @@ public class ReserveSeatCommandHandler implements ICommandHandler<ReserveSeatCom
 
   @Override
   public SeatDto handle(ReserveSeatCommand command) {
-    Seat seat = seatRepository.findSeatByFlightIdAndSeatNumberAndIsDeletedFalse(command.flightId(), command.seatNumber());
+    SeatEntity existSeat = seatRepository.findSeatByFlightIdAndSeatNumberAndIsDeletedFalse(command.flightId(), command.seatNumber());
 
-    if (seat == null) {
+    if (existSeat == null) {
          throw new SeatNumberAlreadyReservedException();
     }
 
-    seat.reserveSeat();
-    Seat seatAggregate = seatRepository.update(seat);
+    Seat seat = Mappings.toSeatAggregate(existSeat);
 
-    return Mappings.toSeatDto(seatAggregate);
+    seat.reserveSeat();
+
+    SeatEntity seatEntity = Mappings.toSeatEntity(seat);
+    SeatEntity seatUpdated = seatRepository.update(seatEntity);
+
+    return Mappings.toSeatDto(seatUpdated);
   }
 }

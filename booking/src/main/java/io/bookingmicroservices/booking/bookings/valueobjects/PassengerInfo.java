@@ -13,5 +13,7 @@ public class PassengerInfo {
 
     public PassengerInfo(String name) {
         ValidationUtils.notBeNullOrEmpty(name);
+
+        this.name = name;
     }
 }

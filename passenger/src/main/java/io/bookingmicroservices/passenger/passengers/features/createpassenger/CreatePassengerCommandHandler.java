@@ -1,11 +1,16 @@
 package io.bookingmicroservices.passenger.passengers.features.createpassenger;
 
 import buildingblocks.mediator.abstractions.commands.ICommandHandler;
+import io.bookingmicroservices.passenger.data.jpa.entities.PassengerEntity;
 import io.bookingmicroservices.passenger.data.jpa.repositories.PassengerRepository;
 import io.bookingmicroservices.passenger.passengers.dtos.PassengerDto;
 import io.bookingmicroservices.passenger.passengers.exceptions.PassengerAlreadyExistException;
 import io.bookingmicroservices.passenger.passengers.features.Mappings;
 import io.bookingmicroservices.passenger.passengers.models.Passenger;
+import io.bookingmicroservices.passenger.passengers.valueobjects.Age;
+import io.bookingmicroservices.passenger.passengers.valueobjects.Name;
+import io.bookingmicroservices.passenger.passengers.valueobjects.PassengerId;
+import io.bookingmicroservices.passenger.passengers.valueobjects.PassportNumber;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,14 +24,23 @@ public class CreatePassengerCommandHandler implements ICommandHandler<CreatePass
     @Override
     public PassengerDto handle(CreatePassengerCommand command) {
 
-        Passenger existPassenger = passengerRepository.findPassengerByPassportNumber(command.passportNumber());
+        PassengerEntity existPassenger = passengerRepository.findPassengerByPassportNumberAndIsDeletedFalse(command.passportNumber());
         if (existPassenger != null) {
          throw new PassengerAlreadyExistException();
         }
 
-        Passenger passengerAggregate = Mappings.toPassengerAggregate(command);
-        Passenger passenger = passengerRepository.create(passengerAggregate);
+        Passenger passengerAggregate = Passenger.create(
+                new PassengerId(command.id()),
+                new Name(command.name()),
+                new PassportNumber(command.passportNumber()),
+                command.passengerType(),
+                new Age(command.age())
+        );
 
-        return Mappings.toPassengerDto(passenger);
+        PassengerEntity passengerEntity = Mappings.toPassengerEntity(passengerAggregate);
+
+        PassengerEntity createdPassenger = passengerRepository.create(passengerEntity);
+
+        return Mappings.toPassengerDto(createdPassenger);
     }
 }

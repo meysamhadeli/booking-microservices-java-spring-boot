@@ -10,6 +10,8 @@ import io.bookingmicroservices.flight.flights.features.updateflight.FlightUpdate
 import io.bookingmicroservices.flight.flights.valueobjects.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -26,9 +28,9 @@ public class Flight extends AggregateRoot<FlightId> {
     ArriveDate arriveDate;
     DepartureDate departureDate;
     FlightDate flightDate;
-    boolean isDeleted;
 
-    public Flight(FlightId flightId, FlightNumber flightNumber, AircraftId aircraftId, AirportId departureAirportId, AirportId arriveAirportId, DurationMinutes durationMinutes, FlightStatus status, Price price, ArriveDate arriveDate, DepartureDate departureDate, FlightDate flightDate, boolean isDeleted) {
+
+    public Flight(FlightId flightId, FlightNumber flightNumber, AircraftId aircraftId, AirportId departureAirportId, AirportId arriveAirportId, DurationMinutes durationMinutes, FlightStatus status, Price price, ArriveDate arriveDate, DepartureDate departureDate, FlightDate flightDate, LocalDateTime createdAt, Long createdBy, LocalDateTime lastModified, Long lastModifiedBy, Long version, boolean isDeleted) {
         this.id = flightId;
         this.flightNumber = flightNumber;
         this.aircraftId = aircraftId;
@@ -40,24 +42,30 @@ public class Flight extends AggregateRoot<FlightId> {
         this.arriveDate = arriveDate;
         this.departureDate = departureDate;
         this.flightDate = flightDate;
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.lastModified = lastModified;
+        this.lastModifiedBy = lastModifiedBy;
+        this.version = version;
         this.isDeleted = isDeleted;
     }
 
-    public static Flight create(
-            FlightId id,
-            FlightNumber flightNumber,
-            AircraftId aircraftId,
-            AirportId departureAirportId,
-            DepartureDate departureDate,
-            ArriveDate arriveDate,
-            AirportId arriveAirportId,
-            DurationMinutes durationMinutes,
-            FlightDate flightDate,
-            FlightStatus status,
-            Price price,
-            boolean isDeleted
-    ) {
-        var flight = new Flight(id, flightNumber, aircraftId, departureAirportId, arriveAirportId, durationMinutes, status, price, arriveDate, departureDate, flightDate, isDeleted);
+  public Flight(FlightId flightId, FlightNumber flightNumber, AircraftId aircraftId, AirportId departureAirportId, AirportId arriveAirportId, DurationMinutes durationMinutes, FlightStatus status, Price price, ArriveDate arriveDate, DepartureDate departureDate, FlightDate flightDate) {
+    this.id = flightId;
+    this.flightNumber = flightNumber;
+    this.aircraftId = aircraftId;
+    this.departureAirportId = departureAirportId;
+    this.arriveAirportId = arriveAirportId;
+    this.durationMinutes = durationMinutes;
+    this.status = status;
+    this.price = price;
+    this.arriveDate = arriveDate;
+    this.departureDate = departureDate;
+    this.flightDate = flightDate;
+  }
+
+    public static Flight create(FlightId id, FlightNumber flightNumber, AircraftId aircraftId, AirportId departureAirportId, DepartureDate departureDate, ArriveDate arriveDate, AirportId arriveAirportId, DurationMinutes durationMinutes, FlightDate flightDate, FlightStatus status, Price price) {
+        var flight = new Flight(id, flightNumber, aircraftId, departureAirportId, arriveAirportId, durationMinutes, status, price, arriveDate, departureDate, flightDate);
 
         flight.addDomainEvent(new FlightCreatedDomainEvent(
                 flight.getId().value(),
@@ -71,28 +79,14 @@ public class Flight extends AggregateRoot<FlightId> {
                 flight.flightDate.value(),
                 flight.status,
                 flight.price.value(),
-                isDeleted
+                false
         ));
 
         return flight;
     }
 
-  public void update(
-    FlightId id,
-    FlightNumber flightNumber,
-    AircraftId aircraftId,
-    AirportId departureAirportId,
-    DepartureDate departureDate,
-    ArriveDate arriveDate,
-    AirportId arriveAirportId,
-    DurationMinutes durationMinutes,
-    FlightDate flightDate,
-    FlightStatus status,
-    Price price,
-    boolean isDeleted
-  ) {
+  public void update(FlightNumber flightNumber, AircraftId aircraftId, AirportId departureAirportId, DepartureDate departureDate, ArriveDate arriveDate, AirportId arriveAirportId, DurationMinutes durationMinutes, FlightDate flightDate, FlightStatus status, Price price, boolean isDeleted) {
 
-    this.id = id;
     this.flightNumber = flightNumber;
     this.aircraftId = aircraftId;
     this.departureAirportId = departureAirportId;
@@ -109,35 +103,11 @@ public class Flight extends AggregateRoot<FlightId> {
       arriveDate.value(), arriveAirportId.value(), durationMinutes.value(), flightDate.value(), status, price.value(), isDeleted));
   }
 
-    public void delete(
-      FlightId id,
-      FlightNumber flightNumber,
-      AircraftId aircraftId,
-      AirportId departureAirportId,
-      DepartureDate departureDate,
-      ArriveDate arriveDate,
-      AirportId arriveAirportId,
-      DurationMinutes durationMinutes,
-      FlightDate flightDate,
-      FlightStatus status,
-      Price price,
-      boolean isDeleted
-    ) {
+  public void delete() {
 
-      this.id = id;
-      this.flightNumber = flightNumber;
-      this.aircraftId = aircraftId;
-      this.departureAirportId = departureAirportId;
-      this.arriveAirportId = arriveAirportId;
-      this.durationMinutes = durationMinutes;
-      this.status = status;
-      this.price = price;
-      this.arriveDate = arriveDate;
-      this.departureDate = departureDate;
-      this.flightDate = flightDate;
-      this.isDeleted = isDeleted;
+      this.isDeleted = true;
 
-      this.addDomainEvent(new FlightDeletedDomainEvent(id.value(), flightNumber.value(), aircraftId.value(), departureAirportId.value(), departureDate.value(),
-        arriveDate.value(), arriveAirportId.value(), durationMinutes.value(), flightDate.value(), status, price.value(), isDeleted));
+      this.addDomainEvent(new FlightDeletedDomainEvent(this.id.value(), this.flightNumber.value(), this.aircraftId.value(), this.departureAirportId.value(), this.departureDate.value(),
+        this.arriveDate.value(), this.arriveAirportId.value(), this.durationMinutes.value(), this.flightDate.value(), this.status, this.price.value(), true));
     }
 }

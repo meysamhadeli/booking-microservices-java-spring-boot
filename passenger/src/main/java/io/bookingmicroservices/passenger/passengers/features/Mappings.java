@@ -22,40 +22,23 @@ public final class Mappings {
                 passenger.getName().value(),
                 passenger.getPassportNumber().value(),
                 passenger.getPassengerType(),
-                passenger.getAge().value()
+                passenger.getAge().value(),
+                passenger.getCreatedAt(),
+                passenger.getCreatedBy(),
+                passenger.getLastModified(),
+                passenger.getLastModifiedBy(),
+                passenger.getVersion(),
+                passenger.isDeleted()
         );
     }
 
-    public static Passenger toPassengerAggregate(PassengerEntity passengerEntity) {
-        return new Passenger(
-                new PassengerId(passengerEntity.getId()),
-                new Name(passengerEntity.getName()),
-                new PassportNumber(passengerEntity.getPassportNumber()),
-                passengerEntity.getPassengerType(),
-                new Age(passengerEntity.getAge()),
-                passengerEntity.isDeleted()
-        );
-    }
-
-    public static Passenger toPassengerAggregate(CreatePassengerCommand createPassengerCommand) {
-        return Passenger.create(
-                new PassengerId(createPassengerCommand.id()),
-                new Name(createPassengerCommand.name()),
-                new PassportNumber(createPassengerCommand.passportNumber()),
-                createPassengerCommand.passengerType(),
-                new Age(createPassengerCommand.age()),
-                false
-        );
-    }
-
-
-    public static PassengerDto toPassengerDto(Passenger passenger) {
+    public static PassengerDto toPassengerDto(PassengerEntity passengerEntity) {
         return new PassengerDto(
-                passenger.getId().value(),
-                passenger.getName().value(),
-                passenger.getPassportNumber().value(),
-                passenger.getPassengerType(),
-                passenger.getAge().value());
+                passengerEntity.getId(),
+                passengerEntity.getName(),
+                passengerEntity.getPassportNumber(),
+                passengerEntity.getPassengerType(),
+                passengerEntity.getAge());
     }
 
 

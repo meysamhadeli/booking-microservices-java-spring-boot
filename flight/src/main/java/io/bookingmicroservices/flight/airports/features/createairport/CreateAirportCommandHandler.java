@@ -5,6 +5,11 @@ import io.bookingmicroservices.flight.airports.dtos.AirportDto;
 import io.bookingmicroservices.flight.airports.exceptions.AirportAlreadyExistException;
 import io.bookingmicroservices.flight.airports.features.Mappings;
 import io.bookingmicroservices.flight.airports.models.Airport;
+import io.bookingmicroservices.flight.airports.valueobjects.Address;
+import io.bookingmicroservices.flight.airports.valueobjects.AirportId;
+import io.bookingmicroservices.flight.airports.valueobjects.Code;
+import io.bookingmicroservices.flight.airports.valueobjects.Name;
+import io.bookingmicroservices.flight.data.jpa.entities.AirportEntity;
 import io.bookingmicroservices.flight.data.jpa.repositories.AirportRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,14 +25,21 @@ public class CreateAirportCommandHandler implements ICommandHandler<CreateAirpor
   @Override
   public AirportDto handle(CreateAirportCommand command) {
 
-      boolean exists = airportRepository.existsByCode(command.code());
-      if (exists) {
+      boolean existAirport = airportRepository.existsByCode(command.code());
+      if (existAirport) {
         throw new AirportAlreadyExistException();
       }
 
-      Airport airport = Mappings.toAirportAggregate(command);
+      Airport airport = Airport.create(
+        new AirportId(command.id()),
+        new Name(command.name()),
+        new Code(command.code()),
+        new Address(command.address())
+      );
 
-      Airport result = airportRepository.create(airport);
-      return Mappings.toAirportDto(result);
+      AirportEntity airportEntity = Mappings.toAirportEntity(airport);
+
+      AirportEntity airportCreated = airportRepository.create(airportEntity);
+      return Mappings.toAirportDto(airportCreated);
   }
 }

@@ -20,36 +20,23 @@ public final class Mappings {
       aircraft.getId().value(),
       aircraft.getName().value(),
       aircraft.getModel().value(),
-      aircraft.getManufacturingYear().value()
+      aircraft.getManufacturingYear().value(),
+      aircraft.getCreatedAt(),
+      aircraft.getCreatedBy(),
+      aircraft.getLastModified(),
+      aircraft.getLastModifiedBy(),
+      aircraft.getVersion(),
+      aircraft.isDeleted()
     );
   }
 
-  public static Aircraft toAircraftAggregate(AircraftEntity aircraftEntity) {
-    return new Aircraft(
-      new AircraftId(aircraftEntity.getId()),
-      new Name(aircraftEntity.getName()),
-      new Model(aircraftEntity.getModel()),
-      new ManufacturingYear(aircraftEntity.getManufacturingYear()),
-      aircraftEntity.isDeleted()
-    );
-  }
 
-  public static Aircraft toAircraftAggregate(CreateAircraftCommand createAircraftCommand) {
-    return Aircraft.create(
-     new AircraftId(createAircraftCommand.id()),
-      new Name(createAircraftCommand.name()),
-      new Model(createAircraftCommand.model()),
-      new ManufacturingYear(createAircraftCommand.manufacturingYear()),
-      false
-    );
-  }
-
-  public static AircraftDto toAircraftDto(Aircraft aircraft) {
+  public static AircraftDto toAircraftDto(AircraftEntity aircraftEntity) {
     return new AircraftDto(
-      aircraft.getId().value(),
-      aircraft.getName().value(),
-      aircraft.getModel().value(),
-      aircraft.getManufacturingYear().value());
+      aircraftEntity.getId(),
+      aircraftEntity.getName(),
+      aircraftEntity.getModel(),
+      aircraftEntity.getManufacturingYear());
   }
 
   public static CreateAircraftCommand toCreateAircraftCommand(CreateAircraftRequestDto createAircraftRequestDto) {

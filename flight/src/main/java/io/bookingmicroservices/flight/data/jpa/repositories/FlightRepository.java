@@ -13,14 +13,14 @@ import java.util.UUID;
 @Repository
 public interface FlightRepository extends JpaRepository<FlightEntity, UUID>, FlightRepositoryCustom {
   boolean existsByFlightNumber(String flightNumber);
-  Flight findFlightByIdAndIsDeletedFalse(UUID id);
+  FlightEntity findFlightByIdAndIsDeletedFalse(UUID id);
 }
 
 
 interface FlightRepositoryCustom {
-  Flight create(Flight flight);
-  Flight update(Flight flight);
-  Flight delete(Flight flight);
+  FlightEntity create(FlightEntity flight);
+  FlightEntity update(FlightEntity flight);
+  FlightEntity remove(FlightEntity flight);
 }
 
 class FlightRepositoryCustomImpl implements FlightRepositoryCustom {
@@ -32,32 +32,29 @@ class FlightRepositoryCustomImpl implements FlightRepositoryCustom {
   }
 
   @Override
-  public Flight create(Flight flight) {
-    FlightEntity entity = Mappings.toFlightEntity(flight);
+  public FlightEntity create(FlightEntity flight) {
 
-    entityManager.persist(entity);
+    entityManager.persist(flight);
     entityManager.flush();
 
-    return Mappings.toFlightAggregate(entity);
+    return flight;
   }
 
   @Override
-  public Flight update(Flight flight) {
-    FlightEntity entity = Mappings.toFlightEntity(flight);
+  public FlightEntity update(FlightEntity flight) {
 
-    entityManager.merge(entity);
+    entityManager.merge(flight);
     entityManager.flush();
 
-    return Mappings.toFlightAggregate(entity);
+    return flight;
   }
 
   @Override
-  public Flight delete(Flight flight) {
-    FlightEntity entity = Mappings.toFlightEntity(flight);
+  public FlightEntity remove(FlightEntity flight) {
 
-    entityManager.remove(entity);
+    entityManager.remove(flight);
     entityManager.flush();
 
-    return Mappings.toFlightAggregate(entity);
+    return flight;
   }
 }

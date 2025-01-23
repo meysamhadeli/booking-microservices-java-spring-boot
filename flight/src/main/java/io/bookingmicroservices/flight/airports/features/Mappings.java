@@ -6,10 +6,6 @@ import io.bookingmicroservices.flight.airports.features.createairport.CreateAirp
 import io.bookingmicroservices.flight.airports.features.createairport.CreateAirportMongoCommand;
 import io.bookingmicroservices.flight.airports.features.createairport.CreateAirportRequestDto;
 import io.bookingmicroservices.flight.airports.models.Airport;
-import io.bookingmicroservices.flight.airports.valueobjects.Address;
-import io.bookingmicroservices.flight.airports.valueobjects.AirportId;
-import io.bookingmicroservices.flight.airports.valueobjects.Code;
-import io.bookingmicroservices.flight.airports.valueobjects.Name;
 import io.bookingmicroservices.flight.data.jpa.entities.AirportEntity;
 import io.bookingmicroservices.flight.data.mongo.documents.AirportDocument;
 
@@ -20,36 +16,23 @@ public final class Mappings {
       airport.getId().value(),
       airport.getName().value(),
       airport.getCode().value(),
-      airport.getAddress().value()
+      airport.getAddress().value(),
+      airport.getCreatedAt(),
+      airport.getCreatedBy(),
+      airport.getLastModified(),
+      airport.getLastModifiedBy(),
+      airport.getVersion(),
+      airport.isDeleted()
     );
   }
 
-  public static Airport toAirportAggregate(AirportEntity airportEntity) {
-    return new Airport(
-      new AirportId(airportEntity.getId()),
-      new Name(airportEntity.getName()),
-      new Code(airportEntity.getCode()),
-      new Address(airportEntity.getAddress()),
-      airportEntity.isDeleted()
-    );
-  }
 
-  public static Airport toAirportAggregate(CreateAirportCommand createAirportCommand) {
-    return Airport.create(
-      new AirportId(createAirportCommand.id()),
-      new Name(createAirportCommand.name()),
-      new Code(createAirportCommand.code()),
-      new Address(createAirportCommand.address()),
-      false
-    );
-  }
-
-  public static AirportDto toAirportDto(Airport airport) {
+  public static AirportDto toAirportDto(AirportEntity airportEntity) {
     return new AirportDto(
-      airport.getId().value(),
-      airport.getName().value(),
-      airport.getCode().value(),
-      airport.getAddress().value());
+      airportEntity.getId(),
+      airportEntity.getName(),
+      airportEntity.getCode(),
+      airportEntity.getAddress());
   }
 
   public static CreateAirportCommand toCreateAirportCommand(CreateAirportRequestDto createAirportRequestDto) {

@@ -11,6 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -26,7 +28,18 @@ public class BookingEntity extends BaseEntity<UUID> {
     private PassengerInfo passengerInfo;
     @Embedded
     private Trip trip;
-    private boolean isDeleted;
+
+    public BookingEntity(UUID id, PassengerInfo passengerInfo, Trip trip, LocalDateTime createdAt, Long createdBy, LocalDateTime lastModified, Long lastModifiedBy, Long version, boolean isDeleted) {
+        this.id = id;
+        this.passengerInfo = passengerInfo;
+        this.trip = trip;
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.lastModified = lastModified;
+        this.lastModifiedBy = lastModifiedBy;
+        this.version = version;
+        this.isDeleted = isDeleted;
+    }
 
     public BookingEntity(UUID id, PassengerInfo passengerInfo, Trip trip) {
         this.id = id;
