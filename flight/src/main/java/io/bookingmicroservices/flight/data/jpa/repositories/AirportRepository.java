@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Repository
 public interface AirportRepository extends JpaRepository<AirportEntity, UUID>, AirportRepositoryCustom {
-  boolean existsByCode(String code);
+  AirportEntity findAirportByCodeAndIsDeletedFalse(String code);
 }
 
 

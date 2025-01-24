@@ -1,18 +1,22 @@
 package buildingblocks.testbase;
 
 import jakarta.annotation.PostConstruct;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
+
 @SpringBootTest
 @ActiveProfiles("test")
+@AutoConfigureMockMvc
+@WithMockUser(authorities = "ADMIN")
 public abstract class IntegrationTestBase {
 
     @Autowired
@@ -36,17 +40,8 @@ public abstract class IntegrationTestBase {
     }
 
     @BeforeAll
-    static void init() {
-        TestContainers.postgres.start();
-        TestContainers.rabbitMq.start();
-        TestContainers.mongoDb.start();
-    }
-
-    @AfterAll
-    static void dispose() {
-        TestContainers.postgres.stop();
-        TestContainers.rabbitMq.stop();
-        TestContainers.mongoDb.stop();
+    static void initializeContainers() {
+        TestContainers.initializeContainersOnce();
     }
 
     @AfterEach

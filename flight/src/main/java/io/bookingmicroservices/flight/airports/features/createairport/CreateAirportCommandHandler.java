@@ -25,21 +25,21 @@ public class CreateAirportCommandHandler implements ICommandHandler<CreateAirpor
   @Override
   public AirportDto handle(CreateAirportCommand command) {
 
-      boolean existAirport = airportRepository.existsByCode(command.code());
-      if (existAirport) {
-        throw new AirportAlreadyExistException();
-      }
+    AirportEntity existAirport = airportRepository.findAirportByCodeAndIsDeletedFalse(command.code());
+    if (existAirport != null) {
+      throw new AirportAlreadyExistException();
+    }
 
-      Airport airport = Airport.create(
-        new AirportId(command.id()),
-        new Name(command.name()),
-        new Code(command.code()),
-        new Address(command.address())
-      );
+    Airport airport = Airport.create(
+      new AirportId(command.id()),
+      new Name(command.name()),
+      new Code(command.code()),
+      new Address(command.address())
+    );
 
-      AirportEntity airportEntity = Mappings.toAirportEntity(airport);
+    AirportEntity airportEntity = Mappings.toAirportEntity(airport);
 
-      AirportEntity airportCreated = airportRepository.create(airportEntity);
-      return Mappings.toAirportDto(airportCreated);
+    AirportEntity airportCreated = airportRepository.create(airportEntity);
+    return Mappings.toAirportDto(airportCreated);
   }
 }

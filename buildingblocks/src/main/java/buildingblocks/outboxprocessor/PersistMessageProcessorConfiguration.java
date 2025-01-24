@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
 
+
 @Configuration
 @Import(MediatorConfiguration.class)
 public class PersistMessageProcessorConfiguration {

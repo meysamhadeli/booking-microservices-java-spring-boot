@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Repository
 public interface SeatRepository extends JpaRepository<SeatEntity, UUID>, SeatRepositoryCustom {
-  boolean existsById(UUID id);
+  SeatEntity findSeatByIdAndIsDeletedFalse(UUID id);
   SeatEntity findSeatByFlightIdAndSeatNumberAndIsDeletedFalse(UUID flightId, String seatNumber);
 }
 

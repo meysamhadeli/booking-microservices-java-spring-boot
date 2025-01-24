@@ -1,6 +1,5 @@
 package io.bookingmicroservices.flight.flights.features;
 
-import buildingblocks.utils.protobuf.ProtobufUtils;
 import com.github.f4b6a3.uuid.UuidCreator;
 import io.bookingmicroservices.flight.aircrafts.valueobjects.AircraftId;
 import io.bookingmicroservices.flight.airports.valueobjects.AirportId;
@@ -63,6 +62,22 @@ public final class Mappings {
       flightEntity.getLastModifiedBy(),
       flightEntity.getVersion(),
       flightEntity.isDeleted()
+    );
+  }
+
+  public static FlightEntity toFlightEntity(CreateFlightCommand createFlightCommand) {
+    return new FlightEntity(
+      createFlightCommand.id(),
+      new FlightNumber(createFlightCommand.flightNumber()),
+      new AircraftId(createFlightCommand.aircraftId()),
+      new AirportId(createFlightCommand.departureAirportId()),
+      new AirportId(createFlightCommand.arriveAirportId()),
+      new DurationMinutes(createFlightCommand.durationMinutes()),
+      createFlightCommand.status(),
+      new Price(createFlightCommand.price()),
+      new ArriveDate(createFlightCommand.arriveDate()),
+      new DepartureDate(createFlightCommand.departureDate()),
+      new FlightDate(createFlightCommand.flightDate())
     );
   }
 
@@ -200,29 +215,30 @@ public final class Mappings {
       flightDocument.getPrice());
   }
 
-  public static flight.Flight.FlightResponseDto toFlightResponseDtoGrpc(FlightDto flightDto) {
-
-        return flight.Flight.FlightResponseDto.newBuilder()
-      .setId(flightDto.id().toString())
-          .setFlightNumber(flightDto.flightNumber())
-          .setAircraftId(flightDto.aircraftId().toString())
-          .setDepartureAirportId(flightDto.departureAirportId().toString())
-          .setArriveAirportId(flightDto.arriveAirportId().toString())
-          .setDepartureDate(ProtobufUtils.toProtobufTimestamp(flightDto.departureDate()))
-          .setArriveDate(ProtobufUtils.toProtobufTimestamp(flightDto.arriveDate()))
-          .setDurationMinutes(flightDto.durationMinutes().doubleValue())
-          .setFlightDate(ProtobufUtils.toProtobufTimestamp(flightDto.flightDate()))
-          .setStatus(toFlightStatusGrpc(flightDto.status()))
-          .setPrice(flightDto.price().doubleValue())
-      .build();
-  }
-
-  public static flight.Flight.FlightStatus toFlightStatusGrpc(FlightStatus flightStatus) {
-    return switch (flightStatus) {
-      case Flying -> flight.Flight.FlightStatus.FLIGHT_STATUS_FLYING;
-      case Delay -> flight.Flight.FlightStatus.FLIGHT_STATUS_DELAY;
-      case Completed -> flight.Flight.FlightStatus.FLIGHT_STATUS_COMPLETED;
-      case Canceled -> flight.Flight.FlightStatus.FLIGHT_STATUS_CANCELED;
-    };
-  }
+//  public static flight.Flight.FlightResponseDto toFlightResponseDtoGrpc(FlightDto flightDto) {
+//
+////        return flight.Flight.FlightResponseDto.newBuilder()
+////      .setId(flightDto.id().toString())
+////          .setFlightNumber(flightDto.flightNumber())
+////          .setAircraftId(flightDto.aircraftId().toString())
+////          .setDepartureAirportId(flightDto.departureAirportId().toString())
+////          .setArriveAirportId(flightDto.arriveAirportId().toString())
+////          .setDepartureDate(ProtobufUtils.toProtobufTimestamp(flightDto.departureDate()))
+////          .setArriveDate(ProtobufUtils.toProtobufTimestamp(flightDto.arriveDate()))
+////          .setDurationMinutes(flightDto.durationMinutes().doubleValue())
+////          .setFlightDate(ProtobufUtils.toProtobufTimestamp(flightDto.flightDate()))
+////          .setStatus(toFlightStatusGrpc(flightDto.status()))
+////          .setPrice(flightDto.price().doubleValue())
+////      .build();
+//    return null;
+//  }
+//
+//  public static flight.Flight.FlightStatus toFlightStatusGrpc(FlightStatus flightStatus) {
+//    return switch (flightStatus) {
+//      case Flying -> flight.Flight.FlightStatus.FLIGHT_STATUS_FLYING;
+//      case Delay -> flight.Flight.FlightStatus.FLIGHT_STATUS_DELAY;
+//      case Completed -> flight.Flight.FlightStatus.FLIGHT_STATUS_COMPLETED;
+//      case Canceled -> flight.Flight.FlightStatus.FLIGHT_STATUS_CANCELED;
+//    };
+//  }
 }
