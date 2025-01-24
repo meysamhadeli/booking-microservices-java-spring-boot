@@ -7,6 +7,8 @@ import io.bookingmicroservices.flight.seats.dtos.SeatDto;
 import io.bookingmicroservices.flight.seats.exceptions.SeatNumberAlreadyReservedException;
 import io.bookingmicroservices.flight.seats.features.Mappings;
 import io.bookingmicroservices.flight.seats.models.Seat;
+import io.bookingmicroservices.flight.seats.valueobjects.FlightId;
+import io.bookingmicroservices.flight.seats.valueobjects.SeatNumber;
 import org.springframework.stereotype.Service;
 
 
@@ -20,7 +22,7 @@ public class ReserveSeatCommandHandler implements ICommandHandler<ReserveSeatCom
 
   @Override
   public SeatDto handle(ReserveSeatCommand command) {
-    SeatEntity existSeat = seatRepository.findSeatByFlightIdAndSeatNumberAndIsDeletedFalse(command.flightId(), command.seatNumber());
+    SeatEntity existSeat = seatRepository.findSeatByFlightIdAndSeatNumberAndIsDeletedFalse(new FlightId(command.flightId()), new SeatNumber(command.seatNumber()));
 
     if (existSeat == null) {
          throw new SeatNumberAlreadyReservedException();

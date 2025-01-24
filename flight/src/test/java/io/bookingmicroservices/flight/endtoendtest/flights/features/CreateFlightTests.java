@@ -1,6 +1,6 @@
 package io.bookingmicroservices.flight.endtoendtest.flights.features;
 
-import buildingblocks.testbase.EndToEndTestBase;
+import buildingblocks.testbase.TestBase;
 import buildingblocks.utils.jsonconverter.JsonConverterUtils;
 import io.bookingmicroservices.flight.flights.dtos.FlightDto;
 import io.bookingmicroservices.flight.flights.features.createflight.CreateFlightCommand;
@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
-public class CreateFlightTests extends EndToEndTestBase {
+public class CreateFlightTests extends TestBase {
 
   @Test
   void should_create_flight_via_api_and_return_200() throws Exception {

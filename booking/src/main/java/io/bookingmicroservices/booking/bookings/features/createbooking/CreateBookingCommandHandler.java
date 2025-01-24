@@ -59,7 +59,7 @@ public class CreateBookingCommandHandler implements ICommandHandler<CreateBookin
             throw new PassengerNotFoundException();
         }
 
-        Flight.SeatResponseDto emptySeat = flightServiceBlockingStub.getAvailableSeats(toGetAvailableSeatsResponseDto(command)).getSeatsDtoList().stream().findFirst().orElse(null);
+        Flight.SeatResponseDto emptySeat = flightServiceBlockingStub.getAvailableSeats(toGetAvailableSeatsResponseDto(command)).getSeatsDtoList().stream().findAny().orElse(null);
 
         if(emptySeat == null){
             throw new SeatNumberIsNotAvailableException();

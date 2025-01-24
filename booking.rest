@@ -1,0 +1,236 @@
+
+@api-gateway=http://localhost:8081  
+@keycloak-api=http://localhost:8080
+@flight-api=http://localhost:8082
+@passenger-api=http://localhost:8083
+@booking-api=http://localhost:8084
+
+@contentType = application/json
+@flightId = "3c5c0000-97c6-fc34-2eb9-08db322230c9"
+@passengerId = "4c5c0000-97c6-fc34-a0cb-08db322230c0"
+@aircraftId = "3c5c0000-97c6-fc34-fcd3-08db322230c8"
+@arriveAirportId = "3c5c0000-97c6-fc34-a0cb-08db322230c8"
+@departureAirportId = "3c5c0000-97c6-fc34-fc3c-08db322230c8"
+################################# Keycloak API #################################
+
+###
+# @name ApiRoot_Keycloak
+GET {{keycloak-api}}
+###
+
+
+###
+# @name Authenticate
+POST {{keycloak-api}}/realms/keycloak-realm/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials
+&client_id=flight-client-credentials
+&client_secret=Glcz8z8E6alTIfay1GdMc6XTTeuZrgOs
+&scope=openid
+###
+
+
+################################# Flight API #################################
+
+###
+# @name ApiRoot_Flight
+GET {{flight-api}}
+###
+
+###
+# @name Create_Seat
+Post {{api-gateway}}/api/v1/flight/seat
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+{
+  "seatNumber": "1255",
+  "seatType": "Window",
+  "seatClass": "FirstClass",
+  "flightId": {{flightId}}
+}
+###
+
+
+###
+# @name Reserve_Seat
+Post {{api-gateway}}/api/v1/flight/reserve-seat
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+{
+  "seatNumber":"1255",
+  "flightId": {{flightId}}
+}
+###
+
+
+###
+# @name Get_Available_Seats
+GET {{api-gateway}}/api/v1/flight/get-available-seats/3c5c0000-97c6-fc34-2eb9-08db322230c9
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+###
+
+
+###
+# @name Get_Flight_By_Id
+GET {{api-gateway}}/api/v1/flight/3c5c0000-97c6-fc34-2eb9-08db322230c9
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+###
+
+
+###
+# @name Get_Available_Flights
+GET {{api-gateway}}/api/v1/flight/get-available-flights
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+###
+
+
+###
+# @name Create_Flights
+POST {{api-gateway}}/api/v1/flight
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+{
+  "flightNumber": "20BB",
+  "aircraftId": {{aircraftId}},
+  "departureAirportId": {{departureAirportId}},
+  "departureDate": "2022-03-01T14:55:41.255Z",
+  "arriveDate": "2022-03-01T14:55:41.255Z",
+  "arriveAirportId": {{arriveAirportId}},
+  "durationMinutes": 120,
+  "flightDate": "2022-03-01T14:55:41.255Z",
+  "status": "Delay",
+  "price": 8000
+}
+###
+
+
+###
+# @name Update_Flights
+PUT  {{api-gateway}}/api/v1/flight/01949849-1608-7e16-975a-e7f4cf1d029d
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+{
+  "flightNumber": "20BB",
+  "aircraftId": {{aircraftId}},
+  "departureAirportId": {{departureAirportId}},
+  "departureDate": "2025-01-24T12:35:11.803Z",
+  "arriveDate": "2025-01-24T12:35:11.803Z",
+  "arriveAirportId": {{arriveAirportId}},
+  "durationMinutes": 140,
+  "flightDate": "2025-01-24T12:35:11.803Z",
+  "status": "Flying",
+  "price": 8000,
+  "isDeleted": false
+}
+###
+
+
+###
+# @name Delete_Flights
+DELETE   {{api-gateway}}/api/v1/flight/01949849-1608-7e16-975a-e7f4cf1d029d
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+###
+
+
+###
+# @name Create_Airport
+POST {{api-gateway}}/api/v1/flight/airport
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+{
+  "name": "mehrabad",
+  "address": "tehran",
+  "code": "12YD"
+}
+###
+
+
+
+###
+# @name Create_Aircraft
+POST {{api-gateway}}/api/v1/flight/aircraft
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+{
+  "name": "airbus2",
+  "model": "322",
+  "manufacturingYear": 2012
+}
+###
+
+
+################################# Passenger API #################################
+
+###
+# @name ApiRoot_Passenger
+GET {{passenger-api}}
+###
+
+
+###
+# @name Register_Passenger
+POST {{api-gateway}}/api/v1/passenger
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+{
+  "name": "test-passenger",
+  "passportNumber": "412900000000",
+  "passengerType": 1,
+  "age": 30
+}
+###
+
+
+###
+# @name Get_Passenger_By_Id
+GET  {{api-gateway}}/api/v1/passenger/4c5c0000-97c6-fc34-a0cb-08db322230c0
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+###
+
+
+################################# Booking API #################################
+
+###
+# @name ApiRoot_Booking
+GET {{booking-api}}
+###
+
+
+###
+# @name Create_Booking
+POST {{api-gateway}}/api/v1/booking
+accept: application/json
+Content-Type: application/json
+authorization: bearer {{Authenticate.response.body.access_token}}
+
+{
+  "passengerId": {{passengerId}},
+  "flightId": {{flightId}},
+  "description": "I want to fly to iran"
+}
+###

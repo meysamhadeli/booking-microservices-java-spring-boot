@@ -22,7 +22,7 @@ public class CreateSeatMongoCommandHandler implements ICommandHandler<CreateSeat
 
     SeatDocument seatDocument = Mappings.toSeatDocument(command);
 
-    var seatExist = seatReadRepository.findBySeatIdAndIsDeletedFalse(seatDocument.getSeatId());
+    var seatExist = seatReadRepository.findSeatByFlightIdAndSeatNumberAndIsDeletedFalse(seatDocument.getFlightId(), seatDocument.getSeatNumber());
 
     if (seatExist != null) {
       throw new SeatAlreadyExistException();
