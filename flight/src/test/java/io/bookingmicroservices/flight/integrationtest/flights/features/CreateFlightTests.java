@@ -6,6 +6,7 @@ import io.bookingmicroservices.flight.flights.dtos.FlightDto;
 import io.bookingmicroservices.flight.flights.features.createflight.CreateFlightCommand;
 import io.bookingmicroservices.flight.integrationtest.fakes.CreateFlightCommandFake;
 import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class CreateFlightTests extends IntegrationTestBase {
@@ -20,7 +21,7 @@ public class CreateFlightTests extends IntegrationTestBase {
 
     // Assert
     assertThat(result).isNotNull();
-    assertThat(result.flightNumber()).isEqualTo("20H50");
+    assertThat(result.flightNumber()).isEqualTo(command.flightNumber());
     assertThat(this.fixture.messageIsPublished(FlightCreated.class)).isTrue();
   }
 }

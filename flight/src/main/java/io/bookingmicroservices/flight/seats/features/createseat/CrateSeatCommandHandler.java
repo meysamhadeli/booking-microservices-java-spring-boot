@@ -24,8 +24,8 @@ public class CrateSeatCommandHandler implements ICommandHandler<CreateSeatComman
   @Override
   public SeatDto handle(CreateSeatCommand command) {
 
-    boolean existSeat = seatRepository.existsById(command.id());
-    if (existSeat) {
+    SeatEntity existSeat = seatRepository.findSeatByIdAndIsDeletedFalse(command.id());
+    if (existSeat!= null) {
       throw new SeatAlreadyExistException();
     }
 

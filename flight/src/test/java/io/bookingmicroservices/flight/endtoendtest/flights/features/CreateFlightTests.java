@@ -2,14 +2,15 @@ package io.bookingmicroservices.flight.endtoendtest.flights.features;
 
 import buildingblocks.testbase.EndToEndTestBase;
 import buildingblocks.utils.jsonconverter.JsonConverterUtils;
-import io.bookingmicroservices.flight.endtoendtest.fakes.CreateFlightCommandFake;
 import io.bookingmicroservices.flight.flights.dtos.FlightDto;
 import io.bookingmicroservices.flight.flights.features.createflight.CreateFlightCommand;
+import io.bookingmicroservices.flight.integrationtest.fakes.CreateFlightCommandFake;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 
 public class CreateFlightTests extends EndToEndTestBase {
 
@@ -29,6 +30,6 @@ public class CreateFlightTests extends EndToEndTestBase {
 
     // Assert
     assertThat(result).isNotNull();
-    assertThat(result.flightNumber()).isEqualTo("20H50");
+    assertThat(result.flightNumber()).isEqualTo(command.flightNumber());
   }
 }

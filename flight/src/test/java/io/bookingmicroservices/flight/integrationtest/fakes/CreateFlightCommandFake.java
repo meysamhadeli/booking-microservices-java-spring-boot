@@ -12,7 +12,7 @@ public class CreateFlightCommandFake {
     return new CreateFlightCommand(
       UuidCreator.getTimeOrderedEpoch(),
       "20H50",
-      UUID.fromString("3c5c0000-97c6-fc34-2e11-08db322230c9"),
+      UUID.fromString("3c5c0000-97c6-fc34-fcd3-08db322230c8"),
       UUID.fromString("3c5c0000-97c6-fc34-a0cb-08db322230c8"),
       LocalDateTime.now(),
       LocalDateTime.now(),

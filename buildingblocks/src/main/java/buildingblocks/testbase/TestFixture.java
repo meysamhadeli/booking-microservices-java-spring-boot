@@ -16,7 +16,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestTemplate;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -42,6 +41,7 @@ public class TestFixture {
         this.restTemplate = applicationContext.getBean(RestTemplate.class);
         this.rabbitAdmin = new RabbitAdmin(applicationContext.getBean(ConnectionFactory.class));
     }
+
 
     public <TResponse> TResponse send(IRequest<TResponse> request) {
         return switch (request) {
