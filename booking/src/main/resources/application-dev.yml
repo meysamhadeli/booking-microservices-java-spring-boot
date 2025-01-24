@@ -14,11 +14,15 @@ logging:
   name: booking-logger
   level:
     root: INFO
+    io:
+      grpc: DEBUG
 
 server:
   port: 8084
 
 grpc:
+  server:
+    port: 9094
   client:
     flight-service:
       address: "static://localhost:9092"

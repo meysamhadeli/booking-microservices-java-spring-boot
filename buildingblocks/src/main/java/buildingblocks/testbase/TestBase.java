@@ -11,16 +11,20 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
 
 
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @WithMockUser(authorities = "ADMIN")
-public abstract class IntegrationTestBase {
+public abstract class TestBase {
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    protected MockMvc mockMvc;
 
     protected TestFixture fixture;
 

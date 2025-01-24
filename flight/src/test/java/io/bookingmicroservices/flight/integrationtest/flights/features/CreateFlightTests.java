@@ -1,7 +1,7 @@
 package io.bookingmicroservices.flight.integrationtest.flights.features;
 
 import buildingblocks.contracts.flight.FlightCreated;
-import buildingblocks.testbase.IntegrationTestBase;
+import buildingblocks.testbase.TestBase;
 import io.bookingmicroservices.flight.flights.dtos.FlightDto;
 import io.bookingmicroservices.flight.flights.features.createflight.CreateFlightCommand;
 import io.bookingmicroservices.flight.integrationtest.fakes.CreateFlightCommandFake;
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class CreateFlightTests extends IntegrationTestBase {
+public class CreateFlightTests extends TestBase {
 
   @Test
   void should_create_new_flight_to_db_and_publish_message_to_broker() {

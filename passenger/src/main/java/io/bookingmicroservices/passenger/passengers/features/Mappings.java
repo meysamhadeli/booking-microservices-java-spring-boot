@@ -49,6 +49,17 @@ public final class Mappings {
         );
     }
 
+    public static PassengerDocument toPassengerDocument(PassengerEntity passengerEntity) {
+        return new PassengerDocument(
+                passengerEntity.getId(),
+                passengerEntity.getName().getName(),
+                passengerEntity.getPassportNumber().getPassportNumber(),
+                passengerEntity.getPassengerType(),
+                passengerEntity.getAge().getAge(),
+                passengerEntity.isDeleted()
+        );
+    }
+
     public static CreatePassengerCommand toCreatePassengerCommand(CreatePassengerRequestDto passengerRequestDto) {
         return new CreatePassengerCommand(
                 UuidCreator.getTimeOrderedEpoch(),
