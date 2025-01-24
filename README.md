@@ -68,9 +68,9 @@ I will try to register future goals and additions in the [Issues](https://github
 High-level plan is represented in the table
 
 | Feature           | Status         |
-| ----------------- | -------------- |
+|-------------------| -------------- |
 | API Gateway       | Completed ✔️   |
-| Keycloak Service  | Completed ✔️   |
+| Identity Service  | Completed ✔️   |
 | Flight Service    | Completed ✔️   |
 | Passenger Service | Completed ✔️   |
 | Booking Service   | Completed ✔️   |
@@ -78,31 +78,31 @@ High-level plan is represented in the table
 
 
 ## Technologies - Libraries
-- ✔️ **[Spring Boot](https://github.com/spring-projects/spring-boot/tree/main)** - A framework for building production-grade Spring-based applications with minimal effort.
-- ✔️ **[Spring AMQP](https://github.com/spring-projects/spring-amqp)** - Simplifies the development of messaging applications using RabbitMQ.
-- ✔️ **[Spring Data JPA](https://github.com/spring-projects/spring-data-jpa)** - A library to simplify data access with JPA-based repositories.
-- ✔️ **[Spring Data MongoDB](https://github.com/spring-projects/spring-data-mongodb)** - Provides integration with MongoDB for Spring applications.
-- ✔️ **[Spring Security](https://github.com/spring-projects/spring-security)** - A framework for securing Spring-based applications, providing authentication and authorization capabilities.
-- ✔️ **[Keycloak](https://github.com/keycloak/keycloak)** - An identity provider and access management solution.
-- ✔️ **[PostgreSQL](https://github.com/pgjdbc/pgjdbc)** A JDBC driver for connecting Java applications to PostgreSQL databases.
-- ✔️ **[Springdoc OpenAPI](https://github.com/springdoc/springdoc-openapi)** - Automates the generation of OpenAPI documentation for Spring Boot applications.
-- ✔️ **[Swagger Core](https://github.com/swagger-api/swagger-core)** - A library for building and interacting with Swagger/OpenAPI definitions.
-- ✔️ **[OpenTelemetry Collector](https://github.com/open-telemetry/opentelemetry-collector/tree/main)** - A collector for collecting telemetry data such as metrics, logs, and traces.
-- ✔️ **[Lombok](https://github.com/projectlombok/lombok)** - A Java library that helps to reduce boilerplate code by generating getters, setters, and other common methods.
-- ✔️ **[Flyway](https://github.com/flyway/flyway)** - A database migration tool for versioning and automating schema changes.
-- ✔️ **[JPA Buddy](https://jpa-buddy.com)** - A productivity tool for working with JPA and Hibernate in IntelliJ IDEA.
-- ✔️ **[UUID Creator](https://github.com/f4b6a3/uuid-creator)** - A library for generating UUIDs in Java.
-- ✔️ **[QueryDSL](https://github.com/querydsl/querydsl)**- A framework for building type-safe queries for JPA, SQL, and other data sources.
-- ✔️ **[Reflections](https://github.com/ronmamo/reflections)** - A Java library for metadata analysis and scanning of classpath resources.
-- ✔️ **[gRPC Spring](https://github.com/grpc-ecosystem/grpc-spring)** - A framework for building gRPC services with Spring Boot.
-- ✔️ **[Testcontainers](https://github.com/testcontainers/testcontainers-java)** - A Java library for creating and managing lightweight, throwaway instances of Docker containers for testing.
-- ✔️ **[Mockito](https://github.com/mockito/mockito)** - A mocking framework for unit tests in Java.
-- ✔️ **[JUnit](https://github.com/junit-team)** - A popular framework for writing and running unit tests in Java.
+- ✔️ **[Spring Boot](https://github.com/spring-projects/spring-boot/tree/main)** - Framework for building Java applications with pre-configured defaults and embedded server support.
+- ✔️ **[Spring AMQP](https://github.com/spring-projects/spring-amqp)** - Simplifies messaging using RabbitMQ with declarative configuration and templates.
+- ✔️ **[Spring Data JPA](https://github.com/spring-projects/spring-data-jpa)** - Enhances JPA with repository abstractions and advanced query capabilities.
+- ✔️ **[Spring Data MongoDB](https://github.com/spring-projects/spring-data-mongodb)** - Provides seamless MongoDB integration with Spring-based applications.
+- ✔️ **[Spring Security](https://github.com/spring-projects/spring-security)** - Comprehensive security framework for authentication and authorization in Java applications.
+- ✔️ **[Keycloak](https://github.com/keycloak/keycloak)** - A identity and access management solution supporting OpenID Connect and OAuth 2.0.
+- ✔️ **[PostgreSQL](https://github.com/pgjdbc/pgjdbc)** - Official JDBC driver for PostgreSQL, enabling Java applications to interact with PostgreSQL databases.
+- ✔️ **[Springdoc OpenAPI](https://github.com/springdoc/springdoc-openapi)** - Automatically generates OpenAPI 3 documentation for Spring Boot projects.
+- ✔️ **[Swagger Core](https://github.com/swagger-api/swagger-core)** - Core library for building and consuming Swagger-compliant APIs.
+- ✔️ **[OpenTelemetry Collector](https://github.com/open-telemetry/opentelemetry-collector/tree/main)** - Collects, processes, and exports telemetry data (traces, metrics, logs) for observability.
+- ✔️ **[Lombok](https://github.com/projectlombok/lombok)** - Reduces boilerplate code in Java by generating common methods like getters and setters.
+- ✔️ **[Flyway](https://github.com/flyway/flyway)** - Database migration tool for version-controlled and repeatable schema changes.
+- ✔️ **[JPA Buddy](https://jpa-buddy.com)** - Productivity tool for working with JPA and Hibernate, simplifying development and debugging.
+- ✔️ **[UUID Creator](https://github.com/f4b6a3/uuid-creator)** - Library for generating UUIDs in various formats and versions.
+- ✔️ **[QueryDSL](https://github.com/querydsl/querydsl)** - Enables type-safe queries for JPA, SQL, and other persistence layers.
+- ✔️ **[Reflections](https://github.com/ronmamo/reflections)** - Facilitates metadata scanning and classpath resource analysis in Java.
+- ✔️ **[gRPC Spring](https://github.com/grpc-ecosystem/grpc-spring)** - Integration of gRPC with Spring Boot for building high-performance RPC services.
+- ✔️ **[Testcontainers](https://github.com/testcontainers/testcontainers-java)** - Provides lightweight, disposable Docker containers for testing purposes.
+- ✔️ **[Mockito](https://github.com/mockito/mockito)** - Popular mocking framework for writing clean, maintainable unit tests in Java.
+- ✔️ **[JUnit](https://github.com/junit-team)** - Essential testing framework for Java developers, supporting unit and integration testing.
 
 
 ## The Domain And Bounded Context - Service Boundary
 
-- `Keycloak Service`: The Keycloak Service is a identity provider for the authentication and authorization of users using [Keycloak](https://github.com/keycloak/keycloak). This service is responsible for creating new users and their corresponding roles permissions and handeling authentication and authorization with OpenID-Connect and OAuth2.
+- `Identity Service`: The Keycloak Service is a identity provider for the authentication and authorization of users using [Keycloak](https://github.com/keycloak/keycloak). This service is responsible for creating new users and their corresponding roles permissions and handeling authentication and authorization with OpenID-Connect and OAuth2.
 
 - `Flight Service`: The Flight Service is a bounded context `CRUD` service to handle flight related operations.
 
@@ -203,4 +203,4 @@ Please follow this [contribution guideline](./CONTRIBUTION.md) to submit a pull 
 - [https://github.com/oskardudycz/cqrs-is-simpler-with-java](https://github.com/oskardudycz/cqrs-is-simpler-with-java)
 
 ## License
-This project is made available under the MIT license. See [LICENSE](https://github.com/meysamhadeli/booking-microservices/blob/main/LICENSE) for details.
+This project is made available under the MIT license. See [LICENSE](https://github.com/meysamhadeli/booking-microservices-java-spring-boot/blob/main/LICENSE) for details.
