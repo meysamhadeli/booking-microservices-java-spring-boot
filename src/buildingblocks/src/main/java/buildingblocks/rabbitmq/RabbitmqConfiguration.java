@@ -9,121 +9,156 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @Configuration
 public class RabbitmqConfiguration {
 
-    @Value("${spring.rabbitmq.template.exchange-type}")
-    private String exchangeType;
+  @Value("${spring.rabbitmq.template.exchange-type}")
+  private String exchangeType;
 
-    private final RabbitProperties rabbitProperties;
-    private final TransactionTemplate transactionTemplate;
-    private final Logger logger;
+  private final RabbitProperties rabbitProperties;
+  private final TransactionTemplate transactionTemplate;
+  private final Logger logger;
 
-    public RabbitmqConfiguration(
-            RabbitProperties rabbitProperties,
-            PlatformTransactionManager platformTransactionManager,
-            Logger logger) {
-        this.rabbitProperties = rabbitProperties;
-        this.transactionTemplate = new TransactionTemplate(platformTransactionManager);
-        this.logger = logger;
-    }
+  public RabbitmqConfiguration(
+    RabbitProperties rabbitProperties,
+    PlatformTransactionManager platformTransactionManager,
+    Logger logger) {
+    this.rabbitProperties = rabbitProperties;
+    this.transactionTemplate = new TransactionTemplate(platformTransactionManager);
+    this.logger = logger;
+  }
 
+  @Bean
+  public ConnectionFactory connectionFactory() {
+    CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitProperties.getHost());
+    connectionFactory.setPort(rabbitProperties.getPort());
+    connectionFactory.setUsername(rabbitProperties.getUsername());
+    connectionFactory.setPassword(rabbitProperties.getPassword());
+    return connectionFactory;
+  }
 
-    @Bean
-    public ConnectionFactory connectionFactory() {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitProperties.getHost());
-        connectionFactory.setPort(rabbitProperties.getPort());
-        connectionFactory.setUsername(rabbitProperties.getUsername());
-        connectionFactory.setPassword(rabbitProperties.getPassword());
-        return connectionFactory;
-    }
+  @Bean
+  public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+    return new RabbitAdmin(connectionFactory);
+  }
 
-    public String getQueueName() {
-        return rabbitProperties.getTemplate().getExchange() + "_queue";
-    }
+  @Bean
+  public AsyncRabbitTemplate asyncTemplate(ConnectionFactory connectionFactory) {
+    return new AsyncRabbitTemplate(new RabbitTemplate(connectionFactory));
+  }
 
-    @Bean
-    public Queue queue() {
-        return new Queue(rabbitProperties.getTemplate().getExchange() + "_queue", true);
-    }
+  @Bean
+  public RabbitTemplate template(ConnectionFactory connectionFactory) {
+    return new RabbitTemplate(connectionFactory);
+  }
 
-    @Bean
-    public Exchange exchange() {
-        return switch (exchangeType.toLowerCase()) {
-            case "direct" -> new DirectExchange(rabbitProperties.getTemplate().getExchange());
-            case "fanout" -> new FanoutExchange(rabbitProperties.getTemplate().getExchange());
-            default -> new TopicExchange(rabbitProperties.getTemplate().getExchange());
-        };
-    }
+  @Bean
+  public MessageListenerContainer addListeners(
+    PersistMessageProcessor persistMessageProcessor,
+    RabbitAdmin rabbitAdmin,
+    ApplicationContext applicationContext) {
+    SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+    container.setConnectionFactory(connectionFactory());
+    container.setAcknowledgeMode(AcknowledgeMode.AUTO);
 
+    // Map to store message type to listener mapping
+    HashMap<Class<?>, Supplier<MessageListener>> listenerMap = new HashMap<>();
 
-    @Bean
-    public Binding binding(Queue queue, Exchange exchange) {
-        String routingKey = rabbitProperties.getTemplate().getExchange() + "_routing_key";
-        return switch (exchange) {
-            case TopicExchange topicExchange -> BindingBuilder.bind(queue).to(topicExchange).with(routingKey);
-            case DirectExchange directExchange -> BindingBuilder.bind(queue).to(directExchange).with(routingKey);
-            case FanoutExchange fanoutExchange -> BindingBuilder.bind(queue).to(fanoutExchange);
-            case null, default -> throw new IllegalArgumentException("Unsupported exchange type for binding");
-        };
-    }
+    // Retrieve all beans of type MessageListener
+    Map<String, MessageListener> listeners = applicationContext.getBeansOfType(MessageListener.class);
 
-    @Bean
-    public AsyncRabbitTemplate asyncTemplate(ConnectionFactory connectionFactory) {
-        return new AsyncRabbitTemplate(new RabbitTemplate(connectionFactory));
-    }
+    listeners.values().forEach(listener -> {
+      RabbitmqMessageHandler annotation = listener.getClass().getAnnotation(RabbitmqMessageHandler.class);
 
-    @Bean
-    public RabbitTemplate template(ConnectionFactory connectionFactory) {
-        return new RabbitTemplate(connectionFactory);
-    }
+      if (annotation != null) {
+        var typeName = annotation.messageType().getTypeName();
 
-    @Bean
-    public MessageListenerContainer addListeners(PersistMessageProcessor persistMessageProcessor) {
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory());
-        container.setQueueNames(getQueueName());
+        Queue queue = declareQueue(rabbitAdmin, typeName);
 
-        // Find all MessageListener implementations
-        var handler = ReflectionUtils.getInstanceOfSubclass(MessageListener.class);
-        if (handler != null) {
-            // Set message listener that routes to appropriate handler
-            container.setMessageListener(message -> {
-                transactionTemplate.execute(status -> {
-                    try {
-                        // Add the received message to the inbox
-                        UUID id = persistMessageProcessor.addReceivedMessage(message);
-                        PersistMessageEntity persistMessage = persistMessageProcessor.existInboxMessage(id);
+        Exchange exchange = declareExchange(rabbitAdmin);
 
-                        if (persistMessage == null) {
-                            handler.onMessage(message);
-                            persistMessageProcessor.process(id, MessageDeliveryType.Inbox);
-                        }
-                    } catch (Exception ex) {
-                        status.setRollbackOnly();
-                        throw ex;
-                    }
-                    return null;
-                });
-            });
-        } else {
-            // Default message listener if no custom implementation is found
-            container.setMessageListener(message -> {
-                logger.info("Received message with no configured listener: {}", message);
-            });
-        }
+        declareBindings(rabbitAdmin, queue, exchange, typeName);
 
-        return container;
-    }
+        container.setQueueNames(queue.getName());
+
+        // Store the listener in the map
+        listenerMap.put(annotation.messageType(), () -> listener);
+      }
+
+      // Set the message listener
+      container.setMessageListener(message -> {
+        transactionTemplate.execute(status -> {
+          try {
+            UUID id = persistMessageProcessor.addReceivedMessage(message);
+            PersistMessageEntity persistMessage = persistMessageProcessor.existInboxMessage(id);
+
+            if (persistMessage == null) {
+              Class<?> messageType = ReflectionUtils.findClassFromName(message.getMessageProperties().getType());
+
+              // Find the appropriate handler
+              Supplier<MessageListener> handlerSupplier = listenerMap.get(messageType);
+
+              if (handlerSupplier != null) {
+                MessageListener handler = handlerSupplier.get();
+                handler.onMessage(message);
+                persistMessageProcessor.process(id, MessageDeliveryType.Inbox);
+              } else {
+                logger.warn("No handler found for message type: {}", messageType.getTypeName());
+              }
+            }
+          } catch (Exception ex) {
+            status.setRollbackOnly();
+            throw ex;
+          }
+          return null;
+        });
+      });
+    });
+    return container;
+  }
+
+  private static void declareBindings(RabbitAdmin rabbitAdmin, Queue queue, Exchange exchange, String routingKey) {
+    switch (exchange) {
+      case TopicExchange topicExchange -> rabbitAdmin.declareBinding(BindingBuilder.bind(queue).to(topicExchange).with(routingKey));
+      case DirectExchange directExchange -> rabbitAdmin.declareBinding(BindingBuilder.bind(queue).to(directExchange).with(routingKey));
+      case FanoutExchange fanoutExchange -> rabbitAdmin.declareBinding(BindingBuilder.bind(queue).to(fanoutExchange));
+      case null, default -> throw new IllegalArgumentException("Unsupported exchange type for binding");
+    };
+  }
+
+  private Exchange declareExchange(RabbitAdmin rabbitAdmin) {
+    Exchange exchange = switch (exchangeType.toLowerCase()) {
+      case "direct" ->
+        new DirectExchange(rabbitProperties.getTemplate().getExchange());
+      case "fanout" ->
+        new FanoutExchange(rabbitProperties.getTemplate().getExchange());
+      default ->
+        new TopicExchange(rabbitProperties.getTemplate().getExchange());
+    };
+
+    rabbitAdmin.declareExchange(exchange);
+
+    return exchange;
+  }
+
+  private static Queue declareQueue(RabbitAdmin rabbitAdmin, String typeName) {
+    Queue queue = new Queue(typeName + "_queue", true);
+    rabbitAdmin.declareQueue(queue);
+    return queue;
+  }
 }

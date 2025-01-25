@@ -20,85 +20,85 @@ import java.time.Instant;
 @RestControllerAdvice
 public class CustomProblemDetailsHandler extends ResponseEntityExceptionHandler {
 
-    private final Environment environment;
+  private final Environment environment;
 
-    public CustomProblemDetailsHandler(Environment environment) {
-        this.environment = environment;
+  public CustomProblemDetailsHandler(Environment environment) {
+    this.environment = environment;
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ProblemDetail> handleAllExceptions(
+    Exception ex,
+    WebRequest request
+  ) {
+    record ExceptionDetails(String detail, String title, HttpStatus status) {
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ProblemDetail> handleAllExceptions(
-            Exception ex,
-            WebRequest request
-    )
-    {
-        record ExceptionDetails(String detail, String title, HttpStatus status) {}
+    ExceptionDetails details = switch (ex) {
 
-        ExceptionDetails details = switch (ex) {
+      case ConflictException conflictEx -> new ExceptionDetails(
+        conflictEx.getMessage(),
+        conflictEx.getClass().getSimpleName(),
+        HttpStatus.CONFLICT
+      );
 
-            case ConflictException conflictEx ->
-                    new ExceptionDetails(
-                            conflictEx.getMessage(),
-                            conflictEx.getClass().getSimpleName(),
-                            HttpStatus.CONFLICT
-                    );
+      case ValidationException validationEx -> new ExceptionDetails(
+        validationEx.getMessage(),
+        validationEx.getClass().getSimpleName(),
+        HttpStatus.BAD_REQUEST
+      );
 
-            case ValidationException validationEx ->
-                    new ExceptionDetails(
-                            validationEx.getMessage(),
-                            validationEx.getClass().getSimpleName(),
-                            HttpStatus.BAD_REQUEST
-                    );
+      case BadRequestException badRequestEx -> new ExceptionDetails(
+        badRequestEx.getMessage(),
+        badRequestEx.getClass().getSimpleName(),
+        HttpStatus.BAD_REQUEST
+      );
 
-            case BadRequestException badRequestEx ->
-                    new ExceptionDetails(
-                            badRequestEx.getMessage(),
-                            badRequestEx.getClass().getSimpleName(),
-                            HttpStatus.BAD_REQUEST
-                    );
+      case NotFoundException notFoundEx -> new ExceptionDetails(
+        notFoundEx.getMessage(),
+        notFoundEx.getClass().getSimpleName(),
+        HttpStatus.NOT_FOUND
+      );
 
-            case NotFoundException notFoundEx ->
-                    new ExceptionDetails(
-                            notFoundEx.getMessage(),
-                            notFoundEx.getClass().getSimpleName(),
-                            HttpStatus.NOT_FOUND
-                    );
+      case OptimisticLockException concurrencyEx -> new ExceptionDetails(
+        concurrencyEx.getMessage(),
+        concurrencyEx.getClass().getSimpleName(),
+        HttpStatus.CONFLICT
+      );
 
-            case OptimisticLockException concurrencyEx ->
-                    new ExceptionDetails(
-                            concurrencyEx.getMessage(),
-                            concurrencyEx.getClass().getSimpleName(),
-                            HttpStatus.CONFLICT
-                    );
+      case io.grpc.StatusRuntimeException grpcEx -> new ExceptionDetails(
+        grpcEx.getMessage(),
+        "GrpcException",
+        HttpStatus.BAD_REQUEST
+      );
 
-            default ->
-                    new ExceptionDetails(
-                            ex.getMessage(),
-                            ex.getClass().getSimpleName(),
-                            HttpStatus.INTERNAL_SERVER_ERROR
-                    );
-        };
+      default -> new ExceptionDetails(
+        ex.getMessage(),
+        ex.getClass().getSimpleName(),
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    };
 
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                details.status(),
-                details.detail()
-        );
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+      details.status(),
+      details.detail()
+    );
 
 
-        problemDetail.setType(URI.create("https://problems/" + details.title().toLowerCase()));
-        problemDetail.setTitle(details.title());
-        problemDetail.setProperty("timestamp", Instant.now());
+    problemDetail.setType(URI.create("https://problems/" + details.title().toLowerCase()));
+    problemDetail.setTitle(details.title());
+    problemDetail.setProperty("timestamp", Instant.now());
 
-        // Add stack trace in development environment
-        if (isDevelopment()) {
-            problemDetail.setProperty("exception", ex.toString());
-        }
-
-        return ResponseEntity.status(problemDetail.getStatus()).body(problemDetail);
+    // Add stack trace in development environment
+    if (isDevelopment()) {
+      problemDetail.setProperty("exception", ex.toString());
     }
 
-    private boolean isDevelopment() {
-        String[] activeProfiles = environment.getActiveProfiles();
-        return activeProfiles.length > 0 && ("dev".equalsIgnoreCase(activeProfiles[0]) || "development".equalsIgnoreCase(activeProfiles[0]));
-    }
+    return ResponseEntity.status(problemDetail.getStatus()).body(problemDetail);
+  }
+
+  private boolean isDevelopment() {
+    String[] activeProfiles = environment.getActiveProfiles();
+    return activeProfiles.length > 0 && ("dev".equalsIgnoreCase(activeProfiles[0]) || "development".equalsIgnoreCase(activeProfiles[0]));
+  }
 }

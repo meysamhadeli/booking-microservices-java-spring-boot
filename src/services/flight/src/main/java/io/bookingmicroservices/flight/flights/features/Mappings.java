@@ -17,6 +17,8 @@ import io.bookingmicroservices.flight.flights.features.updateflight.UpdateFlight
 import io.bookingmicroservices.flight.flights.features.updateflight.UpdateFlightRequestDto;
 import io.bookingmicroservices.flight.flights.models.Flight;
 import io.bookingmicroservices.flight.flights.valueobjects.*;
+import org.bson.types.ObjectId;
+
 import java.util.UUID;
 
 public final class Mappings {
@@ -132,8 +134,9 @@ public final class Mappings {
   }
 
 
-  public static FlightDocument toFlightDocument(UpdateFlightMongoCommand updateFlightMongoCommand) {
+  public static FlightDocument toFlightDocument(ObjectId id, UpdateFlightMongoCommand updateFlightMongoCommand) {
     return new FlightDocument(
+      id,
       updateFlightMongoCommand.id(),
       updateFlightMongoCommand.flightNumber(),
       updateFlightMongoCommand.aircraftId(),
