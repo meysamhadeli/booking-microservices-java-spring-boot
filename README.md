@@ -70,7 +70,7 @@ High-level plan is represented in the table
 | Feature           | Status         |
 |-------------------| -------------- |
 | API Gateway       | Completed ✔️   |
-| Identity Service  | Completed ✔️   |
+| Keycloak Service  | Completed ✔️   |
 | Flight Service    | Completed ✔️   |
 | Passenger Service | Completed ✔️   |
 | Booking Service   | Completed ✔️   |
@@ -102,7 +102,7 @@ High-level plan is represented in the table
 
 ## The Domain And Bounded Context - Service Boundary
 
-- `Identity Service`: The Keycloak Service is a identity provider for the authentication and authorization of users using [Keycloak](https://github.com/keycloak/keycloak). This service is responsible for creating new users and their corresponding roles permissions and handeling authentication and authorization with OpenID-Connect and OAuth2.
+- `Keycloak Service`: The Keycloak Service is a identity provider for the authentication and authorization of users using [Keycloak](https://github.com/keycloak/keycloak). This service is responsible for creating new users and their corresponding roles permissions and handeling authentication and authorization with OpenID-Connect and OAuth2.
 
 - `Flight Service`: The Flight Service is a bounded context `CRUD` service to handle flight related operations.
 
@@ -118,7 +118,7 @@ In this project I used a mix of [clean architecture](https://jasontaylor.dev/cle
 
 I used [yarp reverse proxy](https://microsoft.github.io/reverse-proxy/articles/index.html) to route synchronous and asynchronous requests to the corresponding microservice. Each microservice has its dependencies such as databases, files etc. Each microservice is decoupled from other microservices and developed and deployed separately. Microservices talk to each other with Rest or gRPC for synchronous calls and use RabbitMq or Kafka for asynchronous calls.
 
-We have a separate microservice ([IdentityServer](https://github.com/DuendeSoftware/IdentityServer)) for authentication and authorization of each request. Once signed-in users are issued a JWT token. This token is used by other microservices to validate the user, read claims and allow access to authorized/role specific endpoints.
+We have a separate microservice [Keycloak Service](https://github.com/keycloak/keycloak) for authentication and authorization of each request. Once signed-in users are issued a JWT token. This token is used by other microservices to validate the user, read claims and allow access to authorized/role specific endpoints.
 
 I used [RabbitMQ](https://github.com/rabbitmq) as my MessageBroker for async communication between microservices using the eventual consistency mechanism. Each microservice uses [MassTransit](https://github.com/MassTransit/MassTransit) to interface with [RabbitMQ](https://github.com/rabbitmq) providing, messaging, availability, reliability, etc.
 

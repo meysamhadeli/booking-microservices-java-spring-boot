@@ -97,13 +97,13 @@ authorization: bearer {{Authenticate.response.body.access_token}}
 
 ###
 # @name Create_Flights
-POST {{api-gateway}}/api/v1/flight
+POST {{flight-api}}/api/v1/flight
 accept: application/json
 Content-Type: application/json
 authorization: bearer {{Authenticate.response.body.access_token}}
 
 {
-  "flightNumber": "20BB",
+  "flightNumber": "3dd5555655533",
   "aircraftId": {{aircraftId}},
   "departureAirportId": {{departureAirportId}},
   "departureDate": "2022-03-01T14:55:41.255Z",
@@ -119,13 +119,13 @@ authorization: bearer {{Authenticate.response.body.access_token}}
 
 ###
 # @name Update_Flights
-PUT  {{api-gateway}}/api/v1/flight/01949849-1608-7e16-975a-e7f4cf1d029d
+PUT  {{flight-api}}/api/v1/flight/019498d8-2a28-7f0b-ac0c-2f8352c13c79
 accept: application/json
 Content-Type: application/json
 authorization: bearer {{Authenticate.response.body.access_token}}
 
 {
-  "flightNumber": "20BB",
+  "flightNumber": "2222222222222222",
   "aircraftId": {{aircraftId}},
   "departureAirportId": {{departureAirportId}},
   "departureDate": "2025-01-24T12:35:11.803Z",
@@ -134,7 +134,7 @@ authorization: bearer {{Authenticate.response.body.access_token}}
   "durationMinutes": 140,
   "flightDate": "2025-01-24T12:35:11.803Z",
   "status": "Flying",
-  "price": 8000,
+  "price": 9000,
   "isDeleted": false
 }
 ###
