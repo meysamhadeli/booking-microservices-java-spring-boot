@@ -39,7 +39,7 @@ spring:
     password: guest
     template:
       exchange: passenger
-      exchange-type: direct
+      exchange-type: fanout
 
   otel:
     collector:

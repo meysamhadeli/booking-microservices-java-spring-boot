@@ -7,6 +7,7 @@ import buildingblocks.utils.reflection.ReflectionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ConfigurationBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 
@@ -22,11 +23,13 @@ import java.util.Set;
 public class EventDispatcherImpl implements EventDispatcher {
     private final EventMapper eventMapper;
     private final PersistMessageProcessor persistMessageProcessor;
+  private final ApplicationContext applicationContext;
 
-    public EventDispatcherImpl(EventMapper eventMapper, PersistMessageProcessor persistMessageProcessor) {
+  public EventDispatcherImpl(EventMapper eventMapper, PersistMessageProcessor persistMessageProcessor, ApplicationContext applicationContext) {
         this.eventMapper = eventMapper;
         this.persistMessageProcessor = persistMessageProcessor;
-    }
+    this.applicationContext = applicationContext;
+  }
 
     @Override
     public <T extends DomainEvent> void send(List<T> domainEvents, Class<?> eventType) {
@@ -42,13 +45,13 @@ public class EventDispatcherImpl implements EventDispatcher {
 
     @Override
     public List<DomainEvent> getDomainEvents() {
-            AggregateRoot<?> aggregateRoot = ReflectionUtils.getInstanceOfSubclass(AggregateRoot.class);
+            AggregateRoot<?> aggregateRoot = ReflectionUtils.getInstanceOfSubclass(AggregateRoot.class, applicationContext);
             return Objects.requireNonNull(aggregateRoot).getDomainEvents();
     }
 
     @Override
     public void clearDomainEvents() {
-        AggregateRoot<?> aggregateRoot = ReflectionUtils.getInstanceOfSubclass(AggregateRoot.class);
+        AggregateRoot<?> aggregateRoot = ReflectionUtils.getInstanceOfSubclass(AggregateRoot.class, applicationContext);
          Objects.requireNonNull(aggregateRoot).clearDomainEvents();
     }
 }

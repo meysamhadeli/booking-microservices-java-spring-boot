@@ -152,7 +152,7 @@ public class PersistMessageProcessorImpl implements PersistMessageProcessor {
       if (data instanceof IntegrationEvent integrationEvent) {
 
         this.rabbitTemplate.convertSendAndReceive(
-          message.getDataType(),
+          rabbitProperties.getTemplate().getExchange(),
           message.getDataType(),
           JsonConverterUtils.serializeObject(integrationEvent), msg -> {
             MessageProperties props = msg.getMessageProperties();

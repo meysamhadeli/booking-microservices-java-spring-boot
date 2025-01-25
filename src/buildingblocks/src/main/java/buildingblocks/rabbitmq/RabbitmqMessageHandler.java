@@ -13,10 +13,4 @@ public @interface RabbitmqMessageHandler {
    * @return the message type class
    */
   Class<?> messageType();
-
-  /**
-   * Specifies the queue name for this message handler.
-   * @return the queue name
-   */
-  String queueName();
 }

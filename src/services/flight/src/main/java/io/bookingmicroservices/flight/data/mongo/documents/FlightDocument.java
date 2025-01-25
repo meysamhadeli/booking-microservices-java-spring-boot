@@ -32,6 +32,22 @@ public class FlightDocument {
   private BigDecimal price;
   private boolean isDeleted;
 
+  public FlightDocument(ObjectId id, UUID flightId, String flightNumber, UUID aircraftId, UUID departureAirportId, UUID arriveAirportId, BigDecimal durationMinutes, FlightStatus status, BigDecimal price, LocalDateTime arriveDate, LocalDateTime departureDate, LocalDateTime flightDate, boolean isDeleted) {
+    this.id = id;
+    this.flightId = flightId;
+    this.flightNumber = flightNumber;
+    this.aircraftId = aircraftId;
+    this.departureAirportId = departureAirportId;
+    this.arriveAirportId = arriveAirportId;
+    this.durationMinutes = durationMinutes;
+    this.status = status;
+    this.price = price;
+    this.arriveDate = arriveDate;
+    this.departureDate = departureDate;
+    this.flightDate = flightDate;
+    this.isDeleted = isDeleted;
+  }
+
   public FlightDocument(UUID flightId, String flightNumber, UUID aircraftId, UUID departureAirportId, UUID arriveAirportId, BigDecimal durationMinutes, FlightStatus status, BigDecimal price, LocalDateTime arriveDate, LocalDateTime departureDate, LocalDateTime flightDate, boolean isDeleted) {
     this.flightId = flightId;
     this.flightNumber = flightNumber;

@@ -85,8 +85,9 @@ public class Flight extends AggregateRoot<FlightId> {
     return flight;
   }
 
-  public void update(FlightNumber flightNumber, AircraftId aircraftId, AirportId departureAirportId, DepartureDate departureDate, ArriveDate arriveDate, AirportId arriveAirportId, DurationMinutes durationMinutes, FlightDate flightDate, FlightStatus status, Price price, boolean isDeleted) {
+  public void update(FlightId id, FlightNumber flightNumber, AircraftId aircraftId, AirportId departureAirportId, DepartureDate departureDate, ArriveDate arriveDate, AirportId arriveAirportId, DurationMinutes durationMinutes, FlightDate flightDate, FlightStatus status, Price price, boolean isDeleted) {
 
+    this.id = id;
     this.flightNumber = flightNumber;
     this.aircraftId = aircraftId;
     this.departureAirportId = departureAirportId;

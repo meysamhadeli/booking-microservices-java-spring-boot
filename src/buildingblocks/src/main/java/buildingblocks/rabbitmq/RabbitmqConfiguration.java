@@ -15,11 +15,12 @@ import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -42,7 +43,6 @@ public class RabbitmqConfiguration {
     this.logger = logger;
   }
 
-
   @Bean
   public ConnectionFactory connectionFactory() {
     CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitProperties.getHost());
@@ -54,38 +54,8 @@ public class RabbitmqConfiguration {
 
   @Bean
   public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
-   return new RabbitAdmin(connectionFactory);
+    return new RabbitAdmin(connectionFactory);
   }
-
-//  public String getQueueName() {
-//    return rabbitProperties.getTemplate().getExchange() + "_queue";
-//  }
-
-//  @Bean
-//  public Queue queue() {
-//    return new Queue(rabbitProperties.getTemplate().getExchange() + "_queue", true);
-//  }
-//
-//  @Bean
-//  public Exchange exchange() {
-//    return switch (exchangeType.toLowerCase()) {
-//      case "direct" -> new DirectExchange(rabbitProperties.getTemplate().getExchange());
-//      case "fanout" -> new FanoutExchange(rabbitProperties.getTemplate().getExchange());
-//      default -> new TopicExchange(rabbitProperties.getTemplate().getExchange());
-//    };
-//  }
-//
-//
-//  @Bean
-//  public Binding binding(Queue queue, Exchange exchange) {
-//    String routingKey = rabbitProperties.getTemplate().getExchange() + "_routing_key";
-//    return switch (exchange) {
-//      case TopicExchange topicExchange -> BindingBuilder.bind(queue).to(topicExchange).with(routingKey);
-//      case DirectExchange directExchange -> BindingBuilder.bind(queue).to(directExchange).with(routingKey);
-//      case FanoutExchange fanoutExchange -> BindingBuilder.bind(queue).to(fanoutExchange);
-//      case null, default -> throw new IllegalArgumentException("Unsupported exchange type for binding");
-//    };
-//  }
 
   @Bean
   public AsyncRabbitTemplate asyncTemplate(ConnectionFactory connectionFactory) {
@@ -98,38 +68,35 @@ public class RabbitmqConfiguration {
   }
 
   @Bean
-  public MessageListenerContainer addListeners(PersistMessageProcessor persistMessageProcessor, RabbitAdmin rabbitAdmin) {
+  public MessageListenerContainer addListeners(
+    PersistMessageProcessor persistMessageProcessor,
+    RabbitAdmin rabbitAdmin,
+    ApplicationContext applicationContext) {
     SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
     container.setConnectionFactory(connectionFactory());
-
-//    // Change to support multiple listeners
-//    List<MessageListener> listeners = ReflectionUtils.getAllInstanceOfSubclasses(MessageListener.class);
-//
+    container.setAcknowledgeMode(AcknowledgeMode.AUTO);
 
     // Map to store message type to listener mapping
     HashMap<Class<?>, Supplier<MessageListener>> listenerMap = new HashMap<>();
 
-    // Find all MessageListener implementations
-    var listener = ReflectionUtils.getInstanceOfSubclass(MessageListener.class);
-    if (listener != null) {
+    // Retrieve all beans of type MessageListener
+    Map<String, MessageListener> listeners = applicationContext.getBeansOfType(MessageListener.class);
+
+    listeners.values().forEach(listener -> {
       RabbitmqMessageHandler annotation = listener.getClass().getAnnotation(RabbitmqMessageHandler.class);
 
       if (annotation != null) {
         var typeName = annotation.messageType().getTypeName();
 
-        DirectExchange directExchange = new DirectExchange(typeName);
-        rabbitAdmin.declareExchange(directExchange);
+        Queue queue = declareQueue(rabbitAdmin, typeName);
 
-        Queue queue = new Queue(typeName + "_queue", true);
-        rabbitAdmin.declareQueue(queue);
+        Exchange exchange = declareExchange(rabbitAdmin);
 
-        // Bind the queue to the fanout exchange
-        rabbitAdmin.declareBinding(BindingBuilder.bind(queue).to(directExchange).with(typeName));
+        declareBindings(rabbitAdmin, queue, exchange, typeName);
 
-        // Set the queue name from the annotation
         container.setQueueNames(queue.getName());
 
-        // Store a supplier for the listener
+        // Store the listener in the map
         listenerMap.put(annotation.messageType(), () -> listener);
       }
 
@@ -141,7 +108,6 @@ public class RabbitmqConfiguration {
             PersistMessageEntity persistMessage = persistMessageProcessor.existInboxMessage(id);
 
             if (persistMessage == null) {
-
               Class<?> messageType = ReflectionUtils.findClassFromName(message.getMessageProperties().getType());
 
               // Find the appropriate handler
@@ -162,7 +128,37 @@ public class RabbitmqConfiguration {
           return null;
         });
       });
-    }
+    });
     return container;
+  }
+
+  private static void declareBindings(RabbitAdmin rabbitAdmin, Queue queue, Exchange exchange, String routingKey) {
+    switch (exchange) {
+      case TopicExchange topicExchange -> rabbitAdmin.declareBinding(BindingBuilder.bind(queue).to(topicExchange).with(routingKey));
+      case DirectExchange directExchange -> rabbitAdmin.declareBinding(BindingBuilder.bind(queue).to(directExchange).with(routingKey));
+      case FanoutExchange fanoutExchange -> rabbitAdmin.declareBinding(BindingBuilder.bind(queue).to(fanoutExchange));
+      case null, default -> throw new IllegalArgumentException("Unsupported exchange type for binding");
+    };
+  }
+
+  private Exchange declareExchange(RabbitAdmin rabbitAdmin) {
+    Exchange exchange = switch (exchangeType.toLowerCase()) {
+      case "direct" ->
+        new DirectExchange(rabbitProperties.getTemplate().getExchange());
+      case "fanout" ->
+        new FanoutExchange(rabbitProperties.getTemplate().getExchange());
+      default ->
+        new TopicExchange(rabbitProperties.getTemplate().getExchange());
+    };
+
+    rabbitAdmin.declareExchange(exchange);
+
+    return exchange;
+  }
+
+  private static Queue declareQueue(RabbitAdmin rabbitAdmin, String typeName) {
+    Queue queue = new Queue(typeName + "_queue", true);
+    rabbitAdmin.declareQueue(queue);
+    return queue;
   }
 }

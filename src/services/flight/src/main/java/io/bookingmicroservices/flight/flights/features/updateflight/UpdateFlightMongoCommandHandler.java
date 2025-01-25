@@ -20,13 +20,13 @@ public class UpdateFlightMongoCommandHandler implements ICommandHandler<UpdateFl
 
   public Unit handle(UpdateFlightMongoCommand command) {
 
-    FlightDocument flightDocument = Mappings.toFlightDocument(command);
-
-    var flight = flightReadRepository.findByFlightIdAndIsDeletedFalse(flightDocument.getFlightId());
+    FlightDocument flight = flightReadRepository.findByFlightIdAndIsDeletedFalse(command.id());
 
     if (flight == null) {
       throw new FlightNotFoundException();
     }
+
+    FlightDocument flightDocument = Mappings.toFlightDocument(flight.getId(), command);
 
     flightReadRepository.save(flightDocument);
 
