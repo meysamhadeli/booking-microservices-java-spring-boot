@@ -77,58 +77,58 @@ public class RabbitmqConfiguration {
     container.setAcknowledgeMode(AcknowledgeMode.AUTO);
 
     // Map to store message type to listener mapping
-    HashMap<Class<?>, Supplier<MessageListener>> listenerMap = new HashMap<>();
+    HashMap<Class<?>, Supplier<MessageHandler<?>>> listenerMap = new HashMap<>();
 
-    // Retrieve all beans of type MessageListener
-    Map<String, MessageListener> listeners = applicationContext.getBeansOfType(MessageListener.class);
+    // Retrieve all beans of type MessageHandler
+    Map<String, MessageHandler> listeners = applicationContext.getBeansOfType(MessageHandler.class);
 
     listeners.values().forEach(listener -> {
-      RabbitmqMessageHandler annotation = listener.getClass().getAnnotation(RabbitmqMessageHandler.class);
+      // Infer the message type from the listener instance
+      Class<?> messageType = ReflectionUtils.getGenericTypeParameter(listener.getClass(), MessageHandler.class);
+      String typeName = messageType.getTypeName();
 
-      if (annotation != null) {
-        var typeName = annotation.messageType().getTypeName();
+      // Declare queue, exchange, and bindings
+      Queue queue = declareQueue(rabbitAdmin, typeName);
+      Exchange exchange = declareExchange(rabbitAdmin);
+      declareBindings(rabbitAdmin, queue, exchange, typeName);
 
-        Queue queue = declareQueue(rabbitAdmin, typeName);
+      // Add the queue to the container
+      container.setQueueNames(queue.getName());
 
-        Exchange exchange = declareExchange(rabbitAdmin);
+      // Store the listener in the map
+      listenerMap.put(messageType, () -> listener);
+    });
 
-        declareBindings(rabbitAdmin, queue, exchange, typeName);
+    // Set the message listener
+    container.setMessageListener(message -> {
+      transactionTemplate.execute(status -> {
+        try {
+          UUID id = persistMessageProcessor.addReceivedMessage(message);
+          PersistMessageEntity persistMessage = persistMessageProcessor.existInboxMessage(id);
 
-        container.setQueueNames(queue.getName());
+          if (persistMessage == null) {
+            // Infer the message type from the message properties
+            Class<?> messageType = ReflectionUtils.findClassFromName(message.getMessageProperties().getType());
 
-        // Store the listener in the map
-        listenerMap.put(annotation.messageType(), () -> listener);
-      }
+            // Find the appropriate handler
+            Supplier<MessageHandler<?>> handlerSupplier = listenerMap.get(messageType);
 
-      // Set the message listener
-      container.setMessageListener(message -> {
-        transactionTemplate.execute(status -> {
-          try {
-            UUID id = persistMessageProcessor.addReceivedMessage(message);
-            PersistMessageEntity persistMessage = persistMessageProcessor.existInboxMessage(id);
-
-            if (persistMessage == null) {
-              Class<?> messageType = ReflectionUtils.findClassFromName(message.getMessageProperties().getType());
-
-              // Find the appropriate handler
-              Supplier<MessageListener> handlerSupplier = listenerMap.get(messageType);
-
-              if (handlerSupplier != null) {
-                MessageListener handler = handlerSupplier.get();
-                handler.onMessage(message);
-                persistMessageProcessor.process(id, MessageDeliveryType.Inbox);
-              } else {
-                logger.warn("No handler found for message type: {}", messageType.getTypeName());
-              }
+            if (handlerSupplier != null) {
+              MessageHandler<?> handler = handlerSupplier.get();
+              handler.onMessage(message); // This will delegate to the consume method
+              persistMessageProcessor.process(id, MessageDeliveryType.Inbox);
+            } else {
+              logger.warn("No handler found for message type: {}", messageType.getTypeName());
             }
-          } catch (Exception ex) {
-            status.setRollbackOnly();
-            throw ex;
           }
-          return null;
-        });
+        } catch (Exception ex) {
+          status.setRollbackOnly();
+          throw ex;
+        }
+        return null;
       });
     });
+
     return container;
   }
 

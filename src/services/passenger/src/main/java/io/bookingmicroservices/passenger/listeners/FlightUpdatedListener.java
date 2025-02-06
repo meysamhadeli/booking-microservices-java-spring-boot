@@ -1,16 +1,15 @@
 package io.bookingmicroservices.passenger.listeners;
 
 import buildingblocks.contracts.flight.FlightUpdated;
-import buildingblocks.rabbitmq.RabbitmqMessageHandler;
+import buildingblocks.rabbitmq.MessageHandler;
 import buildingblocks.utils.jsonconverter.JsonConverterUtils;
 import org.slf4j.Logger;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageListener;
+import org.slf4j.event.KeyValuePair;
 import org.springframework.stereotype.Component;
 
-@RabbitmqMessageHandler(messageType = FlightUpdated.class)
 @Component
-public class FlightUpdatedListener implements MessageListener {
+public class FlightUpdatedListener implements MessageHandler<FlightUpdated> {
+
   private final Logger logger;
 
   public FlightUpdatedListener(Logger logger) {
@@ -18,8 +17,7 @@ public class FlightUpdatedListener implements MessageListener {
   }
 
   @Override
-  public void onMessage(Message message) {
-    FlightUpdated flightUpdated = JsonConverterUtils.deserialize(message.getBody(), FlightUpdated.class);
-    logger.info("Do other processing after update flight in passenger service for this flight: {}", flightUpdated.toString());
+  public void onMessage(FlightUpdated flightUpdated) {
+    logger.info("Do other processing after update flight in passenger service for this flight: {}", new KeyValuePair("flight_updated_event", JsonConverterUtils.serializeObject(flightUpdated)));
   }
 }

@@ -1,5 +1,6 @@
 package buildingblocks.keycloak;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,10 +27,10 @@ public class KeycloakConfiguration {
     private String jwkSetUri;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, Logger logger) throws Exception {
         return httpSecurity
                 .exceptionHandling(exception -> {
-                    exception.authenticationEntryPoint(new CustomAuthenticationEntryPoint());
+                    exception.authenticationEntryPoint(new CustomAuthenticationEntryPoint(logger));
                 })
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())

@@ -6,9 +6,9 @@ import org.reflections.util.ConfigurationBuilder;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 public final class ReflectionUtils {
   public static <T> T getInstanceOfSubclass(Class<T> abstractClass, ApplicationContext applicationContext) {
@@ -40,42 +40,39 @@ public final class ReflectionUtils {
     }
   }
 
-  public static <T> List<T> getAllInstanceOfSubclasses(Class<T> abstractClass, ApplicationContext applicationContext) {
-    List<T> instances = new ArrayList<>();
-    try {
-      Reflections reflections = new Reflections(new ConfigurationBuilder()
-        .forPackages("")
-        .setScanners(new SubTypesScanner(false))
-      );
-
-      Set<Class<? extends T>> subTypes = reflections.getSubTypesOf(abstractClass);
-
-      for (Class<? extends T> subType : subTypes) {
-        try {
-          // Check if the class is managed by Spring
-          if (applicationContext.containsBean(subType.getSimpleName())) {
-            T instance = applicationContext.getBean(subType);
-            instances.add(instance);
-          } else {
-            // Fall back to no-argument constructor
-            T instance = subType.getDeclaredConstructor().newInstance();
-            instances.add(instance);
-          }
-        } catch (Exception ex) {
-          throw new RuntimeException("Error occurred while creating an instance of subclasses", ex);
-        }
-      }
-    } catch (Exception ex) {
-      throw new RuntimeException("Error occurred while creating an instance of subclass", ex);
-    }
-    return instances;
-  }
-
   public static Class<?> findClassFromName(String className) {
     try {
       return Class.forName(className);
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  public static <T> Class<T> getGenericTypeParameter(Class<?> clazz, Class<?> interfaceType) {
+    try {
+      // Get the generic interfaces of the class
+      Type[] genericInterfaces = clazz.getGenericInterfaces();
+
+      // Iterate through the generic interfaces to find the one with the generic type parameter
+      for (Type type : genericInterfaces) {
+        if (type instanceof ParameterizedType) {
+          ParameterizedType parameterizedType = (ParameterizedType) type;
+
+          // Check if the raw type matches the provided interface type
+          if (parameterizedType.getRawType().equals(interfaceType)) {
+            Type[] typeArguments = parameterizedType.getActualTypeArguments();
+
+            // Return the first type argument (T)
+            if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
+              return (Class<T>) typeArguments[0];
+            }
+          }
+        }
+      }
+
+      throw new IllegalArgumentException("Could not infer generic type parameter for " + clazz.getName());
+    } catch (Exception ex) {
+      throw new IllegalArgumentException("Failed to infer generic type parameter", ex);
     }
   }
 }
