@@ -4,7 +4,11 @@ import buildingblocks.core.exception.BadRequestException;
 import buildingblocks.core.exception.ConflictException;
 import buildingblocks.core.exception.NotFoundException;
 import buildingblocks.core.exception.ValidationException;
+import buildingblocks.utils.jsonconverter.JsonConverterUtils;
 import jakarta.persistence.OptimisticLockException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.KeyValuePair;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -16,11 +20,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.net.URI;
 import java.time.Instant;
+import java.util.Map;
+import java.util.Objects;
 
 @RestControllerAdvice
 public class CustomProblemDetailsHandler extends ResponseEntityExceptionHandler {
 
   private final Environment environment;
+  private final Logger logger = LoggerFactory.getLogger(CustomProblemDetailsHandler.class);
 
   public CustomProblemDetailsHandler(Environment environment) {
     this.environment = environment;
@@ -35,7 +42,6 @@ public class CustomProblemDetailsHandler extends ResponseEntityExceptionHandler 
     }
 
     ExceptionDetails details = switch (ex) {
-
       case ConflictException conflictEx -> new ExceptionDetails(
         conflictEx.getMessage(),
         conflictEx.getClass().getSimpleName(),
@@ -84,7 +90,6 @@ public class CustomProblemDetailsHandler extends ResponseEntityExceptionHandler 
       details.detail()
     );
 
-
     problemDetail.setType(URI.create("https://problems/" + details.title().toLowerCase()));
     problemDetail.setTitle(details.title());
     problemDetail.setProperty("timestamp", Instant.now());
@@ -93,6 +98,9 @@ public class CustomProblemDetailsHandler extends ResponseEntityExceptionHandler 
     if (isDevelopment()) {
       problemDetail.setProperty("exception", ex.toString());
     }
+
+    // Log structured error details
+    logger.atError().addKeyValue("details", JsonConverterUtils.serializeObject(details)).log("An error occurred while processing the request.");
 
     return ResponseEntity.status(problemDetail.getStatus()).body(problemDetail);
   }

@@ -54,8 +54,8 @@
 - :sparkle: Using `OpenTelemetry Collector` for collecting `Metrics`, `Tracings` and `Structured Logs`.
 - :sparkle: Using `Kibana` for `Logging` top of `OpenTelemetry Collector`.
 - :sparkle: Using `Jaeger` for `Distributed Tracing` top of `OpenTelemetry Collector`.
-- :sparkle: Using `OpenTelemetry` for monitoring on top of `Prometheus` and `Grafana`.
-- :sparkle: Using `Keycloak` for authentication and authorization base on `OpenID-Connect` and `OAuth2`.
+- :sparkle: Using `Prometheus` and `Grafana` for `monitoring` top of `OpenTelemetry Collector`.
+- :sparkle: Using `Keycloak` for `authentication` and `authorization` base on `OpenID-Connect` and `OAuth2`.
 - :sparkle: Using `Spring Cloud Gateway` as a microservices `gateway`.
 
 

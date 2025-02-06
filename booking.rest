@@ -25,9 +25,9 @@ POST {{keycloak-api}}/realms/keycloak-realm/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=client_credentials
-  &client_id=flight-client-credentials
-  &client_secret=Glcz8z8E6alTIfay1GdMc6XTTeuZrgOs
-  &scope=openid
+&client_id=booking-client-credentials
+&client_secret=secret
+&scope=openid
 ###
 
 
