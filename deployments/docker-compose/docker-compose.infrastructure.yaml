@@ -2,8 +2,10 @@
 # ref: https://github.com/joaofbantunes/DotNetMicroservicesObservabilitySample/blob/main/docker-compose.yml
 # ref: https://github.com/oskardudycz/EventSourcing.NetCore/blob/main/docker-compose.yml
 # https://github.com/grafana/intro-to-mltp
+# https://stackoverflow.com/questions/65272764/ports-are-not-available-listen-tcp-0-0-0-0-50070-bind-an-attempt-was-made-to
 
-name: booking-microservices-java-spring-boot
+
+name: booking-microservices
 
 services:
   #######################################################
@@ -44,6 +46,56 @@ services:
     networks:
       - infrastructure
 
+
+  #######################################################
+  #  EventStoreDB
+  #######################################################
+  eventstore:
+      container_name: eventstore
+      image: eventstore/eventstore:latest
+      restart: unless-stopped
+      environment:
+         - EVENTSTORE_CLUSTER_SIZE=1
+         - EVENTSTORE_RUN_PROJECTIONS=All
+         - EVENTSTORE_START_STANDARD_PROJECTIONS=True
+         - EVENTSTORE_HTTP_PORT=2113
+         - EVENTSTORE_INSECURE=True
+         - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=True
+      ports:
+          - "2113:2113"
+      networks:
+          - infrastructure      
+
+
+  #######################################################
+  #  Mongo
+  #######################################################
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: unless-stopped
+    # environment:
+    #   - MONGO_INITDB_ROOT_USERNAME=root
+    #   - MONGO_INITDB_ROOT_PASSWORD=secret
+    ports:
+      - 27017:27017
+    networks:
+      - infrastructure
+
+
+  #######################################################
+  #  Redis
+  #######################################################
+  redis:
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - 6379:6379    
+    networks:
+      - infrastructure      
+
+
   #######################################################
   #  jaeger 
   # https://www.jaegertracing.io/docs/1.64/deployment/
@@ -63,6 +115,7 @@ services:
     networks:
       - infrastructure
 
+
   #######################################################
   #  zipkin 
   # https://zipkin.io/pages/quickstart
@@ -75,6 +128,8 @@ services:
       - "9411:9411"
     networks:
       - infrastructure
+
+
   #######################################################
   #  otel-collector 
   # https://opentelemetry.io/docs/collector/installation/
@@ -100,6 +155,8 @@ services:
       - "55679:55679" # zpages extension
     networks:
       - infrastructure
+
+
   #######################################################
   #  prometheus
   # https://prometheus.io/docs/introduction/first_steps/
@@ -124,6 +181,8 @@ services:
     #   - "--log.level=debug"
     networks:
       - infrastructure
+
+
   #######################################################
   # node-exporter
   # https://prometheus.io/docs/guides/node-exporter/
@@ -145,6 +204,8 @@ services:
        - "9101:9100"
     networks:
       - infrastructure
+
+
   #######################################################
   #  grafana
   # https://grafana.com/docs/grafana/latest/administration/provisioning/
@@ -175,6 +236,8 @@ services:
       # - ./../configs/grafana/grafana.ini:/etc/grafana/grafana.ini
     networks:
       - infrastructure
+
+
   #######################################################
   # tempo
   # https://github.com/grafana/tempo/blob/main/example/docker-compose/otel-collector/docker-compose.yaml
@@ -195,6 +258,8 @@ services:
       - "24318:4318" # otlp http
     networks:
       - infrastructure
+
+
   #######################################################
   # loki
   # https://grafana.com/docs/opentelemetry/collector/send-logs-to-loki/
@@ -213,6 +278,7 @@ services:
     networks:
       - infrastructure
   
+
    #######################################################
    # elasticsearch
    # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/docker.html#docker-compose-file
@@ -245,6 +311,8 @@ services:
        - 9300:9300
      networks:
        - infrastructure
+
+
    #######################################################
    # kibana
    # https://www.elastic.co/guide/en/kibana/current/docker.html
@@ -261,36 +329,29 @@ services:
        - elasticsearch
      networks:
        - infrastructure
-
+  
+       
     #######################################################
-    # keycloak
+    # cadvisor
     #######################################################
-  keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    container_name: keycloak
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
     restart: unless-stopped
-    environment:
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
-      KC_DB_USERNAME: postgres
-      KC_DB_PASSWORD: postgres
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin_keycloak
-      KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 8080
-      KC_HOSTNAME_STRICT: false
-      KC_HOSTNAME_STRICT_HTTPS: false
-      KC_LOG_LEVEL: info
-      KC_METRICS_ENABLED: true
-      KC_HEALTH_ENABLED: true
     ports:
       - "8080:8080"
-    command: start-dev
-    depends_on:
-      - postgres
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
     networks:
       - infrastructure
-       
+
+
 networks:
   infrastructure:
     name: infrastructure
