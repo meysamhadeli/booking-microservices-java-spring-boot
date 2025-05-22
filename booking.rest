@@ -220,7 +220,6 @@ authorization: bearer {{Authenticate.response.body.access_token}}
 GET {{booking-api}}
 ###
 
-
 ###
 # @name Create_Booking
 POST {{api-gateway}}/api/v1/booking
