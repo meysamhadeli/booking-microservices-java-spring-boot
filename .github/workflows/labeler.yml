@@ -8,7 +8,6 @@ on:
       - reopened
       - labeled
       - unlabeled
-  # pull_request_target:
 
 jobs:
   auto-labeler:
@@ -16,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-      contents: read
+      contents: write
 
     steps:
       - uses: release-drafter/release-drafter@v6
